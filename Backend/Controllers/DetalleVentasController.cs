@@ -12,47 +12,47 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriasController : ControllerBase
+    public class DetalleVentasController : ControllerBase
     {
         private readonly StockCarniceriaContext _context;
 
-        public CategoriasController(StockCarniceriaContext context)
+        public DetalleVentasController(StockCarniceriaContext context)
         {
             _context = context;
         }
 
-        // GET: api/Categorias
+        // GET: api/DetalleVentas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
+        public async Task<ActionResult<IEnumerable<DetalleVenta>>> GetDetallesVenta()
         {
-            return await _context.Categorias.ToListAsync();
+            return await _context.DetallesVenta.ToListAsync();
         }
 
-        // GET: api/Categorias/5
+        // GET: api/DetalleVentas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        public async Task<ActionResult<DetalleVenta>> GetDetalleVenta(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
+            var detalleVenta = await _context.DetallesVenta.FindAsync(id);
 
-            if (categoria == null)
+            if (detalleVenta == null)
             {
                 return NotFound();
             }
 
-            return categoria;
+            return detalleVenta;
         }
 
-        // PUT: api/Categorias/5
+        // PUT: api/DetalleVentas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        public async Task<IActionResult> PutDetalleVenta(int id, DetalleVenta detalleVenta)
         {
-            if (id != categoria.Id)
+            if (id != detalleVenta.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            _context.Entry(detalleVenta).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace Backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoriaExists(id))
+                if (!DetalleVentaExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        // POST: api/Categorias
+        // POST: api/DetalleVentas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+        public async Task<ActionResult<DetalleVenta>> PostDetalleVenta(DetalleVenta detalleVenta)
         {
-            _context.Categorias.Add(categoria);
+            _context.DetallesVenta.Add(detalleVenta);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
+            return CreatedAtAction("GetDetalleVenta", new { id = detalleVenta.Id }, detalleVenta);
         }
 
-        // DELETE: api/Categorias/5
+        // DELETE: api/DetalleVentas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        public async Task<IActionResult> DeleteDetalleVenta(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
-            if (categoria == null)
+            var detalleVenta = await _context.DetallesVenta.FindAsync(id);
+            if (detalleVenta == null)
             {
                 return NotFound();
             }
 
-            _context.Categorias.Remove(categoria);
+            _context.DetallesVenta.Remove(detalleVenta);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CategoriaExists(int id)
+        private bool DetalleVentaExists(int id)
         {
-            return _context.Categorias.Any(e => e.Id == id);
+            return _context.DetallesVenta.Any(e => e.Id == id);
         }
     }
 }

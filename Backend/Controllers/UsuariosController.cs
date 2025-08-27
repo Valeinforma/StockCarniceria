@@ -14,9 +14,9 @@ namespace Backend.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly StockCarnniceriaContext _context;
+        private readonly StockCarniceriaContext _context;
 
-        public UsuariosController(StockCarnniceriaContext context)
+        public UsuariosController(StockCarniceriaContext context)
         {
             _context = context;
         }

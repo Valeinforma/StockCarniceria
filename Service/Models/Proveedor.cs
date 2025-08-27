@@ -1,10 +1,12 @@
 ﻿namespace Service.Models
 {
-    public class Categoria  
+    public class Proveedor
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
-       
+
+
+
     }
 }

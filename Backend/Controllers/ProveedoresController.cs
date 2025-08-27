@@ -12,47 +12,47 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriasController : ControllerBase
+    public class ProveedoresController : ControllerBase
     {
         private readonly StockCarniceriaContext _context;
 
-        public CategoriasController(StockCarniceriaContext context)
+        public ProveedoresController(StockCarniceriaContext context)
         {
             _context = context;
         }
 
-        // GET: api/Categorias
+        // GET: api/Proveedores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
+        public async Task<ActionResult<IEnumerable<Proveedor>>> GetProveedores()
         {
-            return await _context.Categorias.ToListAsync();
+            return await _context.Proveedores.ToListAsync();
         }
 
-        // GET: api/Categorias/5
+        // GET: api/Proveedores/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        public async Task<ActionResult<Proveedor>> GetProveedor(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
+            var proveedor = await _context.Proveedores.FindAsync(id);
 
-            if (categoria == null)
+            if (proveedor == null)
             {
                 return NotFound();
             }
 
-            return categoria;
+            return proveedor;
         }
 
-        // PUT: api/Categorias/5
+        // PUT: api/Proveedores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        public async Task<IActionResult> PutProveedor(int id, Proveedor proveedor)
         {
-            if (id != categoria.Id)
+            if (id != proveedor.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
+            _context.Entry(proveedor).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace Backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoriaExists(id))
+                if (!ProveedorExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        // POST: api/Categorias
+        // POST: api/Proveedores
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+        public async Task<ActionResult<Proveedor>> PostProveedor(Proveedor proveedor)
         {
-            _context.Categorias.Add(categoria);
+            _context.Proveedores.Add(proveedor);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
+            return CreatedAtAction("GetProveedor", new { id = proveedor.Id }, proveedor);
         }
 
-        // DELETE: api/Categorias/5
+        // DELETE: api/Proveedores/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        public async Task<IActionResult> DeleteProveedor(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
-            if (categoria == null)
+            var proveedor = await _context.Proveedores.FindAsync(id);
+            if (proveedor == null)
             {
                 return NotFound();
             }
 
-            _context.Categorias.Remove(categoria);
+            _context.Proveedores.Remove(proveedor);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CategoriaExists(int id)
+        private bool ProveedorExists(int id)
         {
-            return _context.Categorias.Any(e => e.Id == id);
+            return _context.Proveedores.Any(e => e.Id == id);
         }
     }
 }

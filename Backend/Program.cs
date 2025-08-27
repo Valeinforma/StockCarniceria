@@ -10,7 +10,7 @@ var configuration = new ConfigurationBuilder()
 string? cadenaConexion = configuration.GetConnectionString("mysqlRemote");
 
 //configuración de inyección de dependencias del DBContext
-builder.Services.AddDbContext<StockCarnniceriaContext>(
+builder.Services.AddDbContext<StockCarniceriaContext>(
     options => options.UseMySql(cadenaConexion,
                                 ServerVersion.AutoDetect(cadenaConexion),
                     options => options.EnableRetryOnFailure(

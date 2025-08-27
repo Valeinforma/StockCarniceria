@@ -10,13 +10,10 @@ namespace Service.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
-        public string Rol { get; set; } = string.Empty;
+        public string Rol { get; set; } = string.Empty; // admin, vendedor
         public bool IsDeleted { get; set; } = false;
         public string Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public override string ToString()
-        {
-             return Nombre;
-        }
+
     }
 }
