@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InicioCarne : Migration
+    public partial class inicioNuevo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,28 +16,28 @@ namespace Backend.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "FechaCompra",
-                value: new DateTime(2025, 8, 27, 2, 56, 51, 507, DateTimeKind.Local).AddTicks(1644));
+                value: new DateTime(2025, 8, 27, 13, 39, 2, 188, DateTimeKind.Local).AddTicks(5632));
 
             migrationBuilder.UpdateData(
                 table: "DetallesCompra",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "FechaCompra",
-                value: new DateTime(2025, 8, 27, 2, 56, 51, 507, DateTimeKind.Local).AddTicks(1650));
+                value: new DateTime(2025, 8, 27, 13, 39, 2, 188, DateTimeKind.Local).AddTicks(5637));
 
             migrationBuilder.UpdateData(
                 table: "Ventas",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "Fecha",
-                value: new DateTime(2025, 8, 27, 2, 56, 51, 507, DateTimeKind.Local).AddTicks(1497));
+                value: new DateTime(2025, 8, 27, 13, 39, 2, 188, DateTimeKind.Local).AddTicks(5471));
 
             migrationBuilder.UpdateData(
                 table: "Ventas",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "Fecha",
-                value: new DateTime(2025, 8, 27, 2, 56, 51, 507, DateTimeKind.Local).AddTicks(1526));
+                value: new DateTime(2025, 8, 27, 13, 39, 2, 188, DateTimeKind.Local).AddTicks(5496));
         }
 
         /// <inheritdoc />
@@ -48,28 +48,28 @@ namespace Backend.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "FechaCompra",
-                value: new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9368));
+                value: new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1822));
 
             migrationBuilder.UpdateData(
                 table: "DetallesCompra",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "FechaCompra",
-                value: new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9375));
+                value: new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1826));
 
             migrationBuilder.UpdateData(
                 table: "Ventas",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "Fecha",
-                value: new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9181));
+                value: new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1725));
 
             migrationBuilder.UpdateData(
                 table: "Ventas",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "Fecha",
-                value: new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9208));
+                value: new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1746));
         }
     }
 }

@@ -14,6 +14,9 @@ namespace Service.Models
         public bool IsDeleted { get; set; } = false;
         public string Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-
+        public override string ToString()
+        {
+            return $"Id: {Id}, Nombre: {Nombre}, Rol: {Rol}, Email: {Email}";
+        }
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InicioStock : Migration
+    public partial class ControlStock : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -169,8 +169,8 @@ namespace Backend.Migrations
                 columns: new[] { "Id", "Cantidad", "FechaCompra", "IdCompra", "IdDetalleCompra", "IsDeleted", "PrecioUnitario", "ProductoId", "ProveedorId" },
                 values: new object[,]
                 {
-                    { 1, 20m, new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9368), 0, 0, false, 1200.00m, 1, 1 },
-                    { 2, 50m, new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9375), 0, 0, false, 700.00m, 2, 2 }
+                    { 1, 20m, new DateTime(2025, 8, 27, 13, 18, 14, 261, DateTimeKind.Local).AddTicks(1292), 0, 0, false, 1200.00m, 1, 1 },
+                    { 2, 50m, new DateTime(2025, 8, 27, 13, 18, 14, 261, DateTimeKind.Local).AddTicks(1296), 0, 0, false, 700.00m, 2, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -215,8 +215,8 @@ namespace Backend.Migrations
                 columns: new[] { "Id", "Cliente", "Fecha", "IdVenta", "IsDeleted", "Precio", "UsuarioId" },
                 values: new object[,]
                 {
-                    { 1, null, new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9181), 0, false, 3000.00m, 2 },
-                    { 2, null, new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9208), 0, false, 1500.00m, 2 }
+                    { 1, null, new DateTime(2025, 8, 27, 13, 18, 14, 261, DateTimeKind.Local).AddTicks(1173), 0, false, 3000.00m, 2 },
+                    { 2, null, new DateTime(2025, 8, 27, 13, 18, 14, 261, DateTimeKind.Local).AddTicks(1195), 0, false, 1500.00m, 2 }
                 });
         }
 

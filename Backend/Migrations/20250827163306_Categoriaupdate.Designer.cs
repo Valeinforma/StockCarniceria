@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(StockCarniceriaContext))]
-    [Migration("20250827054135_InicioStock")]
-    partial class InicioStock
+    [Migration("20250827163306_Categoriaupdate")]
+    partial class Categoriaupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -106,7 +106,7 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             Cantidad = 20m,
-                            FechaCompra = new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9368),
+                            FechaCompra = new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1822),
                             IdCompra = 0,
                             IdDetalleCompra = 0,
                             IsDeleted = false,
@@ -118,7 +118,7 @@ namespace Backend.Migrations
                         {
                             Id = 2,
                             Cantidad = 50m,
-                            FechaCompra = new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9375),
+                            FechaCompra = new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1826),
                             IdCompra = 0,
                             IdDetalleCompra = 0,
                             IsDeleted = false,
@@ -378,7 +378,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 1,
-                            Fecha = new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9181),
+                            Fecha = new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1725),
                             IdVenta = 0,
                             IsDeleted = false,
                             Precio = 3000.00m,
@@ -387,7 +387,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 2,
-                            Fecha = new DateTime(2025, 8, 27, 2, 41, 33, 287, DateTimeKind.Local).AddTicks(9208),
+                            Fecha = new DateTime(2025, 8, 27, 13, 33, 4, 170, DateTimeKind.Local).AddTicks(1746),
                             IdVenta = 0,
                             IsDeleted = false,
                             Precio = 1500.00m,

@@ -15,6 +15,11 @@
 
         public bool IsDeleted { get; set; } = false;
         public int CategoriaId { get; set; }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Nombre: {Nombre}, Precio: {Precio}, Stock: {Stock}, Unidad: {Unidad}, ProveedorId: {ProveedorId}, CategoriaId: {CategoriaId}";
+        }
     }
 
 }

@@ -1,4 +1,6 @@
-﻿namespace Service.Models
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace Service.Models
 {
     public class DetalleCompra
     {
@@ -11,6 +13,10 @@
         public decimal PrecioUnitario { get; set; }
         public bool IsDeleted { get; set; } = false;
         public int ProveedorId { get; set; }
+        public override string ToString()
+        {
+            return $"{Id} - {ProductoId} - {Cantidad} - {PrecioUnitario}";
+        }
     }
 
 }
