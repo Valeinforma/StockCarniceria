@@ -100,6 +100,30 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreCategotia(int id)
+        {
+            var categoria = await _context.Categorias.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if ( categoria== null)
+            {
+                return NotFound();
+            }
+            categoria.IsDeleted = false;
+            _context.Categorias.Update(categoria);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasDeleteds()
+        {
+            return await _context.Categorias.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+        }
+
+
+
         private bool CategoriaExists(int id)
         {
             return _context.Categorias.Any(e => e.Id == id);

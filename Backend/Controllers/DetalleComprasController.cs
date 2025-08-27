@@ -99,6 +99,29 @@ namespace Backend.Controllers
 
             return NoContent();
         }
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreDetalleCompra(int id)
+        {
+            var DetallesCompra = await _context.DetallesCompra.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if (DetallesCompra == null)
+            {
+                return NotFound();
+            }
+            DetallesCompra.IsDeleted = false;
+            _context.DetallesCompra.Update(DetallesCompra);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<DetalleCompra>>> GetDetallesCompraDeleteds()
+        {
+            return await _context.DetallesCompra.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+        }
 
         private bool DetalleCompraExists(int id)
         {

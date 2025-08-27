@@ -100,6 +100,30 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreProducto(int id)
+        {
+            var Producto = await _context.Productos.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if (Producto == null)
+            {
+                return NotFound();
+            }
+            Producto.IsDeleted = false;
+            _context.Productos.Update(Producto);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<Producto>>> GetCapacitacionesDeleteds()
+        {
+            return await _context.Productos.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+        }
+
         private bool ProductoExists(int id)
         {
             return _context.Productos.Any(e => e.Id == id);

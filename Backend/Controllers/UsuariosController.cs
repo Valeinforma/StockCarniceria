@@ -100,6 +100,30 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreUsuatios(int id)
+        {
+            var Usuarios = await _context.Usuarios.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if (Usuarios == null)
+            {
+                return NotFound();
+            }
+            Usuarios.IsDeleted = false;
+            _context.Usuarios.Update(Usuarios);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuariosDeleteds()
+        {
+            return await _context.Usuarios.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+        }
+
         private bool UsuariosExists(int id)
         {
             return _context.Usuarios.Any(e => e.Id == id);
