@@ -7,9 +7,5 @@
         public string categoria { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
 
-        public override string ToString()
-        {
-            return Nombre;
-        }
     }
 }
