@@ -37,7 +37,7 @@ public class StockCarniceriaContext : DbContext
             new Usuarios
             {
                 Id = 1,
-                Nombre = "admin",
+                Nombre = "Martin",
                 Rol = "admin",
                 IsDeleted = false,
                 Password = "admin123", // Considera hashear en producción
@@ -46,7 +46,7 @@ public class StockCarniceriaContext : DbContext
             new Usuarios
             {
                 Id = 2,
-                Nombre = "vendedor1",
+                Nombre = "Pepe",
                 Rol = "vendedor",
                 IsDeleted = false,
                 Password = "vendedor123",
