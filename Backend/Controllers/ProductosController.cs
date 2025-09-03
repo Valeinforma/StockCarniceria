@@ -109,7 +109,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            Producto.IsDeleted = false;
+            Producto.IsDeleted = true;
             _context.Productos.Update(Producto);
             await _context.SaveChangesAsync();
 

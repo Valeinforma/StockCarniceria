@@ -100,6 +100,31 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreProveedor(int id)
+        {
+            var Proveedores = await _context.Proveedores.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if (Proveedores == null)
+            {
+                return NotFound();
+            }
+            Proveedores.IsDeleted = true;
+            _context.Proveedores.Update(Proveedores);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<Proveedor>>> GetProveedoresDeleteds()
+        {
+            return await _context.Proveedores.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+        }
+
+
         private bool ProveedorExists(int id)
         {
             return _context.Proveedores.Any(e => e.Id == id);

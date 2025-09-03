@@ -43,7 +43,7 @@ namespace Backend.Controllers
         }
 
         // PUT: api/Categorias/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
@@ -74,7 +74,7 @@ namespace Backend.Controllers
         }
 
         // POST: api/Categorias
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
@@ -109,7 +109,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            categoria.IsDeleted = false;
+            categoria.IsDeleted = true;
             _context.Categorias.Update(categoria);
             await _context.SaveChangesAsync();
 
@@ -121,8 +121,6 @@ namespace Backend.Controllers
         {
             return await _context.Categorias.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
         }
-
-
 
         private bool CategoriaExists(int id)
         {

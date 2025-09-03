@@ -108,7 +108,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            DetallesCompra.IsDeleted = false;
+            DetallesCompra.IsDeleted = true;
             _context.DetallesCompra.Update(DetallesCompra);
             await _context.SaveChangesAsync();
 

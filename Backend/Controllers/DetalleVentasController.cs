@@ -42,8 +42,7 @@ namespace Backend.Controllers
             return detalleVenta;
         }
 
-        // PUT: api/DetalleVentas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDetalleVenta(int id, DetalleVenta detalleVenta)
         {
@@ -98,6 +97,29 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreDetalleVenta(int id)
+        {
+            var DetalleVenta = await _context.DetallesVenta.IgnoreQueryFilters
+                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            if (DetalleVenta == null)
+            {
+                return NotFound();
+            }
+            DetalleVenta.IsDeleted = true;
+            _context.DetallesVenta.Update(DetalleVenta);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        // GET: api/Capacitaciones
+        [HttpGet("deleteds/")]
+        public async Task<ActionResult<IEnumerable<DetalleVenta>>> GetDetallesVentaDeleteds()
+        {
+            return await _context.DetallesVenta.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
         }
 
         private bool DetalleVentaExists(int id)

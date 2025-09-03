@@ -109,7 +109,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            Usuarios.IsDeleted = false;
+            Usuarios.IsDeleted = true;
             _context.Usuarios.Update(Usuarios);
             await _context.SaveChangesAsync();
 
