@@ -1,0 +1,47 @@
+﻿@page "/productos"
+
+@inject IGenericService<Producto> _serviceCapacitacion
+
+<PageTitle>Productos</PageTitle>
+
+<h1>Productos</h1>
+
+@if (productos == null)
+{
+	<p><em>Cargando la lista de Productos...</em></p>
+}
+else if (!productos.Any())
+{
+	<p><em>No hay capacitaciones disponibles.</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+				<th>Precio</th>
+				<th>Stock</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var producto in productos)
+			{
+				<tr>
+					<td>@producto.Nombre</td>
+					<td>@producto.Precio</td>
+					<td>@producto.Stock</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<Producto>? productos;
+
+	protected override async Task OnInitializedAsync()
+	{
+		productos = (await _serviceCapacitacion.GetAllAsync(null))?.ToList();
+	}
+}
