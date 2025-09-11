@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StockCarne</title>
+    <title>WebBlazor</title>
     <base href="/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
@@ -26,82 +26,6 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <!-- Firebase Authentication -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-    <!-- Configuración de Firebase -->
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDsc99m5XiGRu27mnyznSYcsQj97qJpy6g",
-            authDomain: "agora-ca619.firebaseapp.com",
-            projectId: "agora-ca619",
-            storageBucket: "agora-ca619.firebasestorage.app",
-            messagingSenderId: "242275995526",
-            appId: "1:242275995526:web:1eed599cb7363ae5162607"
-        };
-        firebase.initializeApp(firebaseConfig);
-        console.log(firebase);
-        window.firebaseAuth = {
-            signInWithEmailPassword: async function (email, password) {
-                try {
-                    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                    console.log(userCredential);
-                    return userCredential.user.uid;
-                } catch (error) {
-                    console.error("Error en autenticación:", error.message);
-                    return null;
-                }
-            },
-            createUserWithEmailAndPassword: async function (email, password, displayName) {
-                try {
-                    //imprimo por consola los parametros que ll
-                    console.log(`email${email} password=${password},name=${name}`)
-                    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                    // El usuario se ha creado correctamente
-                    const user = userCredential.user;
-
-                    // Actualizar el perfil del usuario
-                    user.updateProfile({
-                        displayName: displayName
-                    });
-                    return userCredential.user.uid;
-                    // Enviar correo de verificación
-                    //user.sendEmailVerification()
-                    //    .then(() => {
-                    //        console.log('Correo de verificación enviado.');
-                    //    })
-                    //    .catch((error) => {
-                    //        console.error('Error al enviar el correo de verificación:', error);
-                    //    });
-
-
-
-                } catch (error) {
-                    console.error("Error en autenticación:", error.message);
-                    return null;
-                }
-
-            },
-
-            signOut: async function () {
-                await firebase.auth().signOut();
-            }
-        };
-        window.localStorageHelper = {
-            setItem: function (key, value) {
-                localStorage.setItem(key, value);
-            },
-            getItem: function (key) {
-                return localStorage.getItem(key);
-            },
-            removeItem: function (key) {
-                localStorage.removeItem(key);
-            }
-        };
-    </script>
-    <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

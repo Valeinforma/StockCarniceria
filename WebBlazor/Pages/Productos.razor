@@ -1,27 +1,27 @@
 ﻿@page "/productos"
-
-@inject IGenericService<Producto> _serviceProducto
+@inject NavigationManager Navigation
+@inject IGenericService<Producto> _productoService
 
 <PageTitle>Productos</PageTitle>
 
-<h1>Productos</h1>
+<h1>productos</h1>
 
-@if (productos == null)
+@if (Productos == null)
 {
-	<p><em>Cargando la lista de Productos...</em></p>
+	<p><em>Cargando la lista de productos...</em></p>
 }
-else if (!productos.Any())
+else if (!Productos.Any())
 {
-	<p><em>No hay capacitaciones disponibles.</em></p>
+	<p><em>No hay productos disponibles.</em></p>
 }
 else
 {
 	<table class="table">
 		<thead>
 			<tr>
+
 				<th>Nombre</th>
 				<th>Precio</th>
-				<th>Stock</th>
 				<th>Unidad</th>
 			</tr>
 		</thead>
@@ -29,22 +29,21 @@ else
 			@foreach (var producto in productos)
 			{
 				<tr>
+
 					<td>@producto.Nombre</td>
 					<td>@producto.Precio</td>
-					<td>@producto.Stock</td>
 					<td>@producto.Unidad</td>
-					
+
 				</tr>
 			}
 		</tbody>
 	</table>
-}
-
 @code {
 	private List<Producto>? productos;
 
 	protected override async Task OnInitializedAsync()
 	{
-		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+		 productos = (await _productoService.GetAllAsync(null))?.ToList();
 	}
+}
 }

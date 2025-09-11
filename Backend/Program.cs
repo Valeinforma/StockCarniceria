@@ -23,8 +23,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder
+            .WithOrigins("https://localhost:9000", "https://apistockcarne.azurewebsites.net")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
 var app = builder.Build();
 
+app.UseCors("AllowSpecificOrigins");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
