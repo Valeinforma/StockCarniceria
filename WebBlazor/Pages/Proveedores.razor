@@ -1,0 +1,43 @@
+﻿@page "/proveedores"
+
+@inject IGenericService<Proveedor> _serviceProveedor
+
+<PageTitle>Proveedores</PageTitle>
+
+<h1>Proveedores</h1>
+
+@if (proveedores == null)
+{
+	<p><em>Cargando la lista de proveedores...</em></p>
+}
+else if (!proveedores.Any())
+{
+	<p><em>No hay proveedores disponibles.</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var proveedor in proveedores)
+			{
+				<tr>
+					<td>@proveedor.Nombre</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<Proveedor>? proveedores;
+
+	protected override async Task OnInitializedAsync()
+	{
+		proveedores = (await _serviceProveedor.GetAllAsync(null))?.ToList();
+	}
+}

@@ -1,6 +1,6 @@
 ﻿@page "/productos"
 
-@inject IGenericService<Producto> _serviceCapacitacion
+@inject IGenericService<Producto> _serviceProducto
 
 <PageTitle>Productos</PageTitle>
 
@@ -22,6 +22,7 @@ else
 				<th>Nombre</th>
 				<th>Precio</th>
 				<th>Stock</th>
+				<th>Unidad</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -31,6 +32,8 @@ else
 					<td>@producto.Nombre</td>
 					<td>@producto.Precio</td>
 					<td>@producto.Stock</td>
+					<td>@producto.Unidad</td>
+					
 				</tr>
 			}
 		</tbody>
@@ -42,6 +45,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		productos = (await _serviceCapacitacion.GetAllAsync(null))?.ToList();
+		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
 	}
 }
