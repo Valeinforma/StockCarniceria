@@ -124,6 +124,6 @@
     <value>agora-ca619.firebaseapp.com</value>
   </data>
   <data name="UrlApi" xml:space="preserve">
-    <value>https</value>
+    <value>https://apistockcarniceria.azurewebsites.net/api/</value>
   </data>
 </root>
