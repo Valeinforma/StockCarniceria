@@ -1,4 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Service.Enum;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Service.Models
 {
@@ -14,6 +15,7 @@ namespace Service.Models
         public string? Cliente { get; set; }  // Puede ser null
         public bool IsDeleted { get; set; } = false;
         public decimal Precio { get; set; }
+        public TipoPagoEnum TipoPagoEnum { get; set; } = TipoPagoEnum.Efectivo;
         public override string ToString()
         {
             return $"Id: {Id}, Fecha: {Fecha}, UsuarioId: {UsuarioId}, Cliente: {Cliente}, Precio: {Precio}";

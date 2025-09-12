@@ -118,12 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ApiKeyFirebase" xml:space="preserve">
-    <value>AIzaSyDsc99m5XiGRu27mnyznSYcsQj97qJpy6g</value>
+    <value>AIzaSyDPyakUUz7DrOq-mKA8HrA0VecCul5dN4s</value>
   </data>
   <data name="AuthDomainFirebase" xml:space="preserve">
-    <value>agora-ca619.firebaseapp.com</value>
+    <value>stockcarne-e9951.firebaseapp.com</value>
   </data>
   <data name="UrlApi" xml:space="preserve">
     <value>https://apistockcarniceria.azurewebsites.net/api/</value>
+  </data>
+  <data name="UrlApiLocal" xml:space="preserve">
+    <value>https://localhost:9000/api/</value>
   </data>
 </root>

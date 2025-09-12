@@ -55,14 +55,15 @@ public class StockCarniceriaContext : DbContext
         );
         //datos semilla de productos
         modelBuilder.Entity<Producto>().HasData(
-            new Producto { Id = 1, Nombre = "Bife de Chorizo", CategoriaId = 1, ProveedorId = 1, Precio = 1500.00m, Stock = 50 },
-            new Producto { Id = 2, Nombre = "Pechuga de Pollo", CategoriaId = 2, ProveedorId = 2, Precio = 800.00m, Stock = 100 },
-            new Producto { Id = 3, Nombre = "Chorizo", CategoriaId = 3, ProveedorId = 1, Precio = 400.00m, Stock = 200 }
+            new Producto { Id = 1, Nombre = "Bife de Chorizo", Precio = 1500.00m, Stock = 10, Unidad = "kg", ProveedorId = 1, CategoriaId = 1 },
+            new Producto { Id = 2, Nombre = "Pechuga de Pollo", Precio = 800.00m, Stock = 25, Unidad = "kg", ProveedorId = 2, CategoriaId = 2 },
+            new Producto { Id = 3, Nombre = "Chorizo", Precio = 600.00m, Stock = 30, Unidad = "kg", ProveedorId = 1, CategoriaId = 3 }
         );
+
         //datos semilla de ventas
         modelBuilder.Entity<Venta>().HasData(
-            new Venta { Id = 1, Fecha = DateTime.Now, Precio = 3000.00m, UsuarioId = 2 },
-            new Venta { Id = 2, Fecha = DateTime.Now, Precio = 1500.00m, UsuarioId = 2 }
+            new Venta { Id = 1, Fecha = DateTime.Now, UsuarioId = 1, Cliente = "Juan Perez", Precio = 3000.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.Efectivo },
+            new Venta { Id = 2, Fecha = DateTime.Now, UsuarioId = 2, Cliente = "Maria Gomez", Precio = 800.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.TarjetaDebito }
         );
         //datos semilla de detalles de detalles de venta
         modelBuilder.Entity<DetalleVenta>().HasData(

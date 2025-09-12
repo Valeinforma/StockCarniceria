@@ -61,7 +61,7 @@ namespace Service.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a AIzaSyDsc99m5XiGRu27mnyznSYcsQj97qJpy6g.
+        ///   Busca una cadena traducida similar a AIzaSyDPyakUUz7DrOq-mKA8HrA0VecCul5dN4s.
         /// </summary>
         public static string ApiKeyFirebase {
             get {
@@ -70,7 +70,7 @@ namespace Service.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a agora-ca619.firebaseapp.com.
+        ///   Busca una cadena traducida similar a stockcarne-e9951.firebaseapp.com.
         /// </summary>
         public static string AuthDomainFirebase {
             get {
@@ -84,6 +84,15 @@ namespace Service.Properties {
         public static string UrlApi {
             get {
                 return ResourceManager.GetString("UrlApi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a https://localhost:9000/api/.
+        /// </summary>
+        public static string UrlApiLocal {
+            get {
+                return ResourceManager.GetString("UrlApiLocal", resourceCulture);
             }
         }
     }

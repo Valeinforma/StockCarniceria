@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebBlazor</title>
+    <title>StockCarniceria</title>
     <base href="/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
@@ -26,7 +26,84 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
+    <!-- Blazor WebAssembly -->
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <!-- Configuración de Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPyakUUz7DrOq-mKA8HrA0VecCul5dN4s",
+            authDomain: "stockcarne-e9951.firebaseapp.com",
+            projectId: "stockcarne-e9951",
+            storageBucket: "stockcarne-e9951.firebasestorage.app",
+            messagingSenderId: "820415986013",
+            appId: "1:820415986013:web:fd6ed93695d46bab05d0b4"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log("Firebase inicializado:", firebase);
+
+        // Autenticación Firebase expuesta a Blazor
+        window.firebaseAuth = {
+            signInWithEmailPassword: async function (email, password) {
+                try {
+                    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    console.log("Usuario logueado:", userCredential);
+                    return userCredential.user.uid;
+                } catch (error) {
+                    console.error("Error en autenticación:", error.message);
+                    return null;
+                }
+            },
+            createUserWithEmailAndPassword: async function (email, password, displayName) {
+                try {
+                    console.log(`email=${email}, password=${password}, name=${displayName}`);
+
+                    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    // Actualizar perfil
+                    await user.updateProfile({
+                        displayName: displayName
+                    });
+
+                    return userCredential.user.uid;
+
+                    // Opcional: enviar correo de verificación
+                    // await user.sendEmailVerification();
+                } catch (error) {
+                    console.error("Error en autenticación:", error.message);
+                    return null;
+                }
+            },
+            signOut: async function () {
+                await firebase.auth().signOut();
+                console.log("Usuario desconectado");
+            }
+        };
+
+        // LocalStorage expuesto a Blazor
+        window.localStorageHelper = {
+            setItem: function (key, value) {
+                localStorage.setItem(key, value);
+            },
+            getItem: function (key) {
+                return localStorage.getItem(key);
+            },
+            removeItem: function (key) {
+                localStorage.removeItem(key);
+            }
+        };
+    </script>
+
+    <!-- Librería SweetAlert -->
+    <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
 </body>
 
 </html>

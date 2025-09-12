@@ -9,7 +9,7 @@
 
         public decimal Precio { get; set; }
 
-        public int Stock { get; set; }
+        public int Stock { get; set; } = 0;
 
         public string Unidad { get; set; } = string.Empty;
 
