@@ -30,10 +30,11 @@
         {
             menuStrip1 = new MenuStrip();
             BtnPrincipal = new FontAwesome.Sharp.IconMenuItem();
+            usuariosToolStripMenuItem = new ToolStripMenuItem();
             BtnSalir = new ToolStripMenuItem();
             BtnSalirDelSistema = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
-            usuariosToolStripMenuItem = new ToolStripMenuItem();
+            productosToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -48,13 +49,20 @@
             // 
             // BtnPrincipal
             // 
-            BtnPrincipal.DropDownItems.AddRange(new ToolStripItem[] { usuariosToolStripMenuItem });
+            BtnPrincipal.DropDownItems.AddRange(new ToolStripItem[] { usuariosToolStripMenuItem, productosToolStripMenuItem });
             BtnPrincipal.IconChar = FontAwesome.Sharp.IconChar.None;
             BtnPrincipal.IconColor = Color.Black;
             BtnPrincipal.IconFont = FontAwesome.Sharp.IconFont.Auto;
             BtnPrincipal.Name = "BtnPrincipal";
             BtnPrincipal.Size = new Size(81, 20);
             BtnPrincipal.Text = "Principal";
+            // 
+            // usuariosToolStripMenuItem
+            // 
+            usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
+            usuariosToolStripMenuItem.Size = new Size(180, 22);
+            usuariosToolStripMenuItem.Text = "Usuarios";
+            usuariosToolStripMenuItem.Click += usuariosToolStripMenuItem_Click;
             // 
             // BtnSalir
             // 
@@ -78,12 +86,12 @@
             toolStrip1.TabIndex = 5;
             toolStrip1.Text = "toolStrip1";
             // 
-            // usuariosToolStripMenuItem
+            // productosToolStripMenuItem
             // 
-            usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
-            usuariosToolStripMenuItem.Size = new Size(180, 22);
-            usuariosToolStripMenuItem.Text = "Usuarios";
-            usuariosToolStripMenuItem.Click += usuariosToolStripMenuItem_Click;
+            productosToolStripMenuItem.Name = "productosToolStripMenuItem";
+            productosToolStripMenuItem.Size = new Size(180, 22);
+            productosToolStripMenuItem.Text = "Productos";
+            productosToolStripMenuItem.Click += productosToolStripMenuItem_Click;
             // 
             // MenuPrincipalView
             // 
@@ -111,5 +119,6 @@
         private ToolStripMenuItem BtnSalirDelSistema;
         private ToolStrip toolStrip1;
         private ToolStripMenuItem usuariosToolStripMenuItem;
+        private ToolStripMenuItem productosToolStripMenuItem;
     }
 }

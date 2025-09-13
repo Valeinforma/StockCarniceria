@@ -22,60 +22,97 @@ public class StockCarniceriaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //datos semila de los modelos
+        // ==========================
+        // Categorías
+        // ==========================
         modelBuilder.Entity<Categoria>().HasData(
-            new Categoria { Id = 1, Nombre = "Carnes Rojas" },
-            new Categoria { Id = 2, Nombre = "Carnes Blancas" },
-            new Categoria { Id = 3, Nombre = "Embutidos" }
+            new Categoria { Id = 1, Nombre = "Vacuno" },
+            new Categoria { Id = 2, Nombre = "Aves" },
+            new Categoria { Id = 3, Nombre = "Lácteos" },
+            new Categoria { Id = 4, Nombre = "Bebidas" }
         );
+
+        // ==========================
+        // Proveedores
+        // ==========================
         modelBuilder.Entity<Proveedor>().HasData(
-            new Proveedor { Id = 1, Nombre = "Proveedor A" },
-            new Proveedor { Id = 2, Nombre = "Proveedor B" }
+            new Proveedor { Id = 1, Nombre = "Frigorífico Patagonia" },
+            new Proveedor { Id = 2, Nombre = "Avícola San Juan" },
+            new Proveedor { Id = 3, Nombre = "Distribuidora Láctea SRL" }
         );
-        //datos semilla de usuarios
+
+        // ==========================
+        // Usuarios
+        // ==========================
         modelBuilder.Entity<Usuarios>().HasData(
             new Usuarios
             {
                 Id = 1,
-                Nombre = "Martin",
+                Nombre = "Sofia",
                 Rol = "admin",
                 IsDeleted = false,
-                Password = "admin123", // Considera hashear en producción
-                Email = "admin@carniceria.com"
+                Password = "sofiaAdmin2025", // en prod se recomienda hashear
+                Email = "admin@tienda.com"
             },
             new Usuarios
             {
                 Id = 2,
-                Nombre = "Pepe",
+                Nombre = "Carlos",
                 Rol = "vendedor",
                 IsDeleted = false,
-                Password = "vendedor123",
-                Email = "vendedor1@carniceria.com"
+                Password = "carlosV123",
+                Email = "carlos@tienda.com"
+            },
+            new Usuarios
+            {
+                Id = 3,
+                Nombre = "Lucia",
+                Rol = "vendedor",
+                IsDeleted = false,
+                Password = "luciaV123",
+                Email = "lucia@tienda.com"
             }
         );
-        //datos semilla de productos
+
+        // ==========================
+        // Productos
+        // ==========================
         modelBuilder.Entity<Producto>().HasData(
-            new Producto { Id = 1, Nombre = "Bife de Chorizo", Precio = 1500.00m, Stock = 10, Unidad = "kg", ProveedorId = 1, CategoriaId = 1 },
-            new Producto { Id = 2, Nombre = "Pechuga de Pollo", Precio = 800.00m, Stock = 25, Unidad = "kg", ProveedorId = 2, CategoriaId = 2 },
-            new Producto { Id = 3, Nombre = "Chorizo", Precio = 600.00m, Stock = 30, Unidad = "kg", ProveedorId = 1, CategoriaId = 3 }
+            new Producto { Id = 1, Nombre = "Asado", Precio = 2500.00m, Stock = 15, Unidad = "kg", ProveedorId = 1, CategoriaId = 1 },
+            new Producto { Id = 2, Nombre = "Suprema de Pollo", Precio = 1200.00m, Stock = 40, Unidad = "kg", ProveedorId = 2, CategoriaId = 2 },
+            new Producto { Id = 3, Nombre = "Queso Muzzarella", Precio = 1800.00m, Stock = 20, Unidad = "kg", ProveedorId = 3, CategoriaId = 3 },
+            new Producto { Id = 4, Nombre = "Leche Entera", Precio = 900.00m, Stock = 50, Unidad = "litro", ProveedorId = 3, CategoriaId = 3 },
+            new Producto { Id = 5, Nombre = "Gaseosa Cola 2L", Precio = 1500.00m, Stock = 35, Unidad = "botella", ProveedorId = 2, CategoriaId = 4 }
         );
 
-        //datos semilla de ventas
+        // ==========================
+        // Ventas
+        // ==========================
         modelBuilder.Entity<Venta>().HasData(
-            new Venta { Id = 1, Fecha = DateTime.Now, UsuarioId = 1, Cliente = "Juan Perez", Precio = 3000.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.Efectivo },
-            new Venta { Id = 2, Fecha = DateTime.Now, UsuarioId = 2, Cliente = "Maria Gomez", Precio = 800.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.TarjetaDebito }
+            new Venta { Id = 1, Fecha = DateTime.Now, UsuarioId = 2, Cliente = "Pedro López", Precio = 5000.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.Efectivo },
+            new Venta { Id = 2, Fecha = DateTime.Now, UsuarioId = 3, Cliente = "Laura Fernández", Precio = 2700.00m, TipoPagoEnum = Service.Enum.TipoPagoEnum.TarjetaCredito }
         );
-        //datos semilla de detalles de detalles de venta
+
+        // ==========================
+        // Detalles de Venta
+        // ==========================
         modelBuilder.Entity<DetalleVenta>().HasData(
-            new DetalleVenta { Id = 1, VentaId = 1, ProductoId = 1, Cantidad = 2, PrecioUnitario = 1500.00m },
-            new DetalleVenta { Id = 2, VentaId = 2, ProductoId = 2, Cantidad = 1, PrecioUnitario = 800.00m }
+            new DetalleVenta { Id = 1, VentaId = 1, ProductoId = 1, Cantidad = 2, PrecioUnitario = 2500.00m }, // 2kg Asado
+            new DetalleVenta { Id = 2, VentaId = 1, ProductoId = 5, Cantidad = 1, PrecioUnitario = 1500.00m }, // 1 Gaseosa
+            new DetalleVenta { Id = 3, VentaId = 2, ProductoId = 2, Cantidad = 1, PrecioUnitario = 1200.00m }, // 1kg Suprema
+            new DetalleVenta { Id = 4, VentaId = 2, ProductoId = 4, Cantidad = 2, PrecioUnitario = 900.00m }   // 2 Leches
         );
-        //datos semilla de detalles de compra
+
+        // ==========================
+        // Detalles de Compra
+        // ==========================
         modelBuilder.Entity<DetalleCompra>().HasData(
-            new DetalleCompra { Id = 1, ProductoId = 1, Cantidad = 20, PrecioUnitario = 1200.00m, FechaCompra = DateTime.Now, ProveedorId = 1 },
-            new DetalleCompra { Id = 2, ProductoId = 2, Cantidad = 50, PrecioUnitario = 700.00m, FechaCompra = DateTime.Now, ProveedorId = 2 }
+            new DetalleCompra { Id = 1, ProductoId = 1, Cantidad = 30, PrecioUnitario = 2000.00m, FechaCompra = DateTime.Now, ProveedorId = 1 },
+            new DetalleCompra { Id = 2, ProductoId = 2, Cantidad = 60, PrecioUnitario = 1000.00m, FechaCompra = DateTime.Now, ProveedorId = 2 },
+            new DetalleCompra { Id = 3, ProductoId = 3, Cantidad = 25, PrecioUnitario = 1500.00m, FechaCompra = DateTime.Now, ProveedorId = 3 },
+            new DetalleCompra { Id = 4, ProductoId = 5, Cantidad = 50, PrecioUnitario = 1200.00m, FechaCompra = DateTime.Now, ProveedorId = 2 }
         );
-       
+
 
         modelBuilder.Entity<Producto>().HasQueryFilter(p => !p.IsDeleted);
         modelBuilder.Entity<Usuarios>().HasQueryFilter(u => !u.IsDeleted);

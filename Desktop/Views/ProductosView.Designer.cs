@@ -381,7 +381,7 @@
             label1.Name = "label1";
             label1.Size = new Size(204, 51);
             label1.TabIndex = 0;
-            label1.Text = "Películas";
+            label1.Text = "Productos";
             // 
             // LabelStatusMessage
             // 
@@ -401,7 +401,7 @@
             TimerStatusBar.Interval = 3000;
             TimerStatusBar.Tick += TimerStatusBar_Tick;
             // 
-            // PeliculasEFView
+            // ProductosView
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -409,8 +409,8 @@
             Controls.Add(LabelStatusMessage);
             Controls.Add(panel1);
             Controls.Add(tabAgregarEliminar);
-            Name = "PeliculasEFView";
-            Text = "PeliculasView";
+            Name = "ProductosView";
+            Text = "ProductosView";
             ((System.ComponentModel.ISupportInitialize)GridPeliculas).EndInit();
             tabAgregarEliminar.ResumeLayout(false);
             tabPageLista.ResumeLayout(false);

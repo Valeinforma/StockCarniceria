@@ -28,5 +28,12 @@ namespace Desktop.Views
             usuarios.MdiParent = this;
             usuarios.Show();
         }
+
+        private void productosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ProductosView = new ProductosView();
+            ProductosView.MdiParent = this;
+            ProductosView.Show();
+        }
     }
 }
