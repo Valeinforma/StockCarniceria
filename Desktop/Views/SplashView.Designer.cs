@@ -69,6 +69,7 @@
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.None;
             Name = "SplashView";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "SplashView";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
