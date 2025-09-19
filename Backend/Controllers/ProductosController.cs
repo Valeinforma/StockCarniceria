@@ -28,17 +28,15 @@ namespace Backend.Controllers
             return await _context.Productos.ToListAsync();
         }
 
-        // GET: api/Productoes/5
+        // Reemplaza el método GetCapacitaciones para corregir el uso incorrecto de Contains en tipos numéricos
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
             var producto = await _context.Productos.FindAsync(id);
-
             if (producto == null)
             {
                 return NotFound();
             }
-
             return producto;
         }
 
@@ -93,8 +91,8 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-
-            _context.Productos.Remove(producto);
+            producto.IsDeleted = true;
+            _context.Productos.Update(producto);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -109,7 +107,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            Producto.IsDeleted = true;
+            Producto.IsDeleted = false;
             _context.Productos.Update(Producto);
             await _context.SaveChangesAsync();
 
@@ -118,7 +116,7 @@ namespace Backend.Controllers
 
 
         // GET: api/Capacitaciones
-        [HttpGet("deleteds/")]
+        [HttpGet("deleteds")]
         public async Task<ActionResult<IEnumerable<Producto>>> GetCapacitacionesDeleteds()
         {
             return await _context.Productos.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();

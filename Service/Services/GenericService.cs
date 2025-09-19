@@ -55,12 +55,12 @@ namespace Service.Services
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Error al obtener los datos: {response.StatusCode} - {content}");
+                throw new Exception($"Error al obtener los datos: {response.StatusCode}");
             }
             return JsonSerializer.Deserialize<List<T>>(content, _options);
         }
 
-        public async Task<List<T>?> GetAllDeletedAsync(string? filtro)
+        public async Task<List<T>?> GetAllDeletedAsync(string? filtro = "")
         {
             var response = await _httpClient.GetAsync($"{_endpoint}/Deleteds");
             var content = await response.Content.ReadAsStringAsync();
@@ -86,7 +86,7 @@ namespace Service.Services
 
         public async Task<bool> RestoreAsync(int id)
         {
-            var response = await _httpClient.PutAsync($"{_endpoint}/restore/{id}", null);
+            var response = await _httpClient.PutAsync($"{_endpoint}/restore/{id}",null);
             if (!response.IsSuccessStatusCode)
             {
 

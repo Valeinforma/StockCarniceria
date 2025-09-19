@@ -45,17 +45,14 @@
             appId: "1:820415986013:web:fd6ed93695d46bab05d0b4"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
-        console.log("Firebase inicializado:", firebase);
-
-        // Autenticación Firebase expuesta a Blazor
+        console.log(firebase);
         window.firebaseAuth = {
             signInWithEmailPassword: async function (email, password) {
                 try {
                     const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                    console.log("Usuario logueado:", userCredential);
-                    return userCredential.user.uid;
+                    console.log(userCredential);
+                    return userCredential.user;
                 } catch (error) {
                     console.error("Error en autenticación:", error.message);
                     return null;
@@ -63,32 +60,34 @@
             },
             createUserWithEmailAndPassword: async function (email, password, displayName) {
                 try {
-                    console.log(`email=${email}, password=${password}, name=${displayName}`);
-
+                    //imprimo por consola los parametros que ll
+                    console.log(`email${email} password=${password},name=${name}`)
                     const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    // El usuario se ha creado correctamente
                     const user = userCredential.user;
 
-                    // Actualizar perfil
-                    await user.updateProfile({
+                    // Actualizar el perfil del usuario
+                    user.updateProfile({
                         displayName: displayName
                     });
 
+                    // Enviar correo de verificación
+                    user.sendEmailVerification()
+
                     return userCredential.user.uid;
 
-                    // Opcional: enviar correo de verificación
-                    // await user.sendEmailVerification();
+
                 } catch (error) {
                     console.error("Error en autenticación:", error.message);
                     return null;
                 }
+
             },
+
             signOut: async function () {
                 await firebase.auth().signOut();
-                console.log("Usuario desconectado");
             }
         };
-
-        // LocalStorage expuesto a Blazor
         window.localStorageHelper = {
             setItem: function (key, value) {
                 localStorage.setItem(key, value);
@@ -101,9 +100,9 @@
             }
         };
     </script>
-
-    <!-- Librería SweetAlert -->
     <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
 </html>
+

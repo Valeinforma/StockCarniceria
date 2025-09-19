@@ -7,7 +7,7 @@
         public int ProveedorId { get; set; } 
         public string Nombre { get; set; } = string.Empty;
 
-        public decimal Precio { get; set; }
+        public decimal Precio { get; set; } = 0;
 
         public int Stock { get; set; } = 0;
 

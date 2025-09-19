@@ -1,7 +1,7 @@
 ﻿@page "/login"
-@inject FirebaseAuthService firebaseAuthService
-@inject SweetAlertService sweetAlert
-@inject NavigationManager navigation
+@inject FirebaseAuthService _firebaseAuthService
+@inject SweetAlertService _sweetAlert
+@inject NavigationManager _navigation
 
 
 
@@ -12,7 +12,7 @@
             Iniciar sesión
         </div>
         <div class="card-body">
-            <h3 class="card-title">Bienvenido a StockCarniceria</h3>
+            <h3 class="card-title">Bienvenido a Stock Carnieria</h3>
             <div class="container">
                 <div class="row mb-3">
                     <div class="col-md-12 d-flex justify-content-center align-items-center">
@@ -48,7 +48,7 @@ else
             Cerrar sesión
         </div>
         <div class="card-body">
-            <p class="card-header">Cerrar sesión de StockCarniceria</p>
+            <p class="card-header">Cerrar sesión de Àgora</p>
 
             <button class="btn btn-primary" @onclick="Desloguear">Cerrar sesión</button>
         </div>
@@ -57,7 +57,7 @@ else
         </div>
     </div>
 }
-@code 
+@code
 {
     bool isAuthenticated = false;
     private string email = string.Empty;
@@ -66,7 +66,14 @@ else
 
     private async Task Loguear()
     {
-        var user = await firebaseAuthService.SignInWithEmailPassword(email, password);
+        var user = await _firebaseAuthService.SignInWithEmailPassword(email, password);
+        if (user != null)
+
+            if (user.EmailVerified == false)
+            {
+                await _sweetAlert.FireAsync("Verificación de correo", "Por favor, verifica tu correo electrónico antes de iniciar sesión.", SweetAlertIcon.Warning);
+                return;
+            }
         if (user != null)
         {
             isAuthenticated = true;
@@ -74,7 +81,7 @@ else
         }
         else
         {
-            await sweetAlert.FireAsync("Error", "No se pudo iniciar sesión. Verifique sus credenciales.", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync("Error", "No se pudo iniciar sesión. Verifique sus credenciales.", SweetAlertIcon.Warning);
         }
 
     }
@@ -84,12 +91,12 @@ else
         isAuthenticated = false;
         email = string.Empty;
         password = string.Empty;
-        await firebaseAuthService.SignOut();
+        await _firebaseAuthService.SignOut();
         StateHasChanged();
     }
 
     private async Task RegisterMe()
     {
-        navigation.NavigateTo("/signin");
+        _navigation.NavigateTo("/signin");
     }
 }

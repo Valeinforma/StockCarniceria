@@ -14,15 +14,17 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> inicio
             </NavLink>
         </div>
+        @if (isAuthenticated)
+        {
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="productos">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> productos
             </NavLink>
         </div>
-
+        }
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Iniciar Sesiòn
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> inicio sesion
             </NavLink>
         </div>
     </nav>
@@ -31,10 +33,25 @@
 @code {
     private bool collapseNavMenu = true;
 
+    private bool isAuthenticated = false;
+    private string textBtnLogin => isAuthenticated ? "Cerrar sesión" : "Iniciar sesión";
+
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
+        _firebaseAuthService.OnChangeLogin += LoginHasChanged;
+    }
+    private async void LoginHasChanged()
+    {
+
+        isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
+        StateHasChanged();
+
     }
 }

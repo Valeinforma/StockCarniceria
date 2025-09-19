@@ -1,5 +1,5 @@
 ﻿using Microsoft.JSInterop;
-
+using Service.Models.Loguin;
 namespace WebBlazor.Services
 {
     public class FirebaseAuthService
@@ -13,15 +13,15 @@ namespace WebBlazor.Services
             _jsRuntime = jsRuntime;
         }
 
-        public async Task<string> SignInWithEmailPassword(string email, string password)
+        public async Task<FirebaseUser?> SignInWithEmailPassword(string email, string password)
         {
-            var userid = await _jsRuntime.InvokeAsync<string>("firebaseAuth.signInWithEmailPassword", email, password);
-            if (userid != null)
+            var user = await _jsRuntime.InvokeAsync<FirebaseUser?>("firebaseAuth.signInWithEmailPassword", email, password);
+            if (user != null)
             {
-                await _jsRuntime.InvokeVoidAsync("localStorageHelper.setItem", UserIdKey, userid);
+                await _jsRuntime.InvokeVoidAsync("localStorageHelper.setItem", UserIdKey, user.Uid);
                 OnChangeLogin?.Invoke();
             }
-            return userid;
+            return user;
         }
 
         public async Task<string> createUserWithEmailAndPassword(string email, string password, string displayName)

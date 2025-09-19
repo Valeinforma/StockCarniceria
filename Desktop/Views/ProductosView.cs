@@ -23,20 +23,36 @@ namespace Desktop.Views
         {
             InitializeComponent();
             _ = GetAllData();
+            checkBoxEliminados.CheckedChanged += DisplayHideControlsRestoreButton;
+
+        }
+
+        private void DisplayHideControlsRestoreButton(object? sender, EventArgs e)
+        {
+            BtnRestaurar.Visible = checkBoxEliminados.Checked;
+            TxtBuscar.Enabled = !checkBoxEliminados.Checked;
+            BtnModificar.Enabled = !checkBoxEliminados.Checked;
+            BtnEliminar.Enabled = !checkBoxEliminados.Checked;
+            BtnAgregar.Enabled = !checkBoxEliminados.Checked;
+            BtnBuscar.Enabled = !checkBoxEliminados.Checked;
         }
 
         private async Task GetAllData()
         {
-            _productos = await _productoService.GetAllAsync();
-            GridPeliculas.DataSource = _productos;
-            GridPeliculas.Columns["Id"].Visible = false;
-            GridPeliculas.Columns["IsDeleted"].Visible = false; // Ocultamos la columna eliminar // Ocultamos la columna eliminar
+            if (checkBoxEliminados.Checked)
+                _productos = await _productoService.GetAllDeletedAsync();
+
+            else
+                _productos = await _productoService.GetAllAsync();
+            GridData.DataSource = _productos;
+            GridData.Columns["Id"].Visible = false;
+            GridData.Columns["IsDeleted"].Visible = false;
 
 
         }
         private void GridPeliculas_SelectionChanged(object sender, EventArgs e)
         {
-            if (GridPeliculas.RowCount > 0 && GridPeliculas.SelectedRows.Count > 0)
+            if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
                 //    Capacitacion _curr = (Pelicula)GridPeliculas.SelectedRows[0].DataBoundItem;
                 //    FilmPicture.ImageLocation = peliculaSeleccionada.portada;
@@ -46,9 +62,9 @@ namespace Desktop.Views
         private async void BtnEliminar_Click(object sender, EventArgs e)
         {
             //checkeamos que haya peliculas seleccionadas
-            if (GridPeliculas.RowCount > 0 && GridPeliculas.SelectedRows.Count > 0)
+            if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                Producto entitySelected = (Producto)GridPeliculas.SelectedRows[0].DataBoundItem;
+                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
                 var respuesta = MessageBox.Show($"¿Seguro que quieres borrar el Producto ?{entitySelected.Nombre}", "Borrar Producto", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
@@ -80,82 +96,70 @@ namespace Desktop.Views
 
         private void BtnAgregar_Click(object sender, EventArgs e)
         {
-            //    LimpiarControlAgregar();
-            //    tabAgregarEliminar.SelectTab("tabPageAgregar");
+              LimpiarControlAgregar();
+              TabControl.SelectedTab = tabPageAgregar_Editar;
         }
         private void LimpiarControlAgregar()
         {
-            titulo2.Text = string.Empty;
-            NumericDuracion.Value = 0;
-            txtPortada2.Text = string.Empty;
-            FilmPicture.ImageLocation = null;
+            //limpiamos todo
+            BtnNombre.Text = string.Empty;
+            NumericPrecio.Value = 0;
+
         }
         private void iconButton3_Click(object sender, EventArgs e)
         {
-            tabAgregarEliminar.SelectTab("tabPageLista");
+            TabControl.SelectedTab = tabPageAgregar_Editar;
         }
 
         private async void iconButton2_Click(object sender, EventArgs e)
         {
-            //    Pelicula PeliculaAGuardar = new Pelicula
-            //    {
-            //        id = peliculaModificada?.id ?? null,
-            //        titulo = titulo2.Text,
-            //        duracion = (int)NumericDuracion.Value,
-            //        portada = txtPortada2.Text,
-            //        calificacion = (double)NumericCalificacion.Value,
-            //        // Asignamos el PaisId del combo seleccionado
+            Producto ProductoAGuardar = new Producto
+            {
+                Id = _currentProducto?.Id ?? 0,
+                Nombre = BtnNombre.Text,
+                Precio = NumericPrecio.Value,
 
-            //        PaisId = (int?)comboPaises.SelectedValue
-            //    };
-            //    bool response;
-            //    if (peliculaModificada != null)
-            //    {
-            //        response = await peliculaService.UpdateAsync(PeliculaAGuardar);
-            //    }
-            //    else
-            //    {
-            //        response = await peliculaService.AddAsync(
-            //           PeliculaAGuardar);
-            //    }
-            //    if (response)
-            //    {
-            //        peliculaModificada = null;
-            //        MessageBox.Show("Pelicula se guardo correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //        obtenemosPeliculas();
-            //        tabAgregarEliminar.SelectTab("TabPageLista");
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("Error al modificar la pelicula", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    }
+
+            };
+            bool response = false;
+            if (_currentProducto != null)
+            {
+                response = await _productoService.UpdateAsync(ProductoAGuardar);
+            }
+            else
+            {
+                var nuevacapacitacion = await _productoService.AddAsync(
+                   ProductoAGuardar);
+                response = nuevacapacitacion != null;
+            }
+            if (response)
+            {
+                _currentProducto = null;
+                MessageBox.Show($"Producto {ProductoAGuardar.Nombre} guardo correctamente");
+                await GetAllData();
+                TabControl.SelectedTab = tabPageLista;
+            }
+            else
+            {
+                MessageBox.Show("Error al modificar el Producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnModificar_Click(object sender, EventArgs e)
         {
-            //    if (GridPeliculas.RowCount > 0 && GridPeliculas.SelectedRows.Count > 0)
-            //    {
-            //        peliculaModificada = (Pelicula)GridPeliculas.SelectedRows[0].DataBoundItem;
-            //        titulo2.Text = peliculaModificada.titulo;
-            //        NumericDuracion.Value = peliculaModificada.duracion;
-            //        txtPortada2.Text = peliculaModificada.portada;
-            //        NumericCalificacion.Value = (decimal)peliculaModificada.calificacion;
-            //        tabAgregarEliminar.SelectTab("tabPageAgregar");
-            //        //asigna el pais seleccionado al combo
-            //        if (peliculaModificada.PaisId != null)
-            //        {
-            //            comboPaises.SelectedValue = peliculaModificada.PaisId;
-            //        }
-            //        else
-            //        {
-            //            comboPaises.SelectedIndex = -1; // Si no hay PaisId, deselecciona el combo
-            //        }
-            //    }
+            if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
+            {
+
+                _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
+                BtnNombre.Text = _currentProducto.Nombre;
+                NumericPrecio.Value = _currentProducto.Precio;
+               
+            }
         }
 
-        private void iconButton1_Click(object sender, EventArgs e)
+        private async void iconButton1_Click(object sender, EventArgs e)
         {
-            //    GridPeliculas.DataSource = peliculas.Where(p => p.titulo.ToUpper().Contains(TxtBuscar.Text.ToUpper())).ToList();
+            GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
 
         }
 
@@ -168,11 +172,48 @@ namespace Desktop.Views
 
         //}
 
-       private void TimerStatusBar_Tick(object sender, EventArgs e)
+        private void TimerStatusBar_Tick(object sender, EventArgs e)
         {
             //    LabelStatusMessage.Text = string.Empty;
             //    TimerStatusBar.Stop();
             //}
+        }
+
+
+        private async void checkBoxEliminados_CheckedChanged(object sender, EventArgs e)
+        {
+            await GetAllData();
+        }
+
+        private async void BtnRestaurar_Click(object sender, EventArgs e)
+        {
+            if (!checkBoxEliminados.Checked) return;
+
+            //checkeamos que haya peliculas seleccionadas
+            if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
+            {
+                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
+                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar la capacitacion ?{entitySelected.Nombre}", "Confirmar Restauracion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (respuesta == DialogResult.Yes)
+                {
+
+
+                    if (await _productoService.RestoreAsync(entitySelected.Id))
+                    {
+                        LabelStatusMessage.Text = $"capacitacion {entitySelected.Nombre} eliminada correctamente";
+                        TimerStatusBar.Start();
+                        await GetAllData();
+                    }
+
+
+                    else
+                    {
+                        MessageBox.Show("No hay Capacitacion seleccionadas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+            }
         }
     }
 }
