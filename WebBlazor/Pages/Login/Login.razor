@@ -63,7 +63,11 @@ else
     private string email = string.Empty;
     private string password = string.Empty;
 
-
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
+       
+	}
     private async Task Loguear()
     {
         var user = await _firebaseAuthService.SignInWithEmailPassword(email, password);

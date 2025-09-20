@@ -60,34 +60,24 @@
             },
             createUserWithEmailAndPassword: async function (email, password, displayName) {
                 try {
-                    //imprimo por consola los parametros que ll
-                    console.log(`email${email} password=${password},name=${name}`)
+                    console.log(`email=${email}, password=${password}, name=${displayName}`);
                     const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                    // El usuario se ha creado correctamente
                     const user = userCredential.user;
 
-                    // Actualizar el perfil del usuario
-                    user.updateProfile({
-                        displayName: displayName
-                    });
+                    await user.updateProfile({ displayName });
+                    await user.sendEmailVerification();
 
-                    // Enviar correo de verificación
-                    user.sendEmailVerification()
-
-                    return userCredential.user.uid;
-
-
+                    return user.uid;
                 } catch (error) {
                     console.error("Error en autenticación:", error.message);
                     return null;
                 }
-
             },
-
             signOut: async function () {
                 await firebase.auth().signOut();
             }
         };
+
         window.localStorageHelper = {
             setItem: function (key, value) {
                 localStorage.setItem(key, value);
@@ -100,9 +90,7 @@
             }
         };
     </script>
+
     <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
 </body>
-
 </html>
-
