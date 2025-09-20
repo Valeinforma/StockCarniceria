@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         builder => builder
-            .WithOrigins("https://localhost:9000", "https://apistockcarne.azurewebsites.net")
+            .WithOrigins("https://localhost:9000", "https://stockcarniceria.azurewebsites.net")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
