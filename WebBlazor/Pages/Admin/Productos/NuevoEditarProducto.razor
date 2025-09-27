@@ -1,0 +1,72 @@
+﻿@page "/NuevoEditarPoducto"
+
+@inject NavigationManager NavigationManager
+@inject IGenericService<Producto> _ProductoService
+
+@if ( producto == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <h3>Productos Pagina</h3>
+    <div style="background-color: @(isEditing ? "lightyellow" : "white")">
+        <EditForm Model="producto" OnValidSubmit="Guardar">
+            <DataAnnotationsValidator />
+            <div class="container">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label class="form-label">Nombre:</label>
+                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Nombre" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Precio:</label>
+                        <InputNumber class="form-control mb-2" type="text" @bind-Value="producto.Precio" />
+                    </div>
+                </div>
+                <ValidationSummary />
+                <button class="btn btn-primary" type="submit">@guardarButtonText</button>
+                <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </EditForm>
+    </div>
+}
+@code {
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int? idProducto { get; set; }
+    private Producto producto;
+
+    private bool isEditing => idProducto != null;
+    private string guardarButtonText => isEditing ? "Actualizar" : "Agregar";
+    private string tituloPagina => isEditing ? "Editando producto" : "Agregando nuevo Producto";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (idProducto != null)
+        {
+            producto = await _ProductoService.GetByIdAsync((int)idProducto);
+        }
+        else
+        {
+            producto = new Producto();
+
+        }
+    }
+
+    private async Task Guardar()
+    {
+        //logger.LogInformation(campania.PropertiesToString());
+        if (idProducto != null)
+            await _ProductoService.UpdateAsync(producto);
+        else
+            await _ProductoService.AddAsync(producto);
+        NavigationManager.NavigateTo($"productos");
+    }
+
+    private async Task Cancelar()
+    {
+        NavigationManager.NavigateTo($"productos");
+    }
+}

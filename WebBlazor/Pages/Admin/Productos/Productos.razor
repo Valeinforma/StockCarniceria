@@ -1,0 +1,89 @@
+﻿@page "/productos"
+@inject SweetAlertService sweetAlert
+@inject IGenericService<Producto> _serviceProducto
+
+<PageTitle>Productos</PageTitle>
+
+<h1>Productos</h1>
+
+@if (productos == null)
+{
+	<p><em>Cargando la lista de productos...</em></p>
+}
+else if (!productos.Any())
+{
+	<p><em>No hay productos disponibles.</em></p>
+}
+else
+{
+	
+	<NavLink class="btn btn-info" href=@($"NuevoEditarPoducto")>
+		Agregar Producto
+	</NavLink>
+
+	<table class="table">
+		<thead>
+			<tr>
+				
+				<th>Nombre</th>
+				<th>precio</th>
+				<th>Stock</th>
+				<th colspan="2">Acciones</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var producto in productos)
+			{
+				<tr>
+
+					<td>@producto.Nombre</td>
+					<td>@producto.Precio.ToString("0")</td>
+					<td>@producto.Stock</td>
+
+					<td>
+						<button class="btn btn-danger" @onclick="() => DeleteProductos(producto)">Eliminar</button>
+					</td>
+
+					<td>
+						<NavLink class="btn btn-info" href=@($"NuevoEditarPoducto?idProducto={producto.Id}")>
+							Editar
+						</NavLink>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<Producto>? productos;
+
+	protected override async Task OnInitializedAsync()
+	{
+		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+	}
+	private async Task DeleteProductos(Producto producto)
+	{
+		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions
+		{
+			Title = "¿Estás seguro?",
+			Text = $"¿Deseas eliminar el Producto '{producto.Nombre}'?",
+			Icon = SweetAlertIcon.Warning,
+			ShowCancelButton = true,
+			ConfirmButtonText = "Sí, eliminar",
+			CancelButtonText = "Cancelar"
+		});
+		if (respuesta.IsConfirmed)
+		{
+			if (await _serviceProducto.DeleteAsync(producto.Id))
+			{
+				productos?.Remove(producto);
+				StateHasChanged();
+			}
+			else
+			{
+				await sweetAlert.FireAsync("Error", "No se pudo eliminar el Producto.", SweetAlertIcon.Error);
+			}
+		}
+	}
+}
