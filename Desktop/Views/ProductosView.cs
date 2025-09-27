@@ -101,14 +101,18 @@ namespace Desktop.Views
         }
         private void LimpiarControlAgregar()
         {
-            //limpiamos todo
+            //limpiar todo
             BtnNombre.Text = string.Empty;
             NumericPrecio.Value = 0;
+            NumericIdProveedor.Value = 0;
+            NumericStock.Value = 0;
+            NumericIdProducto.Value = 0;
+            NumericCategoriaId.Value = 0;
 
         }
         private void iconButton3_Click(object sender, EventArgs e)
         {
-            TabControl.SelectedTab = tabPageAgregar_Editar;
+            this.Close();
         }
 
         private async void iconButton2_Click(object sender, EventArgs e)
@@ -118,6 +122,11 @@ namespace Desktop.Views
                 Id = _currentProducto?.Id ?? 0,
                 Nombre = BtnNombre.Text,
                 Precio = NumericPrecio.Value,
+                ProveedorId = (int)NumericIdProveedor.Value,
+                Stock = (int)NumericStock.Value,
+                IdProducto = (int)NumericIdProducto.Value,
+                CategoriaId = (int)NumericCategoriaId.Value,
+                Unidad = NumericUnidad.Text
 
 
             };
@@ -153,7 +162,17 @@ namespace Desktop.Views
                 _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
                 BtnNombre.Text = _currentProducto.Nombre;
                 NumericPrecio.Value = _currentProducto.Precio;
-               
+                NumericIdProveedor.Value = _currentProducto.ProveedorId;
+                NumericStock.Value = _currentProducto.Stock;
+                NumericIdProducto.Value = _currentProducto.IdProducto;
+                NumericCategoriaId.Value = _currentProducto.CategoriaId;
+                NumericUnidad.Text = _currentProducto.Unidad;
+             
+
+
+
+                TabControl.SelectedTab = tabPageAgregar_Editar;
+
             }
         }
 
@@ -165,9 +184,9 @@ namespace Desktop.Views
 
         private void TxtBuscar_TextChanged(object sender, EventArgs e)
         {
-            //    if (String.IsNullOrWhiteSpace(TxtBuscar.Text))
-            //    {
-            //        BtnBuscar.PerformClick();
+           
+            BtnBuscar.PerformClick();
+
         }
 
         //}
@@ -193,7 +212,7 @@ namespace Desktop.Views
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
                 Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
-                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar la capacitacion ?{entitySelected.Nombre}", "Confirmar Restauracion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar el Producto ?{entitySelected.Nombre}", "Confirmar Restauracion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
                 {
@@ -201,7 +220,7 @@ namespace Desktop.Views
 
                     if (await _productoService.RestoreAsync(entitySelected.Id))
                     {
-                        LabelStatusMessage.Text = $"capacitacion {entitySelected.Nombre} eliminada correctamente";
+                        LabelStatusMessage.Text = $"Producto {entitySelected.Nombre} eliminada correctamente";
                         TimerStatusBar.Start();
                         await GetAllData();
                     }
@@ -209,7 +228,7 @@ namespace Desktop.Views
 
                     else
                     {
-                        MessageBox.Show("No hay Capacitacion seleccionadas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("No hay Producto seleccionadas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 

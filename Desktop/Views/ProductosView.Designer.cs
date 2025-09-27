@@ -43,6 +43,16 @@
             LbBuscar = new Label();
             FilmPicture = new PictureBox();
             tabPageAgregar_Editar = new TabPage();
+            label5 = new Label();
+            NumericUnidad = new NumericUpDown();
+            label4 = new Label();
+            NumericStock = new NumericUpDown();
+            label3 = new Label();
+            NumericIdProveedor = new NumericUpDown();
+            label2 = new Label();
+            NumericIdProducto = new NumericUpDown();
+            DuracionMinutos = new Label();
+            NumericPrecio = new NumericUpDown();
             BtnNombre = new TextBox();
             nombre = new Label();
             BtnCancelar = new FontAwesome.Sharp.IconButton();
@@ -52,16 +62,21 @@
             LabelStatusMessage = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             TimerStatusBar = new System.Windows.Forms.Timer(components);
-            NumericPrecio = new NumericUpDown();
-            DuracionMinutos = new Label();
+            label = new Label();
+            NumericCategoriaId = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)GridData).BeginInit();
             TabControl.SuspendLayout();
             tabPageLista.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)FilmPicture).BeginInit();
             tabPageAgregar_Editar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NumericUnidad).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NumericStock).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NumericIdProveedor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NumericIdProducto).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NumericPrecio).BeginInit();
             panel1.SuspendLayout();
             LabelStatusMessage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericPrecio).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NumericCategoriaId).BeginInit();
             SuspendLayout();
             // 
             // GridData
@@ -251,6 +266,16 @@
             // 
             // tabPageAgregar_Editar
             // 
+            tabPageAgregar_Editar.Controls.Add(label);
+            tabPageAgregar_Editar.Controls.Add(NumericCategoriaId);
+            tabPageAgregar_Editar.Controls.Add(label5);
+            tabPageAgregar_Editar.Controls.Add(NumericUnidad);
+            tabPageAgregar_Editar.Controls.Add(label4);
+            tabPageAgregar_Editar.Controls.Add(NumericStock);
+            tabPageAgregar_Editar.Controls.Add(label3);
+            tabPageAgregar_Editar.Controls.Add(NumericIdProveedor);
+            tabPageAgregar_Editar.Controls.Add(label2);
+            tabPageAgregar_Editar.Controls.Add(NumericIdProducto);
             tabPageAgregar_Editar.Controls.Add(DuracionMinutos);
             tabPageAgregar_Editar.Controls.Add(NumericPrecio);
             tabPageAgregar_Editar.Controls.Add(BtnNombre);
@@ -264,6 +289,96 @@
             tabPageAgregar_Editar.TabIndex = 1;
             tabPageAgregar_Editar.Text = "Agregar/Editar";
             tabPageAgregar_Editar.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(409, 133);
+            label5.Name = "label5";
+            label5.Size = new Size(45, 15);
+            label5.TabIndex = 22;
+            label5.Text = "Unidad";
+            // 
+            // NumericUnidad
+            // 
+            NumericUnidad.Location = new Point(460, 131);
+            NumericUnidad.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            NumericUnidad.Name = "NumericUnidad";
+            NumericUnidad.Size = new Size(77, 23);
+            NumericUnidad.TabIndex = 21;
+            NumericUnidad.TextAlign = HorizontalAlignment.Right;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(270, 133);
+            label4.Name = "label4";
+            label4.Size = new Size(36, 15);
+            label4.TabIndex = 20;
+            label4.Text = "Stock";
+            // 
+            // NumericStock
+            // 
+            NumericStock.Location = new Point(312, 131);
+            NumericStock.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            NumericStock.Name = "NumericStock";
+            NumericStock.Size = new Size(77, 23);
+            NumericStock.TabIndex = 19;
+            NumericStock.TextAlign = HorizontalAlignment.Right;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(562, 86);
+            label3.Name = "label3";
+            label3.Size = new Size(71, 15);
+            label3.TabIndex = 18;
+            label3.Text = "IdProveedor";
+            // 
+            // NumericIdProveedor
+            // 
+            NumericIdProveedor.Location = new Point(639, 84);
+            NumericIdProveedor.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            NumericIdProveedor.Name = "NumericIdProveedor";
+            NumericIdProveedor.Size = new Size(77, 23);
+            NumericIdProveedor.TabIndex = 17;
+            NumericIdProveedor.TextAlign = HorizontalAlignment.Right;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(388, 86);
+            label2.Name = "label2";
+            label2.Size = new Size(66, 15);
+            label2.TabIndex = 16;
+            label2.Text = "IdProducto";
+            // 
+            // NumericIdProducto
+            // 
+            NumericIdProducto.Location = new Point(460, 84);
+            NumericIdProducto.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            NumericIdProducto.Name = "NumericIdProducto";
+            NumericIdProducto.Size = new Size(77, 23);
+            NumericIdProducto.TabIndex = 15;
+            NumericIdProducto.TextAlign = HorizontalAlignment.Right;
+            // 
+            // DuracionMinutos
+            // 
+            DuracionMinutos.AutoSize = true;
+            DuracionMinutos.Location = new Point(249, 86);
+            DuracionMinutos.Name = "DuracionMinutos";
+            DuracionMinutos.Size = new Size(40, 15);
+            DuracionMinutos.TabIndex = 14;
+            DuracionMinutos.Text = "Precio";
+            // 
+            // NumericPrecio
+            // 
+            NumericPrecio.DecimalPlaces = 2;
+            NumericPrecio.Location = new Point(295, 84);
+            NumericPrecio.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+            NumericPrecio.Name = "NumericPrecio";
+            NumericPrecio.Size = new Size(77, 23);
+            NumericPrecio.TabIndex = 13;
             // 
             // BtnNombre
             // 
@@ -352,22 +467,23 @@
             TimerStatusBar.Interval = 3000;
             TimerStatusBar.Tick += TimerStatusBar_Tick;
             // 
-            // NumericPrecio
+            // label
             // 
-            NumericPrecio.Location = new Point(295, 84);
-            NumericPrecio.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
-            NumericPrecio.Name = "NumericPrecio";
-            NumericPrecio.Size = new Size(77, 23);
-            NumericPrecio.TabIndex = 13;
+            label.AutoSize = true;
+            label.Location = new Point(562, 131);
+            label.Name = "label";
+            label.Size = new Size(68, 15);
+            label.TabIndex = 24;
+            label.Text = "CategoriaId";
             // 
-            // DuracionMinutos
+            // NumericCategoriaId
             // 
-            DuracionMinutos.AutoSize = true;
-            DuracionMinutos.Location = new Point(232, 86);
-            DuracionMinutos.Name = "DuracionMinutos";
-            DuracionMinutos.Size = new Size(40, 15);
-            DuracionMinutos.TabIndex = 14;
-            DuracionMinutos.Text = "Precio";
+            NumericCategoriaId.Location = new Point(636, 131);
+            NumericCategoriaId.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            NumericCategoriaId.Name = "NumericCategoriaId";
+            NumericCategoriaId.Size = new Size(77, 23);
+            NumericCategoriaId.TabIndex = 23;
+            NumericCategoriaId.TextAlign = HorizontalAlignment.Right;
             // 
             // ProductosView
             // 
@@ -386,10 +502,15 @@
             ((System.ComponentModel.ISupportInitialize)FilmPicture).EndInit();
             tabPageAgregar_Editar.ResumeLayout(false);
             tabPageAgregar_Editar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NumericUnidad).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NumericStock).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NumericIdProveedor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NumericIdProducto).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NumericPrecio).EndInit();
             panel1.ResumeLayout(false);
             LabelStatusMessage.ResumeLayout(false);
             LabelStatusMessage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericPrecio).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NumericCategoriaId).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -421,5 +542,15 @@
         private FontAwesome.Sharp.IconButton BtnRestaurar;
         private Label DuracionMinutos;
         private NumericUpDown NumericPrecio;
+        private Label label3;
+        private NumericUpDown NumericIdProveedor;
+        private Label label2;
+        private NumericUpDown NumericIdProducto;
+        private Label label5;
+        private NumericUpDown NumericUnidad;
+        private Label label4;
+        private NumericUpDown NumericStock;
+        private Label label;
+        private NumericUpDown NumericCategoriaId;
     }
 }
