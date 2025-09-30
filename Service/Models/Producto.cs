@@ -3,8 +3,6 @@
     public class Producto
     {
         public int Id { get; set; }
-        public int IdProducto { get; set; }
-        public int ProveedorId { get; set; } 
         public string Nombre { get; set; } = string.Empty;
 
         public decimal Precio { get; set; } = 0;
@@ -15,10 +13,11 @@
 
         public bool IsDeleted { get; set; } = false;
         public int CategoriaId { get; set; }
+        public Categoria Categoria { get; set; } = null!;
 
         public override string ToString()
         {
-            return $"Id: {Id}, Nombre: {Nombre}, Precio: {Precio}, Stock: {Stock}, Unidad: {Unidad}, ProveedorId: {ProveedorId}, CategoriaId: {CategoriaId}";
+            return Nombre;
         }
     }
 

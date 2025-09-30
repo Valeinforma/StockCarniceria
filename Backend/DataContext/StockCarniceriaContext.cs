@@ -78,12 +78,19 @@ public class StockCarniceriaContext : DbContext
         // Productos
         // ==========================
         modelBuilder.Entity<Producto>().HasData(
-            new Producto { Id = 1, Nombre = "Asado", Precio = 2500.00m, Stock = 15, Unidad = "kg", ProveedorId = 1, CategoriaId = 1 },
-            new Producto { Id = 2, Nombre = "Suprema de Pollo", Precio = 1200.00m, Stock = 40, Unidad = "kg", ProveedorId = 2, CategoriaId = 2 },
-            new Producto { Id = 3, Nombre = "Queso Muzzarella", Precio = 1800.00m, Stock = 20, Unidad = "kg", ProveedorId = 3, CategoriaId = 3 },
-            new Producto { Id = 4, Nombre = "Leche Entera", Precio = 900.00m, Stock = 50, Unidad = "litro", ProveedorId = 3, CategoriaId = 3 },
-            new Producto { Id = 5, Nombre = "Gaseosa Cola 2L", Precio = 1500.00m, Stock = 35, Unidad = "botella", ProveedorId = 2, CategoriaId = 4 }
+            new Producto { Id = 1, Nombre = "Asado de Tira", Precio = 2500.00m, Stock = 20, Unidad = "kg", CategoriaId = 1 },
+            new Producto { Id = 2, Nombre = "Suprema de Pollo", Precio = 1200.00m, Stock = 40, Unidad = "kg",  CategoriaId = 2 },
+            new Producto { Id = 3, Nombre = "Queso Cremoso", Precio = 1800.00m, Stock = 15, Unidad = "kg", CategoriaId = 3 },
+            new Producto { Id = 4, Nombre = "Leche Entera", Precio = 900.00m, Stock = 30, Unidad = "litro",  CategoriaId = 3 },
+            new Producto { Id = 5, Nombre = "Gaseosa Cola", Precio = 1500.00m, Stock = 50, Unidad = "botella", CategoriaId = 4 },
+            new Producto { Id = 6, Nombre = "Matambre Vacuno", Precio = 2200.00m, Stock = 10, Unidad = "kg",  CategoriaId = 1 },
+            new Producto { Id = 7, Nombre = "Pechuga de Pollo", Precio = 1300.00m, Stock = 25, Unidad = "kg",  CategoriaId = 2 },
+            new Producto { Id = 8, Nombre = "Yogur Natural", Precio = 700.00m, Stock = 35, Unidad = "unidad", CategoriaId = 3 },
+            new Producto { Id = 9, Nombre = "Agua Mineral", Precio = 800.00m, Stock = 60, Unidad = "botella",  CategoriaId = 4 },
+            new Producto { Id = 10, Nombre = "Chorizo Parrillero", Precio = 1100.00m, Stock = 18, Unidad = "kg",CategoriaId = 1 }
         );
+        //dame nnuevos datos semilla de productos
+        
 
         // ==========================
         // Ventas

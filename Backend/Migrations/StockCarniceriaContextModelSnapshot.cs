@@ -46,19 +46,25 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             IsDeleted = false,
-                            Nombre = "Carnes Rojas"
+                            Nombre = "Vacuno"
                         },
                         new
                         {
                             Id = 2,
                             IsDeleted = false,
-                            Nombre = "Carnes Blancas"
+                            Nombre = "Aves"
                         },
                         new
                         {
                             Id = 3,
                             IsDeleted = false,
-                            Nombre = "Embutidos"
+                            Nombre = "Lácteos"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsDeleted = false,
+                            Nombre = "Bebidas"
                         });
                 });
 
@@ -102,25 +108,49 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 1,
-                            Cantidad = 20m,
-                            FechaCompra = new DateTime(2025, 9, 12, 17, 58, 48, 260, DateTimeKind.Local).AddTicks(9052),
+                            Cantidad = 30m,
+                            FechaCompra = new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(14),
                             IdCompra = 0,
                             IdDetalleCompra = 0,
                             IsDeleted = false,
-                            PrecioUnitario = 1200.00m,
+                            PrecioUnitario = 2000.00m,
                             ProductoId = 1,
                             ProveedorId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Cantidad = 50m,
-                            FechaCompra = new DateTime(2025, 9, 12, 17, 58, 48, 260, DateTimeKind.Local).AddTicks(9058),
+                            Cantidad = 60m,
+                            FechaCompra = new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(21),
                             IdCompra = 0,
                             IdDetalleCompra = 0,
                             IsDeleted = false,
-                            PrecioUnitario = 700.00m,
+                            PrecioUnitario = 1000.00m,
                             ProductoId = 2,
+                            ProveedorId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Cantidad = 25m,
+                            FechaCompra = new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(24),
+                            IdCompra = 0,
+                            IdDetalleCompra = 0,
+                            IsDeleted = false,
+                            PrecioUnitario = 1500.00m,
+                            ProductoId = 3,
+                            ProveedorId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Cantidad = 50m,
+                            FechaCompra = new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(28),
+                            IdCompra = 0,
+                            IdDetalleCompra = 0,
+                            IsDeleted = false,
+                            PrecioUnitario = 1200.00m,
+                            ProductoId = 5,
                             ProveedorId = 2
                         });
                 });
@@ -162,7 +192,7 @@ namespace Backend.Migrations
                             Cantidad = 2m,
                             IdDetalleVenta = 0,
                             IsDeleted = false,
-                            PrecioUnitario = 1500.00m,
+                            PrecioUnitario = 2500.00m,
                             ProductoId = 1,
                             VentaId = 1
                         },
@@ -172,8 +202,28 @@ namespace Backend.Migrations
                             Cantidad = 1m,
                             IdDetalleVenta = 0,
                             IsDeleted = false,
-                            PrecioUnitario = 800.00m,
+                            PrecioUnitario = 1500.00m,
+                            ProductoId = 5,
+                            VentaId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Cantidad = 1m,
+                            IdDetalleVenta = 0,
+                            IsDeleted = false,
+                            PrecioUnitario = 1200.00m,
                             ProductoId = 2,
+                            VentaId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Cantidad = 2m,
+                            IdDetalleVenta = 0,
+                            IsDeleted = false,
+                            PrecioUnitario = 900.00m,
+                            ProductoId = 4,
                             VentaId = 2
                         });
                 });
@@ -189,9 +239,6 @@ namespace Backend.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -202,9 +249,6 @@ namespace Backend.Migrations
                     b.Property<decimal>("Precio")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int>("ProveedorId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
@@ -214,6 +258,8 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoriaId");
+
                     b.ToTable("Productos");
 
                     b.HasData(
@@ -221,37 +267,101 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             CategoriaId = 1,
-                            IdProducto = 0,
                             IsDeleted = false,
-                            Nombre = "Bife de Chorizo",
-                            Precio = 1500.00m,
-                            ProveedorId = 1,
-                            Stock = 50,
-                            Unidad = ""
+                            Nombre = "Asado de Tira",
+                            Precio = 2500.00m,
+                            Stock = 20,
+                            Unidad = "kg"
                         },
                         new
                         {
                             Id = 2,
                             CategoriaId = 2,
-                            IdProducto = 0,
                             IsDeleted = false,
-                            Nombre = "Pechuga de Pollo",
-                            Precio = 800.00m,
-                            ProveedorId = 2,
-                            Stock = 100,
-                            Unidad = ""
+                            Nombre = "Suprema de Pollo",
+                            Precio = 1200.00m,
+                            Stock = 40,
+                            Unidad = "kg"
                         },
                         new
                         {
                             Id = 3,
                             CategoriaId = 3,
-                            IdProducto = 0,
                             IsDeleted = false,
-                            Nombre = "Chorizo",
-                            Precio = 400.00m,
-                            ProveedorId = 1,
-                            Stock = 200,
-                            Unidad = ""
+                            Nombre = "Queso Cremoso",
+                            Precio = 1800.00m,
+                            Stock = 15,
+                            Unidad = "kg"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoriaId = 3,
+                            IsDeleted = false,
+                            Nombre = "Leche Entera",
+                            Precio = 900.00m,
+                            Stock = 30,
+                            Unidad = "litro"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoriaId = 4,
+                            IsDeleted = false,
+                            Nombre = "Gaseosa Cola",
+                            Precio = 1500.00m,
+                            Stock = 50,
+                            Unidad = "botella"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoriaId = 1,
+                            IsDeleted = false,
+                            Nombre = "Matambre Vacuno",
+                            Precio = 2200.00m,
+                            Stock = 10,
+                            Unidad = "kg"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoriaId = 2,
+                            IsDeleted = false,
+                            Nombre = "Pechuga de Pollo",
+                            Precio = 1300.00m,
+                            Stock = 25,
+                            Unidad = "kg"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoriaId = 3,
+                            IsDeleted = false,
+                            Nombre = "Yogur Natural",
+                            Precio = 700.00m,
+                            Stock = 35,
+                            Unidad = "unidad"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoriaId = 4,
+                            IsDeleted = false,
+                            Nombre = "Agua Mineral",
+                            Precio = 800.00m,
+                            Stock = 60,
+                            Unidad = "botella"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoriaId = 1,
+                            IsDeleted = false,
+                            Nombre = "Chorizo Parrillero",
+                            Precio = 1100.00m,
+                            Stock = 18,
+                            Unidad = "kg"
                         });
                 });
 
@@ -279,13 +389,19 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             IsDeleted = false,
-                            Nombre = "Proveedor A"
+                            Nombre = "Frigorífico Patagonia"
                         },
                         new
                         {
                             Id = 2,
                             IsDeleted = false,
-                            Nombre = "Proveedor B"
+                            Nombre = "Avícola San Juan"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDeleted = false,
+                            Nombre = "Distribuidora Láctea SRL"
                         });
                 });
 
@@ -324,19 +440,28 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "admin@carniceria.com",
+                            Email = "admin@tienda.com",
                             IsDeleted = false,
-                            Nombre = "Martin",
-                            Password = "admin123",
+                            Nombre = "Sofia",
+                            Password = "sofiaAdmin2025",
                             Rol = "admin"
                         },
                         new
                         {
                             Id = 2,
-                            Email = "vendedor1@carniceria.com",
+                            Email = "carlos@tienda.com",
                             IsDeleted = false,
-                            Nombre = "Pepe",
-                            Password = "vendedor123",
+                            Nombre = "Carlos",
+                            Password = "carlosV123",
+                            Rol = "vendedor"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "lucia@tienda.com",
+                            IsDeleted = false,
+                            Nombre = "Lucia",
+                            Password = "luciaV123",
                             Rol = "vendedor"
                         });
                 });
@@ -378,25 +503,36 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 1,
-                            Cliente = "Juan Perez",
-                            Fecha = new DateTime(2025, 9, 12, 17, 58, 48, 260, DateTimeKind.Local).AddTicks(8903),
+                            Cliente = "Pedro López",
+                            Fecha = new DateTime(2025, 9, 30, 17, 23, 33, 369, DateTimeKind.Local).AddTicks(9853),
                             IdVenta = 0,
                             IsDeleted = false,
-                            Precio = 3000.00m,
+                            Precio = 5000.00m,
                             TipoPagoEnum = 1,
-                            UsuarioId = 1
+                            UsuarioId = 2
                         },
                         new
                         {
                             Id = 2,
-                            Cliente = "Maria Gomez",
-                            Fecha = new DateTime(2025, 9, 12, 17, 58, 48, 260, DateTimeKind.Local).AddTicks(8925),
+                            Cliente = "Laura Fernández",
+                            Fecha = new DateTime(2025, 9, 30, 17, 23, 33, 369, DateTimeKind.Local).AddTicks(9874),
                             IdVenta = 0,
                             IsDeleted = false,
-                            Precio = 800.00m,
-                            TipoPagoEnum = 3,
-                            UsuarioId = 2
+                            Precio = 2700.00m,
+                            TipoPagoEnum = 2,
+                            UsuarioId = 3
                         });
+                });
+
+            modelBuilder.Entity("Service.Models.Producto", b =>
+                {
+                    b.HasOne("Service.Models.Categoria", "Categoria")
+                        .WithMany()
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
                 });
 #pragma warning restore 612, 618
         }

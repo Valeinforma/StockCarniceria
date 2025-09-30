@@ -23,9 +23,10 @@ namespace Backend.Controllers
 
         // GET: api/Productoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
+        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = "")
         {
             return await _context.Productos.ToListAsync();
+
         }
 
         // Reemplaza el método GetCapacitaciones para corregir el uso incorrecto de Contains en tipos numéricos

@@ -122,9 +122,7 @@ namespace Desktop.Views
                 Id = _currentProducto?.Id ?? 0,
                 Nombre = BtnNombre.Text,
                 Precio = NumericPrecio.Value,
-                ProveedorId = (int)NumericIdProveedor.Value,
                 Stock = (int)NumericStock.Value,
-                IdProducto = (int)NumericIdProducto.Value,
                 CategoriaId = (int)NumericCategoriaId.Value,
                 Unidad = NumericUnidad.Text
 
@@ -162,9 +160,7 @@ namespace Desktop.Views
                 _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
                 BtnNombre.Text = _currentProducto.Nombre;
                 NumericPrecio.Value = _currentProducto.Precio;
-                NumericIdProveedor.Value = _currentProducto.ProveedorId;
                 NumericStock.Value = _currentProducto.Stock;
-                NumericIdProducto.Value = _currentProducto.IdProducto;
                 NumericCategoriaId.Value = _currentProducto.CategoriaId;
                 NumericUnidad.Text = _currentProducto.Unidad;
              
