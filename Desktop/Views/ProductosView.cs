@@ -104,9 +104,7 @@ namespace Desktop.Views
             //limpiar todo
             BtnNombre.Text = string.Empty;
             NumericPrecio.Value = 0;
-            NumericIdProveedor.Value = 0;
             NumericStock.Value = 0;
-            NumericIdProducto.Value = 0;
             NumericCategoriaId.Value = 0;
 
         }
@@ -174,14 +172,14 @@ namespace Desktop.Views
 
         private async void iconButton1_Click(object sender, EventArgs e)
         {
-            GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
+           GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
 
         }
 
         private void TxtBuscar_TextChanged(object sender, EventArgs e)
         {
            
-            BtnBuscar.PerformClick();
+            //BtnBuscar.PerformClick();
 
         }
 

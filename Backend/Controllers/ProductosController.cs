@@ -25,7 +25,7 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = "")
         {
-            return await _context.Productos.ToListAsync();
+            return await _context.Productos.Where(c => c.Nombre.Contains(filter)).ToListAsync();
 
         }
 
