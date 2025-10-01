@@ -96,8 +96,8 @@ namespace Desktop.Views
 
         private void BtnAgregar_Click(object sender, EventArgs e)
         {
-              LimpiarControlAgregar();
-              TabControl.SelectedTab = tabPageAgregar_Editar;
+            LimpiarControlAgregar();
+            TabControl.SelectedTab = tabPageAgregar_Editar;
         }
         private void LimpiarControlAgregar()
         {
@@ -105,7 +105,7 @@ namespace Desktop.Views
             BtnNombre.Text = string.Empty;
             NumericPrecio.Value = 0;
             NumericStock.Value = 0;
-            NumericCategoriaId.Value = 0;
+
 
         }
         private void iconButton3_Click(object sender, EventArgs e)
@@ -121,7 +121,6 @@ namespace Desktop.Views
                 Nombre = BtnNombre.Text,
                 Precio = NumericPrecio.Value,
                 Stock = (int)NumericStock.Value,
-                CategoriaId = (int)NumericCategoriaId.Value,
                 Unidad = NumericUnidad.Text
 
 
@@ -159,9 +158,8 @@ namespace Desktop.Views
                 BtnNombre.Text = _currentProducto.Nombre;
                 NumericPrecio.Value = _currentProducto.Precio;
                 NumericStock.Value = _currentProducto.Stock;
-                NumericCategoriaId.Value = _currentProducto.CategoriaId;
                 NumericUnidad.Text = _currentProducto.Unidad;
-             
+
 
 
 
@@ -172,13 +170,13 @@ namespace Desktop.Views
 
         private async void iconButton1_Click(object sender, EventArgs e)
         {
-           GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
+            GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
 
         }
 
         private void TxtBuscar_TextChanged(object sender, EventArgs e)
         {
-           
+
             //BtnBuscar.PerformClick();
 
         }
@@ -227,6 +225,12 @@ namespace Desktop.Views
                 }
 
             }
+        }
+
+        private void ComboCategorias_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           //generame para poder elegir categoria que quiero
+
         }
     }
 }

@@ -274,6 +274,7 @@
             ComboCategorias.Name = "ComboCategorias";
             ComboCategorias.Size = new Size(121, 23);
             ComboCategorias.TabIndex = 25;
+            ComboCategorias.SelectedIndexChanged += ComboCategorias_SelectedIndexChanged;
             // 
             // label
             // 
