@@ -1,4 +1,4 @@
-﻿@page "/productos"
+﻿@page "/Admin/Productos"
 
 @inject SweetAlertService sweetAlert
 @inject IGenericService<Producto> _serviceProducto
@@ -18,7 +18,7 @@ else if (!productos.Any())
 else
 {
 	
-	<NavLink class="btn btn-info" href=@($"NuevoEditarPoducto")>
+	<NavLink class="btn btn-info" href="/NuevoEditarProducto">
 		Agregar Producto
 	</NavLink>
 
@@ -38,7 +38,7 @@ else
 				<tr>
 
 					<td>@producto.Nombre</td>
-					<td>@producto.Precio.ToString("0")</td>
+					<td>@producto.Precio</td>
 					<td>@producto.Stock</td>
 
 					<td>
@@ -46,7 +46,7 @@ else
 					</td>
 
 					<td>
-						<NavLink class="btn btn-info" href=@($"NuevoEditarPoducto?idProducto={producto.Id}")>
+						<NavLink class="btn btn-info" href=@($"/NuevoEditarProducto?idProducto={producto.Id}")>
 							Editar
 						</NavLink>
 					</td>

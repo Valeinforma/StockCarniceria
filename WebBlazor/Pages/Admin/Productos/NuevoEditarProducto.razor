@@ -1,4 +1,4 @@
-﻿@page "/NuevoEditarPoducto"
+﻿@page "/NuevoEditarProducto"
 
 @inject NavigationManager NavigationManager
 @inject IGenericService<Producto> _ProductoService
@@ -62,11 +62,11 @@ else
             await _ProductoService.UpdateAsync(producto);
         else
             await _ProductoService.AddAsync(producto);
-        NavigationManager.NavigateTo($"productos");
+        NavigationManager.NavigateTo($"/Admin/Productos");
     }
 
     private async Task Cancelar()
     {
-        NavigationManager.NavigateTo($"productos");
+        NavigationManager.NavigateTo($"/Admin/Productos");
     }
 }

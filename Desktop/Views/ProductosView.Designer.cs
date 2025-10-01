@@ -42,8 +42,8 @@
             TxtBuscar = new TextBox();
             LbBuscar = new Label();
             tabPageAgregar_Editar = new TabPage();
+            ComboCategorias = new ComboBox();
             label = new Label();
-            NumericCategoriaId = new NumericUpDown();
             label5 = new Label();
             NumericUnidad = new NumericUpDown();
             label4 = new Label();
@@ -63,7 +63,6 @@
             TabControl.SuspendLayout();
             tabPageLista.SuspendLayout();
             tabPageAgregar_Editar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericCategoriaId).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumericUnidad).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumericStock).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumericPrecio).BeginInit();
@@ -248,8 +247,8 @@
             // 
             // tabPageAgregar_Editar
             // 
+            tabPageAgregar_Editar.Controls.Add(ComboCategorias);
             tabPageAgregar_Editar.Controls.Add(label);
-            tabPageAgregar_Editar.Controls.Add(NumericCategoriaId);
             tabPageAgregar_Editar.Controls.Add(label5);
             tabPageAgregar_Editar.Controls.Add(NumericUnidad);
             tabPageAgregar_Editar.Controls.Add(label4);
@@ -268,23 +267,22 @@
             tabPageAgregar_Editar.Text = "Agregar/Editar";
             tabPageAgregar_Editar.UseVisualStyleBackColor = true;
             // 
+            // ComboCategorias
+            // 
+            ComboCategorias.FormattingEnabled = true;
+            ComboCategorias.Location = new Point(460, 81);
+            ComboCategorias.Name = "ComboCategorias";
+            ComboCategorias.Size = new Size(121, 23);
+            ComboCategorias.TabIndex = 25;
+            // 
             // label
             // 
             label.AutoSize = true;
             label.Location = new Point(391, 84);
             label.Name = "label";
-            label.Size = new Size(68, 15);
+            label.Size = new Size(63, 15);
             label.TabIndex = 24;
-            label.Text = "CategoriaId";
-            // 
-            // NumericCategoriaId
-            // 
-            NumericCategoriaId.Location = new Point(465, 84);
-            NumericCategoriaId.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
-            NumericCategoriaId.Name = "NumericCategoriaId";
-            NumericCategoriaId.Size = new Size(77, 23);
-            NumericCategoriaId.TabIndex = 23;
-            NumericCategoriaId.TextAlign = HorizontalAlignment.Right;
+            label.Text = "Categorias";
             // 
             // label5
             // 
@@ -443,7 +441,6 @@
             tabPageLista.PerformLayout();
             tabPageAgregar_Editar.ResumeLayout(false);
             tabPageAgregar_Editar.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericCategoriaId).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumericUnidad).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumericStock).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumericPrecio).EndInit();
@@ -485,6 +482,6 @@
         private Label label4;
         private NumericUpDown NumericStock;
         private Label label;
-        private NumericUpDown NumericCategoriaId;
+        private ComboBox ComboCategorias;
     }
 }
