@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Service.Models;
+using Service.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,9 +9,8 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
-using Service.Models;
-using Service.Services;
 
 namespace Desktop.Views
 {
@@ -17,14 +18,18 @@ namespace Desktop.Views
     {
 
         GenericService<Producto> _productoService = new GenericService<Producto>();
+        GenericService<Categoria> _categoriaService = new GenericService<Categoria>();
+        Categoria _currentCategoria;
         Producto _currentProducto;
         List<Producto>? _productos;
+        List<Categoria>? _categorias;
         public ProductosView()
         {
             InitializeComponent();
             _ = GetAllData();
             checkBoxEliminados.CheckedChanged += DisplayHideControlsRestoreButton;
-
+            CargarCategorias();
+           
         }
 
         private void DisplayHideControlsRestoreButton(object? sender, EventArgs e)
@@ -43,11 +48,32 @@ namespace Desktop.Views
                 _productos = await _productoService.GetAllDeletedAsync();
 
             else
+            {
+                _categorias = await _categoriaService.GetAllAsync();
                 _productos = await _productoService.GetAllAsync();
+            }
+             
             GridData.DataSource = _productos;
             GridData.Columns["Id"].Visible = false;
             GridData.Columns["IsDeleted"].Visible = false;
+            ActualizarGridView();
 
+        }
+        private void ActualizarGridView()
+        {
+            var DatosGrid = _productos.Select(p => new
+            {
+                //agrega los datos para el dataGRidView
+                p.Id,
+                p.Nombre,
+                p.Precio,
+                p.Stock,
+                p.Unidad,
+                Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin Categoria"
+
+            }).ToList();
+            GridData.DataSource = null;
+            GridData.DataSource = DatosGrid;
 
         }
         private void GridPeliculas_SelectionChanged(object sender, EventArgs e)
@@ -115,37 +141,89 @@ namespace Desktop.Views
 
         private async void iconButton2_Click(object sender, EventArgs e)
         {
-            Producto ProductoAGuardar = new Producto
+            try
             {
-                Id = _currentProducto?.Id ?? 0,
-                Nombre = BtnNombre.Text,
-                Precio = NumericPrecio.Value,
-                Stock = (int)NumericStock.Value,
-                Unidad = NumericUnidad.Text
+                // Validación de campos obligatorios
+                if (string.IsNullOrWhiteSpace(ComboCategorias.Text) ||
+                    string.IsNullOrWhiteSpace(NumericPrecio.Text) ||
+                    string.IsNullOrWhiteSpace(NumericStock.Text) ||
+                    string.IsNullOrWhiteSpace(NumericUnidad.Text) ||
+                    ComboCategorias.SelectedItem == null)
+                {
+                    MessageBox.Show("Todos los campos marcados son obligatorios.",
+                                    "Validación",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                    return;
+                }
 
+                // Asignar la categoría seleccionada
+                var categoriaSeleccionada = ComboCategorias.SelectedItem as Categoria;
+                if (categoriaSeleccionada == null)
+                {
+                    MessageBox.Show("Debes seleccionar una categoría válida.",
+                                    "Validación",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                    return;
+                }
 
-            };
-            bool response = false;
-            if (_currentProducto != null)
-            {
-                response = await _productoService.UpdateAsync(ProductoAGuardar);
+                Producto productoAguardar = new Producto
+                {
+                    Id = _currentProducto?.Id ?? 0,
+                    Nombre = BtnNombre.Text,
+                    Precio = NumericPrecio.Value,
+                    Stock = (int)NumericStock.Value,
+                    Unidad = NumericUnidad.Text,
+                    CategoriaId = categoriaSeleccionada.Id,
+                    Categoria = categoriaSeleccionada
+                };
+
+                bool success = false;
+
+                if ( _currentCategoria!= null)
+                {
+                    // Actualización
+                    if (!await _categoriaService.UpdateAsync(categoriaSeleccionada))
+                        throw new Exception("Error al actualizar la categoria");
+
+                    if (!await _productoService.UpdateAsync(productoAguardar))
+                        throw new Exception("Error al actualizar el producto");
+
+                    success = true;
+                }
+                else
+                {
+                    // Creación
+                    var nuevoProducto = await _productoService.AddAsync(productoAguardar);
+                    if (nuevoProducto == null)
+                        throw new Exception("Error al crear el usuario");
+
+                    var nuevaCategoria = await _categoriaService.AddAsync(categoriaSeleccionada);
+                    if (nuevaCategoria == null)
+                        throw new Exception("Error al crear el cliente");
+
+                    success = true;
+                }
+
+                if (success)
+                {
+                    MessageBox.Show($"Cliente {productoAguardar.Nombre} guardado correctamente",
+                                  "Éxito",
+                                  MessageBoxButtons.OK,
+                                  MessageBoxIcon.Information);
+                    await GetAllData();
+                    LimpiarControlAgregar();
+                    TabControl.SelectedTab = tabPageLista;
+                    _currentProducto = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var nuevacapacitacion = await _productoService.AddAsync(
-                   ProductoAGuardar);
-                response = nuevacapacitacion != null;
-            }
-            if (response)
-            {
-                _currentProducto = null;
-                MessageBox.Show($"Producto {ProductoAGuardar.Nombre} guardo correctamente");
-                await GetAllData();
-                TabControl.SelectedTab = tabPageLista;
-            }
-            else
-            {
-                MessageBox.Show("Error al modificar el Producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error en la operación: {ex.Message}",
+                               "Error",
+                               MessageBoxButtons.OK,
+                               MessageBoxIcon.Error);
             }
         }
 
@@ -153,18 +231,16 @@ namespace Desktop.Views
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-
-                _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
-                BtnNombre.Text = _currentProducto.Nombre;
-                NumericPrecio.Value = _currentProducto.Precio;
-                NumericStock.Value = _currentProducto.Stock;
-                NumericUnidad.Text = _currentProducto.Unidad;
-
-
-
-
-                TabControl.SelectedTab = tabPageAgregar_Editar;
-
+                var id = (int)GridData.SelectedRows[0].Cells["Id"].Value;
+                _currentProducto = _productos.FirstOrDefault(p => p.Id == id);
+                if (_currentProducto != null)
+                {
+                    BtnNombre.Text = _currentProducto.Nombre;
+                    NumericPrecio.Value = _currentProducto.Precio;
+                    NumericStock.Value = _currentProducto.Stock;
+                    NumericUnidad.Text = _currentProducto.Unidad;
+                    TabControl.SelectedTab = tabPageAgregar_Editar;
+                }
             }
         }
 
@@ -232,5 +308,14 @@ namespace Desktop.Views
            //generame para poder elegir categoria que quiero
 
         }
+        private async void CargarCategorias()
+        {
+            _categorias = await _categoriaService.GetAllAsync(null);
+            ComboCategorias.DataSource = _categorias;
+            ComboCategorias.DisplayMember = "Nombre";
+            ComboCategorias.ValueMember = "Id";
+            ComboCategorias.SelectedItem = null;
+        }
     }
+
 }

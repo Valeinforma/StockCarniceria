@@ -1,6 +1,9 @@
 ﻿@page "/Productos"
+@using System.Diagnostics
 @inject SweetAlertService sweetAlert
 @inject IGenericService<Producto> _serviceProducto
+@inject ILogger<Productos> _logger
+
 
 <PageTitle>Productos</PageTitle>
 
@@ -56,11 +59,13 @@ else
 }
 
 @code {
-	private List<Producto>? productos;
+    private List<Producto>? productos;
 
-	protected override async Task OnInitializedAsync()
-	{
-		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+    protected override async Task OnInitializedAsync()
+    {
+        var stopwach = Stopwatch.StartNew();
+		productos = await _serviceProducto.GetAllAsync();
+		stopwach.Stop();
 	}
 	private async Task DeleteProductos(Producto producto)
 	{
