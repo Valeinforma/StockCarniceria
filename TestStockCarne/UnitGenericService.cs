@@ -95,7 +95,7 @@ namespace TestStockCarne
             foreach (var item in result)
             {
                 //imprimimos las capacitaciones
-                Console.WriteLine($"Id: {item.Id}, Productoid: {item.ProveedorId}");
+                Console.WriteLine($"Id: {item.Id}, Productoid: {item.CategoriaId}");
             }
 
 
