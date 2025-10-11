@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Shell
-    x:Class="MovilApp.Views.StockCarniceriaShell"
+    x:Class="MovilApp.Views.AgoraShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MovilApp"
@@ -8,8 +8,9 @@
     xmlns:commons="clr-namespace:MovilApp.Views"
     xmlns:contentviews="clr-namespace:MovilApp.ContentViews"
     xmlns:viewmodels="clr-namespace:MovilApp.ViewModels"
+    xmlns:views="clr-namespace:MovilApp.Views.StockCarniceria"
     FlyoutBehavior="Disabled"
-    Title ="ÀgoraApp">
+    Title ="StockCarniceria">
     
         <Shell.BindingContext>
         <viewmodels:StockCarniceriaShellViewModel />
@@ -44,6 +45,12 @@
                 ContentTemplate="{DataTemplate commons:AddEditCarreraView}"
                 Route="AgregarEditarCarrera" />
     </Tab><!-->
+    </FlyoutItem>
+    <FlyoutItem Title="📖 Buscar Productos" Icon="search.png">
+        <ShellContent
+            Title="Buscar Capacitaciones"
+            ContentTemplate="{DataTemplate views:ProductosView}"
+            Route="BuscarProductos" />
     </FlyoutItem>
     <MenuItem Text="Cerrar sesión"
       Command="{Binding LogoutCommand}"

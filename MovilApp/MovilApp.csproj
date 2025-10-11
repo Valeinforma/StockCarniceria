@@ -69,8 +69,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\StockCarniceria.xaml.cs">
-	    <DependentUpon>StockCarniceria.xaml</DependentUpon>
+	  <Compile Update="Views\StockCarniceriaShell.xaml.cs">
+	    <DependentUpon>StockCarniceriaShell.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\StockCarniceriaShell.xaml.cs">
+	    <DependentUpon>StockCarniceriaShell.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -81,13 +84,19 @@
 	  <MauiXaml Update="ContentViews\FlyoutHeader.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\StockCarniceria.xaml">
+	  <MauiXaml Update="Views\StockCarniceriaShell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\StockCarniceriaShell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Login\LoginView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Login\SignInView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\StockCarniceria\ProductosView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

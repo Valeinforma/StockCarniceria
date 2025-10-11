@@ -3,9 +3,9 @@ using MovilApp.Views.Login;
 
 namespace MovilApp.Views;
 
-public partial class StockCarniceriaShell : Shell
+public partial class AgoraShell : Shell
 {
-    public StockCarniceriaShell()
+    public AgoraShell()
     {
         InitializeComponent();
         FlyoutItemsPrincipal.IsVisible = false; // Oculta el menú lateral
@@ -22,7 +22,7 @@ public partial class StockCarniceriaShell : Shell
         FlyoutBehavior = FlyoutBehavior.Flyout; // Habilita el FlyOut
         FlyoutItemsPrincipal.IsVisible = true; // Muestra el menú lateral
         Shell.Current.GoToAsync("//MainPage"); // Navega a la página principal
-        var viewmodel = this.BindingContext as StockCarniceriaShellViewModel;
+        var viewmodel = this.BindingContext as AgoraShellViewModel;
         viewmodel.UserIsLogout = false;
     }
     public void DisableAppAfterLogin()

@@ -42,10 +42,10 @@
             TxtBuscar = new TextBox();
             LbBuscar = new Label();
             tabPageAgregar_Editar = new TabPage();
+            ComboUnidad = new ComboBox();
             ComboCategorias = new ComboBox();
             label = new Label();
             label5 = new Label();
-            NumericUnidad = new NumericUpDown();
             label4 = new Label();
             NumericStock = new NumericUpDown();
             DuracionMinutos = new Label();
@@ -63,7 +63,6 @@
             TabControl.SuspendLayout();
             tabPageLista.SuspendLayout();
             tabPageAgregar_Editar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericUnidad).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumericStock).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumericPrecio).BeginInit();
             panel1.SuspendLayout();
@@ -84,7 +83,7 @@
             GridData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             GridData.Size = new Size(710, 251);
             GridData.TabIndex = 0;
-            GridData.SelectionChanged += GridPeliculas_SelectionChanged;
+            GridData.SelectionChanged += GridData_SelectionChanged_1;
             // 
             // BtnAgregar
             // 
@@ -227,7 +226,7 @@
             BtnBuscar.Text = "Buscar";
             BtnBuscar.TextAlign = ContentAlignment.MiddleRight;
             BtnBuscar.UseVisualStyleBackColor = true;
-            BtnBuscar.Click += iconButton1_Click;
+            BtnBuscar.Click += BtnBuscar_Click;
             // 
             // TxtBuscar
             // 
@@ -247,10 +246,10 @@
             // 
             // tabPageAgregar_Editar
             // 
+            tabPageAgregar_Editar.Controls.Add(ComboUnidad);
             tabPageAgregar_Editar.Controls.Add(ComboCategorias);
             tabPageAgregar_Editar.Controls.Add(label);
             tabPageAgregar_Editar.Controls.Add(label5);
-            tabPageAgregar_Editar.Controls.Add(NumericUnidad);
             tabPageAgregar_Editar.Controls.Add(label4);
             tabPageAgregar_Editar.Controls.Add(NumericStock);
             tabPageAgregar_Editar.Controls.Add(DuracionMinutos);
@@ -266,6 +265,14 @@
             tabPageAgregar_Editar.TabIndex = 1;
             tabPageAgregar_Editar.Text = "Agregar/Editar";
             tabPageAgregar_Editar.UseVisualStyleBackColor = true;
+            // 
+            // ComboUnidad
+            // 
+            ComboUnidad.FormattingEnabled = true;
+            ComboUnidad.Location = new Point(460, 130);
+            ComboUnidad.Name = "ComboUnidad";
+            ComboUnidad.Size = new Size(121, 23);
+            ComboUnidad.TabIndex = 26;
             // 
             // ComboCategorias
             // 
@@ -293,15 +300,6 @@
             label5.Size = new Size(45, 15);
             label5.TabIndex = 22;
             label5.Text = "Unidad";
-            // 
-            // NumericUnidad
-            // 
-            NumericUnidad.Location = new Point(460, 131);
-            NumericUnidad.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
-            NumericUnidad.Name = "NumericUnidad";
-            NumericUnidad.Size = new Size(77, 23);
-            NumericUnidad.TabIndex = 21;
-            NumericUnidad.TextAlign = HorizontalAlignment.Right;
             // 
             // label4
             // 
@@ -370,7 +368,7 @@
             BtnCancelar.Text = "cancelar";
             BtnCancelar.TextAlign = ContentAlignment.MiddleRight;
             BtnCancelar.UseVisualStyleBackColor = true;
-            BtnCancelar.Click += iconButton3_Click;
+            BtnCancelar.Click += BtnCancelar_Click;
             // 
             // BtnGuardar
             // 
@@ -387,7 +385,7 @@
             BtnGuardar.Text = "Guardar ";
             BtnGuardar.TextAlign = ContentAlignment.MiddleRight;
             BtnGuardar.UseVisualStyleBackColor = true;
-            BtnGuardar.Click += iconButton2_Click;
+            BtnGuardar.Click += BtnGuardar_Click;
             // 
             // panel1
             // 
@@ -442,7 +440,6 @@
             tabPageLista.PerformLayout();
             tabPageAgregar_Editar.ResumeLayout(false);
             tabPageAgregar_Editar.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericUnidad).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumericStock).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumericPrecio).EndInit();
             panel1.ResumeLayout(false);
@@ -479,10 +476,10 @@
         private Label DuracionMinutos;
         private NumericUpDown NumericPrecio;
         private Label label5;
-        private NumericUpDown NumericUnidad;
         private Label label4;
         private NumericUpDown NumericStock;
         private Label label;
         private ComboBox ComboCategorias;
+        private ComboBox ComboUnidad;
     }
 }

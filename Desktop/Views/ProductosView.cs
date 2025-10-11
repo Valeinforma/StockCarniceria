@@ -29,7 +29,7 @@ namespace Desktop.Views
             _ = GetAllData();
             checkBoxEliminados.CheckedChanged += DisplayHideControlsRestoreButton;
             CargarCategorias();
-           
+
         }
 
         private void DisplayHideControlsRestoreButton(object? sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace Desktop.Views
                 _categorias = await _categoriaService.GetAllAsync();
                 _productos = await _productoService.GetAllAsync();
             }
-             
+
             GridData.DataSource = _productos;
             GridData.Columns["Id"].Visible = false;
             GridData.Columns["IsDeleted"].Visible = false;
@@ -61,22 +61,14 @@ namespace Desktop.Views
         }
         private void ActualizarGridView()
         {
-            var DatosGrid = _productos.Select(p => new
-            {
-                //agrega los datos para el dataGRidView
-                p.Id,
-                p.Nombre,
-                p.Precio,
-                p.Stock,
-                p.Unidad,
-                Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin Categoria"
-
-            }).ToList();
             GridData.DataSource = null;
-            GridData.DataSource = DatosGrid;
+            GridData.DataSource = _productos;
 
+            GridData.Columns["Id"].Visible = false;
+            GridData.Columns["IsDeleted"].Visible = false;
+            // Oculta o formatea otras columnas según necesidad
         }
-        private void GridPeliculas_SelectionChanged(object sender, EventArgs e)
+        private void GridData_SelectionChanged_1(object sender, EventArgs e)
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
@@ -84,7 +76,7 @@ namespace Desktop.Views
                 //    FilmPicture.ImageLocation = peliculaSeleccionada.portada;
             }
         }
-
+      
         private async void BtnEliminar_Click(object sender, EventArgs e)
         {
             //checkeamos que haya peliculas seleccionadas
@@ -134,12 +126,12 @@ namespace Desktop.Views
 
 
         }
-        private void iconButton3_Click(object sender, EventArgs e)
+        private void BtnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private async void iconButton2_Click(object sender, EventArgs e)
+        private async void BtnGuardar_Click(object sender, EventArgs e)
         {
             try
             {
@@ -147,7 +139,7 @@ namespace Desktop.Views
                 if (string.IsNullOrWhiteSpace(ComboCategorias.Text) ||
                     string.IsNullOrWhiteSpace(NumericPrecio.Text) ||
                     string.IsNullOrWhiteSpace(NumericStock.Text) ||
-                    string.IsNullOrWhiteSpace(NumericUnidad.Text) ||
+                    string.IsNullOrWhiteSpace(ComboUnidad.Text) ||
                     ComboCategorias.SelectedItem == null)
                 {
                     MessageBox.Show("Todos los campos marcados son obligatorios.",
@@ -161,27 +153,23 @@ namespace Desktop.Views
                 var categoriaSeleccionada = ComboCategorias.SelectedItem as Categoria;
                 if (categoriaSeleccionada == null)
                 {
-                    MessageBox.Show("Debes seleccionar una categoría válida.",
-                                    "Validación",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Warning);
+                    MessageBox.Show("Debes seleccionar una categoría válida.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 Producto productoAguardar = new Producto
                 {
-                    Id = _currentProducto?.Id ?? 0,
                     Nombre = BtnNombre.Text,
                     Precio = NumericPrecio.Value,
                     Stock = (int)NumericStock.Value,
-                    Unidad = NumericUnidad.Text,
+                    Unidad = ComboUnidad.Text,
                     CategoriaId = categoriaSeleccionada.Id,
-                    Categoria = categoriaSeleccionada
+                    Categoria = categoriaSeleccionada // <--- Esto es lo que falta
                 };
 
                 bool success = false;
 
-                if ( _currentCategoria!= null)
+                if (_currentCategoria != null)
                 {
                     // Actualización
                     if (!await _categoriaService.UpdateAsync(categoriaSeleccionada))
@@ -238,13 +226,13 @@ namespace Desktop.Views
                     BtnNombre.Text = _currentProducto.Nombre;
                     NumericPrecio.Value = _currentProducto.Precio;
                     NumericStock.Value = _currentProducto.Stock;
-                    NumericUnidad.Text = _currentProducto.Unidad;
+                    ComboUnidad.Text = _currentProducto.Unidad;
                     TabControl.SelectedTab = tabPageAgregar_Editar;
                 }
             }
         }
 
-        private async void iconButton1_Click(object sender, EventArgs e)
+        private async void BtnBuscar_Click(object sender, EventArgs e)
         {
             GridData.DataSource = await _productoService.GetAllAsync(TxtBuscar.Text);
 
@@ -305,17 +293,28 @@ namespace Desktop.Views
 
         private void ComboCategorias_SelectedIndexChanged(object sender, EventArgs e)
         {
-           //generame para poder elegir categoria que quiero
-
+            if (ComboCategorias.SelectedItem is Categoria categoriaSeleccionada)
+            {
+                _currentCategoria = categoriaSeleccionada;
+                LabelStatusMessage.Text = $"Categoría seleccionada: {_currentCategoria.Nombre}";
+                TimerStatusBar.Start();
+            }
         }
         private async void CargarCategorias()
         {
             _categorias = await _categoriaService.GetAllAsync(null);
+            if (_categorias == null || !_categorias.Any())
+            {
+                MessageBox.Show("No se pudieron cargar las categorías.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             ComboCategorias.DataSource = _categorias;
             ComboCategorias.DisplayMember = "Nombre";
             ComboCategorias.ValueMember = "Id";
             ComboCategorias.SelectedItem = null;
         }
+
+        
     }
 
 }
