@@ -139,7 +139,6 @@ namespace Desktop.Views
                 if (string.IsNullOrWhiteSpace(ComboCategorias.Text) ||
                     string.IsNullOrWhiteSpace(NumericPrecio.Text) ||
                     string.IsNullOrWhiteSpace(NumericStock.Text) ||
-                    string.IsNullOrWhiteSpace(ComboUnidad.Text) ||
                     ComboCategorias.SelectedItem == null)
                 {
                     MessageBox.Show("Todos los campos marcados son obligatorios.",
@@ -162,7 +161,6 @@ namespace Desktop.Views
                     Nombre = BtnNombre.Text,
                     Precio = NumericPrecio.Value,
                     Stock = (int)NumericStock.Value,
-                    Unidad = ComboUnidad.Text,
                     CategoriaId = categoriaSeleccionada.Id,
                     Categoria = categoriaSeleccionada // <--- Esto es lo que falta
                 };
@@ -226,7 +224,6 @@ namespace Desktop.Views
                     BtnNombre.Text = _currentProducto.Nombre;
                     NumericPrecio.Value = _currentProducto.Precio;
                     NumericStock.Value = _currentProducto.Stock;
-                    ComboUnidad.Text = _currentProducto.Unidad;
                     TabControl.SelectedTab = tabPageAgregar_Editar;
                 }
             }

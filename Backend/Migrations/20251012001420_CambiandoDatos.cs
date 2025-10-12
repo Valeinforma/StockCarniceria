@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class actualizacionproductos : Migration
+    public partial class CambiandoDatos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -164,42 +164,27 @@ namespace Backend.Migrations
                 columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
-                    { 1, false, "Vacuno" },
-                    { 2, false, "Aves" },
-                    { 3, false, "Lácteos" },
-                    { 4, false, "Bebidas" }
+                    { 1, false, "Carnes Rojas" },
+                    { 2, false, "Carnes Blancas" }
                 });
 
             migrationBuilder.InsertData(
                 table: "DetallesCompra",
                 columns: new[] { "Id", "Cantidad", "FechaCompra", "IdCompra", "IdDetalleCompra", "IsDeleted", "PrecioUnitario", "ProductoId", "ProveedorId" },
-                values: new object[,]
-                {
-                    { 1, 30m, new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(14), 0, 0, false, 2000.00m, 1, 1 },
-                    { 2, 60m, new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(21), 0, 0, false, 1000.00m, 2, 2 },
-                    { 3, 25m, new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(24), 0, 0, false, 1500.00m, 3, 3 },
-                    { 4, 50m, new DateTime(2025, 9, 30, 17, 23, 33, 370, DateTimeKind.Local).AddTicks(28), 0, 0, false, 1200.00m, 5, 2 }
-                });
+                values: new object[] { 1, 20m, new DateTime(2025, 10, 11, 21, 14, 17, 521, DateTimeKind.Local).AddTicks(5561), 1, 3001, false, 1400m, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "DetallesVenta",
                 columns: new[] { "Id", "Cantidad", "IdDetalleVenta", "IsDeleted", "PrecioUnitario", "ProductoId", "VentaId" },
-                values: new object[,]
-                {
-                    { 1, 2m, 0, false, 2500.00m, 1, 1 },
-                    { 2, 1m, 0, false, 1500.00m, 5, 1 },
-                    { 3, 1m, 0, false, 1200.00m, 2, 2 },
-                    { 4, 2m, 0, false, 900.00m, 4, 2 }
-                });
+                values: new object[] { 1, 2m, 2001, false, 1500m, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "Proveedores",
                 columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
-                    { 1, false, "Frigorífico Patagonia" },
-                    { 2, false, "Avícola San Juan" },
-                    { 3, false, "Distribuidora Láctea SRL" }
+                    { 1, false, "Proveedor A" },
+                    { 2, false, "Proveedor B" }
                 });
 
             migrationBuilder.InsertData(
@@ -207,35 +192,22 @@ namespace Backend.Migrations
                 columns: new[] { "Id", "Email", "IsDeleted", "Nombre", "Password", "Rol" },
                 values: new object[,]
                 {
-                    { 1, "admin@tienda.com", false, "Sofia", "sofiaAdmin2025", "admin" },
-                    { 2, "carlos@tienda.com", false, "Carlos", "carlosV123", "vendedor" },
-                    { 3, "lucia@tienda.com", false, "Lucia", "luciaV123", "vendedor" }
+                    { 1, "admin@example.com", false, "Admin", "admin123", "admin" },
+                    { 2, "vendedor@example.com", false, "Vendedor", "vendedor123", "vendedor" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Ventas",
                 columns: new[] { "Id", "Cliente", "Fecha", "IdVenta", "IsDeleted", "Precio", "TipoPagoEnum", "UsuarioId" },
-                values: new object[,]
-                {
-                    { 1, "Pedro López", new DateTime(2025, 9, 30, 17, 23, 33, 369, DateTimeKind.Local).AddTicks(9853), 0, false, 5000.00m, 1, 2 },
-                    { 2, "Laura Fernández", new DateTime(2025, 9, 30, 17, 23, 33, 369, DateTimeKind.Local).AddTicks(9874), 0, false, 2700.00m, 2, 3 }
-                });
+                values: new object[] { 1, "Cliente A", new DateTime(2025, 10, 11, 21, 14, 17, 521, DateTimeKind.Local).AddTicks(5381), 1001, false, 3000m, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "Productos",
                 columns: new[] { "Id", "CategoriaId", "IsDeleted", "Nombre", "Precio", "Stock", "Unidad" },
                 values: new object[,]
                 {
-                    { 1, 1, false, "Asado de Tira", 2500.00m, 20, "kg" },
-                    { 2, 2, false, "Suprema de Pollo", 1200.00m, 40, "kg" },
-                    { 3, 3, false, "Queso Cremoso", 1800.00m, 15, "kg" },
-                    { 4, 3, false, "Leche Entera", 900.00m, 30, "litro" },
-                    { 5, 4, false, "Gaseosa Cola", 1500.00m, 50, "botella" },
-                    { 6, 1, false, "Matambre Vacuno", 2200.00m, 10, "kg" },
-                    { 7, 2, false, "Pechuga de Pollo", 1300.00m, 25, "kg" },
-                    { 8, 3, false, "Yogur Natural", 700.00m, 35, "unidad" },
-                    { 9, 4, false, "Agua Mineral", 800.00m, 60, "botella" },
-                    { 10, 1, false, "Chorizo Parrillero", 1100.00m, 18, "kg" }
+                    { 1, 1, false, "Bife de Chorizo", 1500m, 50, "kg" },
+                    { 2, 2, false, "Pechuga de Pollo", 800m, 100, "kg" }
                 });
 
             migrationBuilder.CreateIndex(

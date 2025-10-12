@@ -42,10 +42,8 @@
             TxtBuscar = new TextBox();
             LbBuscar = new Label();
             tabPageAgregar_Editar = new TabPage();
-            ComboUnidad = new ComboBox();
             ComboCategorias = new ComboBox();
             label = new Label();
-            label5 = new Label();
             label4 = new Label();
             NumericStock = new NumericUpDown();
             DuracionMinutos = new Label();
@@ -246,10 +244,8 @@
             // 
             // tabPageAgregar_Editar
             // 
-            tabPageAgregar_Editar.Controls.Add(ComboUnidad);
             tabPageAgregar_Editar.Controls.Add(ComboCategorias);
             tabPageAgregar_Editar.Controls.Add(label);
-            tabPageAgregar_Editar.Controls.Add(label5);
             tabPageAgregar_Editar.Controls.Add(label4);
             tabPageAgregar_Editar.Controls.Add(NumericStock);
             tabPageAgregar_Editar.Controls.Add(DuracionMinutos);
@@ -265,14 +261,6 @@
             tabPageAgregar_Editar.TabIndex = 1;
             tabPageAgregar_Editar.Text = "Agregar/Editar";
             tabPageAgregar_Editar.UseVisualStyleBackColor = true;
-            // 
-            // ComboUnidad
-            // 
-            ComboUnidad.FormattingEnabled = true;
-            ComboUnidad.Location = new Point(460, 130);
-            ComboUnidad.Name = "ComboUnidad";
-            ComboUnidad.Size = new Size(121, 23);
-            ComboUnidad.TabIndex = 26;
             // 
             // ComboCategorias
             // 
@@ -292,19 +280,10 @@
             label.TabIndex = 24;
             label.Text = "Categorias";
             // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(409, 133);
-            label5.Name = "label5";
-            label5.Size = new Size(45, 15);
-            label5.TabIndex = 22;
-            label5.Text = "Unidad";
-            // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(270, 133);
+            label4.Location = new Point(601, 83);
             label4.Name = "label4";
             label4.Size = new Size(36, 15);
             label4.TabIndex = 20;
@@ -312,7 +291,7 @@
             // 
             // NumericStock
             // 
-            NumericStock.Location = new Point(312, 131);
+            NumericStock.Location = new Point(643, 81);
             NumericStock.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             NumericStock.Name = "NumericStock";
             NumericStock.Size = new Size(77, 23);
@@ -475,11 +454,9 @@
         private FontAwesome.Sharp.IconButton BtnRestaurar;
         private Label DuracionMinutos;
         private NumericUpDown NumericPrecio;
-        private Label label5;
         private Label label4;
         private NumericUpDown NumericStock;
         private Label label;
         private ComboBox ComboCategorias;
-        private ComboBox ComboUnidad;
     }
 }

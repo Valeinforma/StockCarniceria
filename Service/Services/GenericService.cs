@@ -100,18 +100,22 @@ namespace Service.Services
 
         public async Task<bool> UpdateAsync(T? entity)
         {
-            var idValue = entity.GetType().GetProperty("Id").GetValue(entity);
+            var idProperty = entity?.GetType().GetProperty("Id");
+            if (idProperty == null || idProperty.GetValue(entity) == null)
+            {
+                throw new Exception("La entidad no tiene un 'Id' válido.");
+            }
+
+            var idValue = idProperty.GetValue(entity);
             var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{idValue}", entity);
+            var content = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Hubon un problema al actualizar");
-            }
-            else
-            {
-                return response.IsSuccessStatusCode;
+                throw new Exception($"Hubo un problema al actualizar: {response.StatusCode} - {content}");
             }
 
-
+            return response.IsSuccessStatusCode;
         }
 
 

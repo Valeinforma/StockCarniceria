@@ -17,6 +17,7 @@ namespace Service.Utlis
         public static string Venta { get; set; } = "ventas";
 
 
+
         public static string GetEndpoint(string name)
         {
             return name switch
