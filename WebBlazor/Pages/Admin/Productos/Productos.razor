@@ -1,13 +1,12 @@
-﻿@page "/Productos"
-@using System.Diagnostics
-@inject SweetAlertService sweetAlert
+﻿@page "/productos"
+
 @inject IGenericService<Producto> _serviceProducto
-@inject ILogger<Productos> _logger
+@inject NavigationManager NavigationManager
+@inject FirebaseAuthService _authService
+@inject SweetAlertService sweetAlert
+<PageTitle>productos</PageTitle>
 
-
-<PageTitle>Productos</PageTitle>
-
-<h1>Productos</h1>
+<PageHeader Title="Productos" Description="Admistra aqui los productos" />
 
 @if (productos == null)
 {
@@ -19,36 +18,39 @@ else if (!productos.Any())
 }
 else
 {
-	
-	<NavLink class="btn btn-info" href="/NuevoEditarProducto">
-		Agregar Producto
+	<NavLink class="btn btn-primary" href=@($"NuevoEditarProductos")>
+		Agregar producto
 	</NavLink>
-
 	<table class="table">
 		<thead>
 			<tr>
 				
 				<th>Nombre</th>
-				<th>precio</th>
-				<th>Stock</th>
+				<th>Categoria</th>
+				<th>Precio</th>
+
+				
+				
+
 				<th colspan="2">Acciones</th>
+
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var producto in productos)
+			@foreach (var pro in productos)
 			{
 				<tr>
-
-					<td>@producto.Nombre</td>
-					<td>@producto.Precio</td>
-					<td>@producto.Stock</td>
-
+					
+					<td>@pro.Nombre</td>
+					<td>@pro.Categoria</td>
+					<td>@pro.Precio</td>
+				
 					<td>
-						<button class="btn btn-danger" @onclick="() => DeleteProductos(producto)">Eliminar</button>
+						<button class="btn btn-danger" @onclick="() => DeleteProducto(pro)">Eliminar</button>
 					</td>
 
 					<td>
-						<NavLink class="btn btn-info" href=@($"/NuevoEditarProducto?idProducto={producto.Id}")>
+						<NavLink class="btn btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
 							Editar
 						</NavLink>
 					</td>
@@ -59,36 +61,41 @@ else
 }
 
 @code {
-    private List<Producto>? productos;
+	private List<Producto>? productos;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var stopwach = Stopwatch.StartNew();
-		productos = await _serviceProducto.GetAllAsync();
-		stopwach.Stop();
+	protected override async Task OnInitializedAsync()
+	{
+		if (!await _authService.IsUserAuthenticated())
+		{
+			NavigationManager.NavigateTo("/login");
+			return;
+		}
+
+		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
 	}
-	private async Task DeleteProductos(Producto producto)
+
+	private async Task DeleteProducto(Producto producto)
 	{
 		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions
-		{
-			Title = "¿Estás seguro?",
-			Text = $"¿Deseas eliminar el Producto '{producto.Nombre}'?",
-			Icon = SweetAlertIcon.Warning,
-			ShowCancelButton = true,
-			ConfirmButtonText = "Sí, eliminar",
-			CancelButtonText = "Cancelar"
-		});
+			{
+				Title = "¿Estás seguro?",
+				Text = $"¿Deseas eliminar el producto '{producto.Nombre}'?",
+				Icon = SweetAlertIcon.Warning,
+				ShowCancelButton = true,
+				ConfirmButtonText = "Sí, eliminar",
+				CancelButtonText = "Cancelar"
+			});
 		if (respuesta.IsConfirmed)
 		{
 			if (await _serviceProducto.DeleteAsync(producto.Id))
 			{
 				productos?.Remove(producto);
 				StateHasChanged();
-			}
-			else
+			}else
 			{
-				await sweetAlert.FireAsync("Error", "No se pudo eliminar el Producto.", SweetAlertIcon.Error);
+				await sweetAlert.FireAsync("Error", "No se pudo eliminar el producto.", SweetAlertIcon.Error);
 			}
 		}
 	}
+	
 }

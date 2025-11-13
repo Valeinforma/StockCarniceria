@@ -1,7 +1,71 @@
 ﻿@page "/"
+@using Service.Services
+
+@inject  IProductoService _productoService
 
 <PageTitle>Inicio</PageTitle>
 
-<h1>StockCarniceria — Plataforma de Gestión de Carnicerias</h1>
 
-<h4>StockCarniceria es una plataforma educativa desarrollada por un estudiante de 2.º año de Programación. Su objetivo es brindar una solución integral para la gestión de carnicerías: desde el control de stock y ventas, hasta la administración de proveedores y generación de reportes.</h4>
+
+<PageHeader Title="StockCarniceria" Description="Plataforma de Gestíon de Productos"/>
+
+<h4>StockCarniceria es una plataforma diseñada para gestionar productos de una carnicería. Permite administrar el inventario, controlar el stock, y optimizar la gestión de ventas y compras.</h4>
+@if (ProductosPorCategoria is null || ProductosPorNombre is null)
+{
+    <p><em>Cargando productos...</em></p>
+}
+else
+{
+    if (!ProductosPorCategoria.Any())
+    {
+        <p>No hay productos por categoria.</p>
+    }
+    else
+    {
+        <h3>productos por nombre</h3>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var producto in ProductosPorNombre)
+            {
+                <div class="col">
+                    <CardProducto producto ="producto" />
+                </div>
+            }
+        </div>
+    }
+
+    if (!ProductosPorNombre.Any())
+    {
+        <p>No hay capacitaciones próximas programadas en este momento.</p>
+    }
+    else
+    {
+        <h3>Capacitaciones Próximas</h3>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var producto in ProductosPorNombre)
+            {
+                <div class="col">
+                    <CardProducto producto="producto" />
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<Producto>? ProductosPorCategoria;
+    private List<Producto>? ProductosPorNombre;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Se debe proporcionar un valor para categoriaId. Aquí se usa 0 como ejemplo.
+        int categoriaId = 0; // Cambia este valor según la lógica de tu aplicación.
+
+        var ProductosPorCategoriaTask = _productoService.GetProductosPorCategoriaAsync(categoriaId);
+        var ProductosPorNombreTask = _productoService.BuscarProductosPorNombreAsync(string.Empty);
+
+        await Task.WhenAll(ProductosPorCategoriaTask, ProductosPorNombreTask);
+
+        ProductosPorCategoria = await ProductosPorCategoriaTask;
+        ProductosPorNombre = await ProductosPorNombreTask;
+    }
+}

@@ -84,6 +84,12 @@
 	  <MauiXaml Update="ContentViews\FlyoutHeader.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\AddEditCapacitacionView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\AdminCapacitacionesView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\StockCarniceriaShell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

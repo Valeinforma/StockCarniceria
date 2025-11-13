@@ -1,0 +1,19 @@
+﻿<div class="card text-center">
+    <div class="card-header">
+        Orador: @producto?.Nombre
+    </div>
+    
+   
+    <div class="card-body">
+        <h5 class="card-title">@producto?.Categoria</h5>
+        <p class="card-text">@producto?.Precio</p>
+        <a href="#" class="btn btn-primary">Informacion</a>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public Producto? producto { get; set; }
+
+
+
+}

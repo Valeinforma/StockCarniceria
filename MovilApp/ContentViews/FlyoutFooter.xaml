@@ -4,7 +4,7 @@
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              x:Class="MovilApp.ContentViews.FlyoutFooter">
     <StackLayout>
-        <Label Text="ÀgoraApp"
+        <Label Text="StockCarniceriaApp"
                TextColor="GhostWhite"
                FontAttributes="Bold"
                HorizontalOptions="Center" />

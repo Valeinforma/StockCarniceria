@@ -1,14 +1,13 @@
-﻿@page "/NuevoEditarProducto"
+﻿@page "/nuevoEditarProducto"
 @inject NavigationManager NavigationManager
-@inject IGenericService<Producto> _ProductoService
-
-@if ( producto == null)
+@inject IGenericService<Producto> _Productoservice
+@if (producto == null)
 {
     <p><em>Cargando...</em></p>
 }
 else
 {
-    <h3>Productos Pagina</h3>
+    <h3>Productos Página</h3>
     <div style="background-color: @(isEditing ? "lightyellow" : "white")">
         <EditForm Model="producto" OnValidSubmit="Guardar">
             <DataAnnotationsValidator />
@@ -18,14 +17,21 @@ else
                         <label class="form-label">Nombre:</label>
                         <InputText class="form-control mb-2" type="text" @bind-Value="producto.Nombre" />
                     </div>
-                    
                     <div class="form-group">
                         <label class="form-label">Precio:</label>
-                        <InputNumber class="form-control mb-2" type="text" @bind-Value="producto.Precio" />
+                        <InputNumber class="form-control mb-2" type="number" @bind-Value="producto.Precio" />
                     </div>
                     <div class="form-group">
                         <label class="form-label">Stock:</label>
-                        <InputNumber class="form-control mb-2" type="text" @bind-Value="producto.Stock" />
+                        <InputNumber class="form-control mb-2" type="number" @bind-Value="producto.Stock" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unidad:</label>
+                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Unidad" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoría:</label>
+                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Categoria.Nombre" />
                     </div>
                 </div>
                 <ValidationSummary />
@@ -43,28 +49,26 @@ else
 
     private bool isEditing => idProducto != null;
     private string guardarButtonText => isEditing ? "Actualizar" : "Agregar";
-    private string tituloPagina => isEditing ? "Editando producto" : "Agregando nuevo Producto";
+    private string tituloPagina => isEditing ? "Editando Producto" : "Agregando nuevo Producto";
 
     protected override async Task OnInitializedAsync()
     {
         if (idProducto != null)
         {
-            producto = await _ProductoService.GetByIdAsync((int)idProducto);
+            producto = await _Productoservice.GetByIdAsync((int)idProducto);
         }
         else
         {
             producto = new Producto();
-
         }
     }
 
     private async Task Guardar()
     {
-        //logger.LogInformation(campania.PropertiesToString());
         if (idProducto != null)
-            await _ProductoService.UpdateAsync(producto);
+            await _Productoservice.UpdateAsync(producto);
         else
-            await _ProductoService.AddAsync(producto);
+            await _Productoservice.AddAsync(producto);
         NavigationManager.NavigateTo($"productos");
     }
 

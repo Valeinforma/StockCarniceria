@@ -1,0 +1,16 @@
+﻿<div class="header-card">
+    <h1 class="header-title">@Title</h1>
+@if (Description != null)
+	{
+		<p class="header-description">
+			@Description
+		</p>
+	}
+</div>
+
+@code {
+    [Parameter]
+	public string Title { get; set; } = "Title no definido";
+	[Parameter]
+	public string Description { get; set; }
+}

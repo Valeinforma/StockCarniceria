@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovilApp", "MovilApp\MovilApp.csproj", "{276F78F6-9EE4-492E-891F-D2D09F40EF25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBlazor", "WebBlazor\WebBlazor.csproj", "{C559AA61-7824-41A9-9802-29B6635C2D48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBlazor", "WebBlazor\WebBlazor.csproj", "{DEBC2D98-305A-4BE9-AF52-28E79F6EDF06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +43,10 @@ Global
 		{276F78F6-9EE4-492E-891F-D2D09F40EF25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{276F78F6-9EE4-492E-891F-D2D09F40EF25}.Release|Any CPU.Build.0 = Release|Any CPU
 		{276F78F6-9EE4-492E-891F-D2D09F40EF25}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{C559AA61-7824-41A9-9802-29B6635C2D48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C559AA61-7824-41A9-9802-29B6635C2D48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C559AA61-7824-41A9-9802-29B6635C2D48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C559AA61-7824-41A9-9802-29B6635C2D48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEBC2D98-305A-4BE9-AF52-28E79F6EDF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEBC2D98-305A-4BE9-AF52-28E79F6EDF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEBC2D98-305A-4BE9-AF52-28E79F6EDF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEBC2D98-305A-4BE9-AF52-28E79F6EDF06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

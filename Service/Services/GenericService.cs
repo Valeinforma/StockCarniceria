@@ -12,7 +12,7 @@ namespace Service.Services
 {
     public class GenericService<T> : IGenericService<T> where T : class
     {
-        private readonly HttpClient _httpClient;
+        protected readonly HttpClient _httpClient;
         protected readonly JsonSerializerOptions _options;
         protected readonly string _endpoint;
         public GenericService()
@@ -100,24 +100,19 @@ namespace Service.Services
 
         public async Task<bool> UpdateAsync(T? entity)
         {
-            var idProperty = entity?.GetType().GetProperty("Id");
-            if (idProperty == null || idProperty.GetValue(entity) == null)
-            {
-                throw new Exception("La entidad no tiene un 'Id' válido.");
-            }
-
-            var idValue = idProperty.GetValue(entity);
+            var idValue = entity.GetType().GetProperty("Id").GetValue(entity);
             var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{idValue}", entity);
-            var content = await response.Content.ReadAsStringAsync();
-
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Hubo un problema al actualizar: {response.StatusCode} - {content}");
+                throw new Exception("Hubon un problema al actualizar");
+            }
+            else
+            {
+                return response.IsSuccessStatusCode;
             }
 
-            return response.IsSuccessStatusCode;
-        }
 
+        }
 
 
 

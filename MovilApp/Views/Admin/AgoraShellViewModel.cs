@@ -1,5 +1,4 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MovilApp.Views;
 using System;
@@ -10,26 +9,22 @@ using System.Threading.Tasks;
 
 namespace MovilApp.ViewModels
 {
-    public partial class StockCarniceriaShellViewModel : ObservableObject
+    public partial class StockCarniceriaModel : ObservableObject
     {
         [ObservableProperty]
-        private bool userIsLogged = true;
+        private bool userIsLogged = false;
 
         public IRelayCommand LogoutCommand { get; }
 
-        public StockCarniceriaShellViewModel()
+        public StockCarniceriaModel()
         {
             LogoutCommand = new RelayCommand(OnLogout);
+            SetLoginState(false); // Inicialmente no está logueado
         }
 
-        private void OnLogout()
+        public void SetLoginState(bool isLoggedIn)
         {
-            SetLoginState(false);
-        }
-
-        private void SetLoginState(bool isLoggedIn)
-        {
-            if (Application.Current?.MainPage is StockCarniceriaShell shell)
+            if (Application.Current?.MainPage is AgoraShell shell)
             {
                 if (isLoggedIn)
                     shell.FlyoutBehavior = FlyoutBehavior.Flyout;
@@ -42,6 +37,12 @@ namespace MovilApp.ViewModels
                 else
                     shell.GoToAsync("//Login");
             }
+
+        }
+
+        private void OnLogout()
+        {
+            SetLoginState(false);
         }
     }
 }

@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Firebase.Auth;
 using Firebase.Auth.Providers;
 using Firebase.Auth.Repository;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.Storage;
 using MovilApp.Views;
 
 namespace MovilApp.ViewModels.Login
@@ -25,6 +27,9 @@ namespace MovilApp.ViewModels.Login
         [ObservableProperty]
         private bool recordarContraseña;
 
+        [ObservableProperty]
+        private bool estaDescargando;
+
 
         public IRelayCommand IniciarSesionCommand { get; }
         public IRelayCommand RegistrarseCommand { get; }
@@ -41,7 +46,7 @@ namespace MovilApp.ViewModels.Login
                     new EmailProvider()
                 }
             });
-            _userRepository = new FileUserRepository("StockCarneMovilApp");
+            _userRepository = new FileUserRepository("StockCarniceriaMovilApp");
             ChequearSiHayUsuarioAlmacenado();
             IniciarSesionCommand = new RelayCommand(IniciarSesion, PermitirIniciarSesion);
             RegistrarseCommand = new RelayCommand(Registrarse);
@@ -49,36 +54,57 @@ namespace MovilApp.ViewModels.Login
 
         private async void Registrarse()
         {
-            await Shell.Current.GoToAsync("Registrarse");
+            if (Application.Current?.MainPage is StockCarniceriaShell shell)
+            {
+                await shell.GoToAsync("//Registrarse");
+            }
         }
 
         private async void ChequearSiHayUsuarioAlmacenado()
         {
-            if (_userRepository.UserExists())
+            _userRepository.DeleteUser(); // Por temas de testing
+            // la aplicación se ejecuta en android o ios chequea si hay un usuario almacenado
+            if (DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS)
             {
-                (_userInfo, _firebaseCredential) = _userRepository.ReadUser();
+                try
+                {
+                    if (_userRepository.UserExists())
+                    {
+                        (_userInfo, _firebaseCredential) = _userRepository.ReadUser();
 
-                var StockCarniceriaShell = (StockCarniceriaShell)App.Current.MainPage;
-                StockCarniceriaShell.EnableAppAfterLogin();
+                        if (Application.Current?.MainPage is AgoraShell shell)
+                        {
+                            shell.SetLoginState(true);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Ocurrió un problema al leer el usuario almacenado: " + ex.Message, "Ok");
+                }
             }
         }
 
+
+        
+
         private bool PermitirIniciarSesion()
         {
-            return !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password);
+            return !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Password);
         }
 
         private async void IniciarSesion()
         {
             try
             {
-
+                EstaDescargando = true;
                 var userCredential = await _clientAuth.SignInWithEmailAndPasswordAsync(email, password);
-                //if (userCredential.User.Info.IsEmailVerified == false)
-                //{
-                //    await Application.Current.MainPage.DisplayAlert("Inicios de sesión", "Debe verificar su correo electrónico", "Ok");
-                //    return;
-                //}
+                if (userCredential.User.Info.IsEmailVerified == false)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Inicio de sesión", "Debe verificar su correo electrónico", "Ok");
+                    EstaDescargando = false;
+                    return;
+                }
 
                 if (recordarContraseña)
                 {
@@ -89,8 +115,11 @@ namespace MovilApp.ViewModels.Login
                     _userRepository.DeleteUser();
                 }
 
-                var StockCarniceriaShell = (StockCarniceriaShell)App.Current.MainPage;
-                StockCarniceriaShell.EnableAppAfterLogin();
+                if (Application.Current?.MainPage is AgoraShell shell)
+                {
+                    shell.SetLoginState(true);
+                }
+                EstaDescargando = false;
 
             }
             catch (FirebaseAuthException error)
