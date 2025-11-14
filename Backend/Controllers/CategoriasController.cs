@@ -88,33 +88,48 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoria(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
-            if (categoria == null)
+            try
             {
-                return NotFound();
+                var categoria = await _context.Categorias.FindAsync(id);
+                if (categoria == null)
+                {
+                    return NotFound();
+                }
+
+                categoria.IsDeleted = true;
+                _context.Categorias.Update(categoria);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Categorias.Remove(categoria);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
         [HttpPut("restore/{id}")]
-        public async Task<IActionResult> RestoreCategotia(int id)
+        public async Task<IActionResult> RestoreCategoria(int id)
         {
-            var categoria = await _context.Categorias.IgnoreQueryFilters
-                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
-            if ( categoria== null)
+            try
             {
-                return NotFound();
-            }
-            categoria.IsDeleted = true;
-            _context.Categorias.Update(categoria);
-            await _context.SaveChangesAsync();
+                var categoria = await _context.Categorias.IgnoreQueryFilters
+                    ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+                if (categoria == null)
+                {
+                    return NotFound();
+                }
+                categoria.IsDeleted = false;
+                _context.Categorias.Update(categoria);
+                await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+               }
+           }
         // GET: api/Capacitaciones
         [HttpGet("deleteds/")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasDeleteds()

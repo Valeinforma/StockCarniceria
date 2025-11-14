@@ -89,34 +89,47 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {
-            var producto = await _context.Productos.FindAsync(id);
-            if (producto == null)
+            try
             {
-                return NotFound();
-            }
-            producto.IsDeleted = true;
-            _context.Productos.Update(producto);
-            await _context.SaveChangesAsync();
+                var producto = await _context.Productos.FindAsync(id);
+                if (producto == null)
+                {
+                    return NotFound();
+                }
+                producto.IsDeleted = true;
+                _context.Productos.Update(producto);
+                await _context.SaveChangesAsync();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
         [HttpPut("restore/{id}")]
         public async Task<IActionResult> RestoreProducto(int id)
         {
-            var Producto = await _context.Productos.IgnoreQueryFilters
-                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
-            if (Producto == null)
+            try
             {
-                return NotFound();
+                var Producto = await _context.Productos.IgnoreQueryFilters
+                    ().FirstOrDefaultAsync(c => c.Id.Equals(id));
+                if (Producto == null)
+                {
+                    return NotFound();
+                }
+                Producto.IsDeleted = false;
+                _context.Productos.Update(Producto);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-            Producto.IsDeleted = false;
-            _context.Productos.Update(Producto);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
+            catch (Exception ex)
+               {
+                   return StatusCode(500, $"Error interno: {ex.Message}");
+               }
+           }
 
         // GET: api/Capacitaciones
         [HttpGet("deleteds")]
