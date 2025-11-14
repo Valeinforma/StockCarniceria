@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,9 +25,9 @@ namespace Desktop.Views
 
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var usuarios = new Usuarios();
-            usuarios.MdiParent = this;
-            usuarios.Show();
+           var UsuariosView = new UsuariosView();
+            UsuariosView.MdiParent = this;
+            UsuariosView.Show();
         }
 
         private void productosToolStripMenuItem_Click(object sender, EventArgs e)

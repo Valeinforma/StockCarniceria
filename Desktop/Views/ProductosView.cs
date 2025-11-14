@@ -290,10 +290,10 @@ namespace Desktop.Views
 
         private void ComboCategorias_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ComboCategorias.SelectedItem is Categoria categoriaSeleccionada)
+            if (ComboCategorias.SelectedItem is Categoria selectedCategoria)
             {
-                _currentCategoria = categoriaSeleccionada;
-                LabelStatusMessage.Text = $"Categoría seleccionada: {_currentCategoria.Nombre}";
+                _currentCategoria = selectedCategoria;
+                LabelStatusMessage.Text = $"Categoría seleccionada: {selectedCategoria.Nombre}";
                 TimerStatusBar.Start();
             }
         }
