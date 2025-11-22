@@ -35,7 +35,7 @@ namespace Service.Services
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Error al agregar el registro: {response.StatusCode} - {content}");
+                throw new Exception($"Error al agregar el dato: {response.StatusCode} - {content}");
             }
             return JsonSerializer.Deserialize<T>(content, _options);
         }
@@ -49,7 +49,6 @@ namespace Service.Services
                 throw new Exception($"Error al eliminar el registro: {response.StatusCode}");
             }
             return response.IsSuccessStatusCode;
-
         }
 
         public async Task<List<T>?> GetAllAsync(string? filtro = "")
@@ -89,7 +88,8 @@ namespace Service.Services
 
         public async Task<bool> RestoreAsync(int id)
         {
-            var response = await _httpClient.PutAsync($"{_endpoint}/restore/{id}",null);
+
+            var response = await _httpClient.PutAsync($"{_endpoint}/restore/{id}", null);
             if (!response.IsSuccessStatusCode)
             {
 
@@ -103,17 +103,18 @@ namespace Service.Services
 
         public async Task<bool> UpdateAsync(T? entity)
         {
+
             var idValue = entity.GetType().GetProperty("Id").GetValue(entity);
             var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{idValue}", entity);
+            var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Hubon un problema al actualizar");
+                throw new Exception($"Hubon un problema al actualizar:{response.StatusCode} - {content}");
             }
             else
             {
                 return response.IsSuccessStatusCode;
             }
-
 
         }
 

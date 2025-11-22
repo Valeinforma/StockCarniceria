@@ -290,11 +290,14 @@ namespace Desktop.Views
 
         private void ComboCategorias_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ComboCategorias.SelectedItem is Categoria selectedCategoria)
+          //seleccionar la categoria y guardarla en la variable _currentCategoria
+            if (ComboCategorias.SelectedItem != null)
             {
-                _currentCategoria = selectedCategoria;
-                LabelStatusMessage.Text = $"Categoría seleccionada: {selectedCategoria.Nombre}";
-                TimerStatusBar.Start();
+                _currentCategoria = (Categoria)ComboCategorias.SelectedItem;
+            }
+            else
+            {
+                _currentCategoria = null;
             }
         }
         private async void CargarCategorias()
