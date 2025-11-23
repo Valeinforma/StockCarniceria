@@ -25,8 +25,8 @@ public class StockCarniceriaContext : DbContext
     {
         // Seed data for Categoria
         modelBuilder.Entity<Categoria>().HasData(
-            new Categoria {  Nombre = "Carnes Rojas", IsDeleted = false },
-            new Categoria {  Nombre = "Carnes Blancas", IsDeleted = false }
+            new Categoria { Id = 1, Nombre = "Carnes Rojas", IsDeleted = false },
+            new Categoria { Id = 2, Nombre = "Carnes Blancas", IsDeleted = false }
         );
 
         // Seed data for Producto
