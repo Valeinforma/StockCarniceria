@@ -1,4 +1,5 @@
-﻿using Service.Models;
+﻿using Desktop.ExtensionMethod;
+using Service.Models;
 using Service.Services;
 using System;
 using System.Collections.Generic;
@@ -54,8 +55,7 @@ namespace Desktop.Views
             }
 
             GridData.DataSource = _productos;
-            GridData.Columns["Id"].Visible = false;
-            GridData.Columns["IsDeleted"].Visible = false;
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted");
             await GetComboCategorias();
 
         }

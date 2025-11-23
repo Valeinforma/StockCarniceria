@@ -79,7 +79,7 @@
             GridData.Name = "GridData";
             GridData.ReadOnly = true;
             GridData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            GridData.Size = new Size(710, 251);
+            GridData.Size = new Size(1116, 251);
             GridData.TabIndex = 0;
             GridData.SelectionChanged += GridData_SelectionChanged_1;
             // 
