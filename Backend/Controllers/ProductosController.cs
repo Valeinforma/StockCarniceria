@@ -23,15 +23,29 @@ namespace Backend.Controllers
 
         // GET: api/Productoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = "")
+        public async Task<ActionResult<IEnumerable<object>>> GetProductos([FromQuery] string? filter = "")
         {
-            return await _context.Productos
-            .Include(p => p.Categoria)
-            .Where(p => p.Nombre.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                || p.Unidad.Contains(filter, StringComparison.OrdinalIgnoreCase))
-            .AsNoTracking()
-            .ToListAsync();
-
+         
+                return await _context.Productos
+                    .Where(p => p.Nombre.Contains(filter))
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Nombre,
+                        p.Precio,
+                        p.Stock,
+                        p.Unidad,
+                        p.IsDeleted,
+                        p.CategoriaId,
+                        Categoria = new
+                        {
+                           
+                            p.Categoria.Nombre,
+                         
+                        }
+                    })
+                    .ToListAsync();
+            
         }
 
         // Reemplaza el método GetCapacitaciones para corregir el uso incorrecto de Contains en tipos numéricos
