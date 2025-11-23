@@ -136,44 +136,53 @@ namespace Desktop.Views
 
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
+            _currentProducto.Nombre = TxtNombre.Text;
+            _currentProducto.Precio = (int)NumericPrecio.Value;
+            _currentProducto.Stock = (int)NumericStock.Value;
+
+            // Asignar la categoría seleccionada
+            if (ComboCategorias.SelectedItem != null)
             {
-                _currentProducto.Nombre = TxtNombre.Text;
-                _currentProducto.Precio = (int)NumericPrecio.Value;
-                _currentProducto.Stock = (int)NumericStock.Value;
-                _currentProducto.CategoriaId = _currentCategoria?.Id ?? 0; // Asignar la categoría seleccionada
+                _currentProducto.CategoriaId = ((Categoria)ComboCategorias.SelectedItem).Id;
+                _currentProducto.Categoria = (Categoria)ComboCategorias.SelectedItem; // Asignar el objeto completo
+            }
+            else
+            {
+                _currentProducto.CategoriaId = 0; // Valor predeterminado si no se selecciona ninguna categoría
+                _currentProducto.Categoria = null; // Asegurarse de que no se envíe un objeto vacío
+            }
 
-                bool succesfull = false;
-                try
+            bool succesfull = false;
+            try
+            {
+                if (_currentProducto.Id == 0)
                 {
-                    if (_currentProducto.Id == 0)
-                    {
-                        var nuevoproducto = await _productoService.AddAsync(_currentProducto);
-                        succesfull = nuevoproducto != null;
-                    }
-                    else if (_currentProducto.Id > 0)
-                    {
-                        succesfull = await _productoService.UpdateAsync(_currentProducto);
-                    }
+                    var nuevoproducto = await _productoService.AddAsync(_currentProducto);
+                    succesfull = nuevoproducto != null;
                 }
-                catch (Exception ex)
+                else if (_currentProducto.Id > 0)
                 {
-                    MessageBox.Show($"Error al guardar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    succesfull = await _productoService.UpdateAsync(_currentProducto);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                if (succesfull)
-                {
-                    LabelStatusMessage.Text = $"Producto {_currentProducto.Nombre} guardado correctamente";
-                    TimerStatusBar.Start();
-                    await GetAllData(); // Refrescar los datos en el DataGrid
-                    LimpiarControlAgregar();
-                    TabControl.SelectedTab = tabPageLista;
-                    _currentProducto = null; // Resetear el producto actual
-                }
-                else
-                {
-                    MessageBox.Show("Error al guardar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            if (succesfull)
+            {
+                LabelStatusMessage.Text = $"Producto {_currentProducto.Nombre} guardado correctamente";
+                TimerStatusBar.Start();
+                await GetAllData();
+                LimpiarControlAgregar();
+                TabControl.SelectedTab = tabPageLista;
+                _currentProducto = null;
+            }
+            else
+            {
+                MessageBox.Show("Error al guardar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
