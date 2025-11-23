@@ -55,7 +55,7 @@ namespace Desktop.Views
             }
 
             GridData.DataSource = _productos;
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted");
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted","CategoriaId","Unudad");
             await GetComboCategorias();
 
         }

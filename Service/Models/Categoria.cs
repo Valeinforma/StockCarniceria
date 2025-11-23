@@ -9,7 +9,7 @@
         public ICollection<Producto> Productos { get; set; } = new List<Producto>();
         public override string ToString()
         {
-            return $"Id: {Id}, Nombre: {Nombre}";
+            return Nombre;
         }
     }
 }
