@@ -48,7 +48,7 @@
             NumericStock = new NumericUpDown();
             DuracionMinutos = new Label();
             NumericPrecio = new NumericUpDown();
-            BtnNombre = new TextBox();
+            TxtNombre = new TextBox();
             nombre = new Label();
             BtnCancelar = new FontAwesome.Sharp.IconButton();
             BtnGuardar = new FontAwesome.Sharp.IconButton();
@@ -250,7 +250,7 @@
             tabPageAgregar_Editar.Controls.Add(NumericStock);
             tabPageAgregar_Editar.Controls.Add(DuracionMinutos);
             tabPageAgregar_Editar.Controls.Add(NumericPrecio);
-            tabPageAgregar_Editar.Controls.Add(BtnNombre);
+            tabPageAgregar_Editar.Controls.Add(TxtNombre);
             tabPageAgregar_Editar.Controls.Add(nombre);
             tabPageAgregar_Editar.Controls.Add(BtnCancelar);
             tabPageAgregar_Editar.Controls.Add(BtnGuardar);
@@ -316,12 +316,12 @@
             NumericPrecio.Size = new Size(77, 23);
             NumericPrecio.TabIndex = 13;
             // 
-            // BtnNombre
+            // TxtNombre
             // 
-            BtnNombre.Location = new Point(295, 26);
-            BtnNombre.Name = "BtnNombre";
-            BtnNombre.Size = new Size(397, 23);
-            BtnNombre.TabIndex = 10;
+            TxtNombre.Location = new Point(295, 26);
+            TxtNombre.Name = "TxtNombre";
+            TxtNombre.Size = new Size(397, 23);
+            TxtNombre.TabIndex = 10;
             // 
             // nombre
             // 
@@ -444,7 +444,7 @@
         private TextBox TxtBuscar;
         private FontAwesome.Sharp.IconButton BtnCancelar;
         private FontAwesome.Sharp.IconButton BtnGuardar;
-        private TextBox BtnNombre;
+        private TextBox TxtNombre;
         private Label nombre;
         private FontAwesome.Sharp.IconButton BtnBuscar;
         private StatusStrip LabelStatusMessage;

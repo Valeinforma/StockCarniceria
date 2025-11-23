@@ -56,17 +56,14 @@ namespace Desktop.Views
             GridData.DataSource = _productos;
             GridData.Columns["Id"].Visible = false;
             GridData.Columns["IsDeleted"].Visible = false;
-            ActualizarGridView();
+            await GetComboCategorias();
 
         }
-        private void ActualizarGridView()
+        private async Task GetComboCategorias()
         {
-            GridData.DataSource = null;
-            GridData.DataSource = _productos;
-
-            GridData.Columns["Id"].Visible = false;
-            GridData.Columns["IsDeleted"].Visible = false;
-            // Oculta o formatea otras columnas según necesidad
+           ComboCategorias.DataSource = await _categoriaService.GetAllAsync();
+            ComboCategorias.DisplayMember = "Nombre";
+            ComboCategorias.ValueMember = "Id";
         }
         private void GridData_SelectionChanged_1(object sender, EventArgs e)
         {
@@ -115,117 +112,93 @@ namespace Desktop.Views
         private void BtnAgregar_Click(object sender, EventArgs e)
         {
             LimpiarControlAgregar();
+            _currentProducto = new Producto();
             TabControl.SelectedTab = tabPageAgregar_Editar;
         }
         private void LimpiarControlAgregar()
         {
-            //limpiar todo
-            BtnNombre.Text = string.Empty;
+           //limpiar todos los campos
+            TxtNombre.Text = string.Empty;
             NumericPrecio.Value = 0;
             NumericStock.Value = 0;
-
+            ComboCategorias.SelectedItem = null;
 
         }
         private void BtnCancelar_Click(object sender, EventArgs e)
         {
-            this.Close();
+            TabControl.SelectedTab = tabPageLista;
         }
 
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
-            try
             {
-                // Validación de campos obligatorios
-                if (string.IsNullOrWhiteSpace(ComboCategorias.Text) ||
-                    string.IsNullOrWhiteSpace(NumericPrecio.Text) ||
-                    string.IsNullOrWhiteSpace(NumericStock.Text) ||
-                    ComboCategorias.SelectedItem == null)
+
+
+
+                _currentProducto.Nombre = TxtNombre.Text;
+                _currentProducto.Precio = (int)NumericPrecio.Value;
+                _currentProducto.Stock = (int)NumericStock.Value;
+
+
+                bool succesfull = false;
+                try
                 {
-                    MessageBox.Show("Todos los campos marcados son obligatorios.",
-                                    "Validación",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Warning);
+                    if (_currentProducto.Id == 0)
+                    {
+                        var nuevoproducto = await _productoService.AddAsync(_currentProducto);
+                        succesfull = nuevoproducto != null;
+                    }
+                    if (_currentProducto.Id > 0)
+                    {
+
+                        succesfull = await _productoService.UpdateAsync(_currentProducto);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al guardar la capacitación: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-
-                // Asignar la categoría seleccionada
-                var categoriaSeleccionada = ComboCategorias.SelectedItem as Categoria;
-                if (categoriaSeleccionada == null)
+                if (succesfull)
                 {
-                    MessageBox.Show("Debes seleccionar una categoría válida.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
 
-                Producto productoAguardar = new Producto
-                {
-                    Nombre = BtnNombre.Text,
-                    Precio = NumericPrecio.Value,
-                    Stock = (int)NumericStock.Value,
-                    CategoriaId = categoriaSeleccionada.Id,
-                    Categoria = categoriaSeleccionada // <--- Esto es lo que falta
-                };
-
-                bool success = false;
-
-                if (_currentCategoria != null)
-                {
-                    // Actualización
-                    if (!await _categoriaService.UpdateAsync(categoriaSeleccionada))
-                        throw new Exception("Error al actualizar la categoria");
-
-                    if (!await _productoService.UpdateAsync(productoAguardar))
-                        throw new Exception("Error al actualizar el producto");
-
-                    success = true;
-                }
-                else
-                {
-                    // Creación
-                    var nuevoProducto = await _productoService.AddAsync(productoAguardar);
-                    if (nuevoProducto == null)
-                        throw new Exception("Error al crear el usuario");
-
-                    var nuevaCategoria = await _categoriaService.AddAsync(categoriaSeleccionada);
-                    if (nuevaCategoria == null)
-                        throw new Exception("Error al crear el cliente");
-
-                    success = true;
-                }
-
-                if (success)
-                {
-                    MessageBox.Show($"Cliente {productoAguardar.Nombre} guardado correctamente",
-                                  "Éxito",
-                                  MessageBoxButtons.OK,
-                                  MessageBoxIcon.Information);
+                    LabelStatusMessage.Text = $"Capacitación {_currentProducto.Nombre} guardada correctamente";
+                    TimerStatusBar.Start(); // Iniciar el temporizador para mostrar el mensaje en la barra de estado
                     await GetAllData();
                     LimpiarControlAgregar();
                     TabControl.SelectedTab = tabPageLista;
-                    _currentProducto = null;
+                    _currentProducto = null; // Reset the modified movie after saving
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error en la operación: {ex.Message}",
-                               "Error",
-                               MessageBoxButtons.OK,
-                               MessageBoxIcon.Error);
+                else
+                {
+                    MessageBox.Show("Error al guardar la capacitación", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void BtnModificar_Click(object sender, EventArgs e)
         {
+           //chequeamos que haya un producto seleccionado
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                var id = (int)GridData.SelectedRows[0].Cells["Id"].Value;
-                _currentProducto = _productos.FirstOrDefault(p => p.Id == id);
-                if (_currentProducto != null)
+                _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
+                TxtNombre.Text = _currentProducto.Nombre;
+                NumericPrecio.Value = _currentProducto.Precio;
+                NumericStock.Value = _currentProducto.Stock;
+                //seleccionar la categoria en el combobox
+                if (_currentProducto.CategoriaId != null)
                 {
-                    BtnNombre.Text = _currentProducto.Nombre;
-                    NumericPrecio.Value = _currentProducto.Precio;
-                    NumericStock.Value = _currentProducto.Stock;
-                    TabControl.SelectedTab = tabPageAgregar_Editar;
+                    ComboCategorias.SelectedItem = _categorias.FirstOrDefault(c => c.Id == _currentProducto.CategoriaId);
                 }
+                else
+                {
+                    ComboCategorias.SelectedItem = null;
+                }
+                TabControl.SelectedTab = tabPageAgregar_Editar;
+            }
+            else
+            {
+                MessageBox.Show("No hay Producto seleccionada", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -242,13 +215,10 @@ namespace Desktop.Views
 
         }
 
-        //}
-
         private void TimerStatusBar_Tick(object sender, EventArgs e)
         {
-            //    LabelStatusMessage.Text = string.Empty;
-            //    TimerStatusBar.Stop();
-            //}
+            LabelStatusMessage.Text = string.Empty;
+            TimerStatusBar.Stop();
         }
 
 

@@ -23,11 +23,14 @@ namespace Backend.Controllers
 
         // GET: api/Productoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filtro = "")
+        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = "")
         {
             return await _context.Productos
-           .Where(p => p.Nombre.Contains(filtro))// Incluye los datos del usuario asociado
-           .ToListAsync();
+            .Include(p => p.Categoria)
+            .Where(p => p.Nombre.Contains(filter, StringComparison.OrdinalIgnoreCase)
+                || p.Unidad.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            .AsNoTracking()
+            .ToListAsync();
 
         }
 
