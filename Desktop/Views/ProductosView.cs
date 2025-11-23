@@ -55,7 +55,12 @@ namespace Desktop.Views
             }
 
             GridData.DataSource = _productos;
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted","CategoriaId","Unudad");
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted","CategoriaId","Unidad");
+            if (GridData.Columns.Contains("Precio"))
+            {
+                GridData.Columns["Precio"].DefaultCellStyle.Format = "C2";
+                GridData.Columns["Precio"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
             await GetComboCategorias();
 
         }
@@ -132,13 +137,10 @@ namespace Desktop.Views
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
             {
-
-
-
                 _currentProducto.Nombre = TxtNombre.Text;
                 _currentProducto.Precio = (int)NumericPrecio.Value;
                 _currentProducto.Stock = (int)NumericStock.Value;
-
+                _currentProducto.CategoriaId = _currentCategoria?.Id ?? 0; // Asignar la categoría seleccionada
 
                 bool succesfull = false;
                 try
@@ -148,30 +150,29 @@ namespace Desktop.Views
                         var nuevoproducto = await _productoService.AddAsync(_currentProducto);
                         succesfull = nuevoproducto != null;
                     }
-                    if (_currentProducto.Id > 0)
+                    else if (_currentProducto.Id > 0)
                     {
-
                         succesfull = await _productoService.UpdateAsync(_currentProducto);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error al guardar la capacitación: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error al guardar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 if (succesfull)
                 {
-
-                    LabelStatusMessage.Text = $"Capacitación {_currentProducto.Nombre} guardada correctamente";
-                    TimerStatusBar.Start(); // Iniciar el temporizador para mostrar el mensaje en la barra de estado
-                    await GetAllData();
+                    LabelStatusMessage.Text = $"Producto {_currentProducto.Nombre} guardado correctamente";
+                    TimerStatusBar.Start();
+                    await GetAllData(); // Refrescar los datos en el DataGrid
                     LimpiarControlAgregar();
                     TabControl.SelectedTab = tabPageLista;
-                    _currentProducto = null; // Reset the modified movie after saving
+                    _currentProducto = null; // Resetear el producto actual
                 }
                 else
                 {
-                    MessageBox.Show("Error al guardar la capacitación", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al guardar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
