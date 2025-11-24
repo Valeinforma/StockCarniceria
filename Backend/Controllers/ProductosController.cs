@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.DataContext;
@@ -21,67 +20,102 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // GET: api/Productoes
+        // --------------------------------------------------------------------------------
+        // GET: api/Productos (Obtiene todos los activos, con filtro de búsqueda)
+        // --------------------------------------------------------------------------------
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetProductos([FromQuery] string? filter = "")
+        public async Task<ActionResult<IEnumerable<object>>> GetProductos([FromQuery] string? filter = null)
         {
-           var query = _context.Productos.AsQueryable();
-    
-            // 1. Manejo del filtro: Usar IsNullOrEmpty y ToLower para la búsqueda.
-            if (!string.IsNullOrEmpty(filter))
+            if (_context.Productos == null)
             {
-                var lowerFilter = filter.ToLower();
-                query = query.Where(p => p.Nombre.ToLower().Contains(lowerFilter) && !p.IsDeleted);
-            }
-            else
-            {
-                 query = query.Where(p => !p.IsDeleted);
+                return StatusCode(500, "El conjunto de entidades 'Productos' no está disponible.");
             }
 
-            // 2. Proyección de datos (ya es eficiente, solo la simplificamos un poco)
-            return await query
-        .Select(p => new
-        {
-            p.Id,
-            p.Nombre,
-            p.Precio,
-            p.Stock,
-            p.Unidad,
-            // Excluimos p.IsDeleted si solo traemos activos
-            CategoriaNombre = p.Categoria.Nombre // Renombramos para mejor claridad en la respuesta JSON
-        })
-        .ToListAsync();
+            try
+            {
+                var query = _context.Productos
+                    .Include(p => p.Categoria) // Incluye la categoría para obtener su nombre
+                    .Where(p => !p.IsDeleted) // Filtrado semántico: solo productos activos
+                    .AsNoTracking()
+                    .AsQueryable();
+
+                // Aplicar filtro si se proporciona
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var lowerFilter = filter.Trim().ToLower();
+                    query = query.Where(p => p.Nombre.ToLower().Contains(lowerFilter));
+                }
+
+                // Proyección de datos a un tipo anónimo para ser más eficiente y evitar ciclos
+                var productos = await query
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Nombre,
+                        p.Precio,
+                        p.Stock,
+                        p.Unidad,
+                        p.CategoriaId, // Mantenemos el ID
+                        CategoriaNombre = p.Categoria.Nombre // Nombre de la categoría
+                    })
+                    .ToListAsync();
+
+                if (!productos.Any())
+                {
+                    return NotFound("No se encontraron productos activos que coincidan con los criterios.");
+                }
+
+                return Ok(productos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al obtener productos: {ex.Message}");
+            }
         }
 
-        // Reemplaza el método GetCapacitaciones para corregir el uso incorrecto de Contains en tipos numéricos
+        // --------------------------------------------------------------------------------
+        // GET: api/Productos/5 (Obtiene un producto activo por ID)
+        // --------------------------------------------------------------------------------
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
-            var producto = await _context.Productos
-
-         .Include(p => p.Categoria)
-
-         .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (producto == null)
+            if (_context.Productos == null)
             {
                 return NotFound();
             }
 
-            // Si la configuración global para ignorar ciclos está activa (ReferenceHandler.IgnoreCycles), funcionará.
-            return producto;
+            try
+            {
+                var producto = await _context.Productos
+                    .Include(p => p.Categoria) // Incluye la categoría
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+
+                if (producto == null)
+                {
+                    return NotFound($"Producto con ID {id} no encontrado o está eliminado.");
+                }
+
+                return Ok(producto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
-        // PUT: api/Productoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // --------------------------------------------------------------------------------
+        // PUT: api/Productos/5 (Actualizar)
+        // --------------------------------------------------------------------------------
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
             if (id != producto.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID de la ruta no coincide con el ID del producto.");
             }
 
+            // Aseguramos que solo actualizamos los campos necesarios o usamos Attached/Detached
             _context.Entry(producto).State = EntityState.Modified;
 
             try
@@ -94,81 +128,138 @@ namespace Backend.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw; // Lanza la excepción si es un error de concurrencia real
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al actualizar: {ex.Message}");
             }
 
-            return NoContent();
+            return NoContent(); // 204 No Content
         }
 
-        // POST: api/Productoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // --------------------------------------------------------------------------------
+        // POST: api/Productos (Crear)
+        // --------------------------------------------------------------------------------
         [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
-            _context.Productos.Add(producto);
-            await _context.SaveChangesAsync();
+            if (_context.Productos == null)
+            {
+                return Problem("El conjunto de entidades 'Productos' es nulo.");
+            }
 
-            return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
+            try
+            {
+                producto.IsDeleted = false; // Asegurar que el nuevo producto esté activo
+                _context.Productos.Add(producto);
+                await _context.SaveChangesAsync();
+
+                // 201 Created con la ubicación del nuevo recurso
+                return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, producto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al crear: {ex.Message}");
+            }
         }
 
-        // DELETE: api/Productoes/5
+        // --------------------------------------------------------------------------------
+        // DELETE: api/Productos/5 (Eliminación Lógica / Soft Delete)
+        // --------------------------------------------------------------------------------
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {
             try
             {
+                // Usar FindAsync es rápido si ya está en memoria, pero no trae propiedades de navegación
                 var producto = await _context.Productos.FindAsync(id);
+
                 if (producto == null)
                 {
                     return NotFound();
                 }
+
+                if (producto.IsDeleted)
+                {
+                    return BadRequest("El producto ya se encuentra eliminado lógicamente.");
+                }
+
                 producto.IsDeleted = true;
-                _context.Productos.Update(producto);
+
+                // .Update() se usa explícitamente si la entidad no está siendo rastreada, 
+                // pero FindAsync la rastrea. SaveChanges() es suficiente.
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return NoContent(); // 204 No Content
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error interno: {ex.Message}");
+                return StatusCode(500, $"Error interno del servidor al eliminar: {ex.Message}");
             }
         }
 
+        // --------------------------------------------------------------------------------
+        // PUT: api/Productos/restore/5 (Restaurar)
+        // --------------------------------------------------------------------------------
         [HttpPut("restore/{id}")]
         public async Task<IActionResult> RestoreProducto(int id)
         {
             try
             {
-                var Producto = await _context.Productos.IgnoreQueryFilters
-                    ().FirstOrDefaultAsync(c => c.Id.Equals(id));
-                if (Producto == null)
+                // Usamos IgnoreQueryFilters() para encontrar el producto aunque esté eliminado
+                var producto = await _context.Productos
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (producto == null)
                 {
-                    return NotFound();
+                    return NotFound($"Producto con ID {id} no encontrado.");
                 }
-                Producto.IsDeleted = false;
-                _context.Productos.Update(Producto);
+
+                if (!producto.IsDeleted)
+                {
+                    return BadRequest("El producto no se encuentra eliminado.");
+                }
+
+                producto.IsDeleted = false;
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return NoContent(); // 204 No Content
             }
             catch (Exception ex)
-               {
-                   return StatusCode(500, $"Error interno: {ex.Message}");
-               }
-           }
-
-        // GET: api/Capacitaciones
-        [HttpGet("deleteds")]
-        public async Task<ActionResult<IEnumerable<Producto>>> GetCapacitacionesDeleteds()
-        {
-            return await _context.Productos.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+            {
+                return StatusCode(500, $"Error interno del servidor al restaurar: {ex.Message}");
+            }
         }
 
+        // --------------------------------------------------------------------------------
+        // GET: api/Productos/deleteds (Obtener Eliminados)
+        // --------------------------------------------------------------------------------
+        [HttpGet("deleteds")]
+        public async Task<ActionResult<IEnumerable<Producto>>> GetProductosDeleteds()
+        {
+            // Usamos IgnoreQueryFilters() para anular el filtro IsDeleted = false
+            var eliminados = await _context.Productos
+                .IgnoreQueryFilters()
+                .Where(p => p.IsDeleted)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (!eliminados.Any())
+            {
+                return NotFound("No hay productos eliminados.");
+            }
+
+            return Ok(eliminados); // 200 OK
+        }
+
+        // --------------------------------------------------------------------------------
+        // Método Auxiliar
+        // --------------------------------------------------------------------------------
         private bool ProductoExists(int id)
         {
+            // Nota: Este método verifica la existencia *activa* si tienes Query Filters globales.
             return _context.Productos.Any(e => e.Id == id);
         }
     }

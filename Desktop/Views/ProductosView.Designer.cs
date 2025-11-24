@@ -81,7 +81,6 @@
             GridData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             GridData.Size = new Size(1116, 251);
             GridData.TabIndex = 0;
-            GridData.SelectionChanged += GridData_SelectionChanged_1;
             // 
             // BtnAgregar
             // 
@@ -207,7 +206,6 @@
             checkBoxEliminados.TabIndex = 12;
             checkBoxEliminados.Text = "Ver Eliminados";
             checkBoxEliminados.UseVisualStyleBackColor = true;
-            checkBoxEliminados.CheckedChanged += checkBoxEliminados_CheckedChanged;
             // 
             // BtnBuscar
             // 
@@ -232,7 +230,6 @@
             TxtBuscar.Name = "TxtBuscar";
             TxtBuscar.Size = new Size(659, 23);
             TxtBuscar.TabIndex = 9;
-            TxtBuscar.TextChanged += TxtBuscar_TextChanged;
             // 
             // LbBuscar
             // 
