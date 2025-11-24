@@ -1,4 +1,6 @@
-﻿namespace Service.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Service.Models
 {
     public class Producto
     {
@@ -12,9 +14,14 @@
         public string Unidad { get; set; } = string.Empty;
 
         public bool IsDeleted { get; set; } = false;
-        public int CategoriaId { get; set; }
-        public Categoria Categoria { get; set; } = null!;
 
+        // Relacion 1 a 1
+        // Aplica [JsonIgnore] aquí para que el serializador no intente
+        // cargar recursivamente la Categoría desde el Producto, rompiendo el ciclo.
+        [JsonIgnore]
+        public Categoria Categoria { get; set; } = null!;
+        public int CategoriaId { get; set; }
+        
         public override string ToString()
         {
             return Nombre;
