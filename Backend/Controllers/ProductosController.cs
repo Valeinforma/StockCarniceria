@@ -29,7 +29,7 @@ namespace Backend.Controllers
         {
             var query = _context.Productos.AsQueryable();
 
-            // 1. Manejo del filtro: Usar IsNullOrEmpty y ToLower para la búsqueda.
+            // 1. Manejo del filtro (se mantiene la eficiencia)
             if (!string.IsNullOrEmpty(filter))
             {
                 var lowerFilter = filter.ToLower();
@@ -40,7 +40,7 @@ namespace Backend.Controllers
                 query = query.Where(p => !p.IsDeleted);
             }
 
-            // 2. Proyección de datos (ya es eficiente, solo la simplificamos un poco)
+            // 2. Proyección con aplanamiento (Proyección eficiente)
             return await query
                 .Select(p => new
                 {
@@ -49,22 +49,36 @@ namespace Backend.Controllers
                     p.Precio,
                     p.Stock,
                     p.Unidad,
-                    // Excluimos p.IsDeleted si solo traemos activos
-                    p.CategoriaId,
-                    CategoriaNombre = p.Categoria.Nombre // Renombramos para mejor claridad en la respuesta JSON
+                    // Eliminamos p.CategoriaId si no lo necesitas en la respuesta
+
+                    // 👈 APLANAMIENTO: Tomamos el nombre y lo asignamos como una nueva propiedad
+                    CategoriaNombre = p.Categoria.Nombre
                 })
                 .ToListAsync();
         }
 
         // Reemplaza el método GetCapacitaciones para corregir el uso incorrecto de Contains en tipos numéricos
         [HttpGet("{id}")]
-        public async Task<ActionResult<Producto>> GetProducto(int id)
+        public async Task<ActionResult<object>> GetProducto(int id) // 👈 Cambia la firma a ActionResult<object>
         {
-            var producto = await _context.Productos.FindAsync(id);
+            var producto = await _context.Productos
+                .Where(p => p.Id == id)
+                .Select(p => new // 👈 Usamos proyección para aplanar
+                {
+                    p.Id,
+                    p.Nombre,
+                    p.Precio,
+                    p.Stock,
+                    p.Unidad,
+                    CategoriaNombre = p.Categoria.Nombre
+                })
+                .FirstOrDefaultAsync();
+
             if (producto == null)
             {
                 return NotFound();
             }
+
             return producto;
         }
 
