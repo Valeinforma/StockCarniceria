@@ -47,28 +47,42 @@ namespace Desktop.Views
 
         private async Task CargarCategoriasAsync()
         {
+           
+            
             try
             {
-                // El servicio obtiene todas las categorías activas
                 _categorias = await _categoriaService.GetAllAsync();
 
-                if (_categorias == null || !_categorias.Any())
+                if (_categorias == null) // Manejar el nulo por si la API falla
                 {
-                    MessageBox.Show("No se pudieron cargar las categorías.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    _categorias = new List<Categoria>(); // Asegurar que no sea nulo
                 }
 
-                // Configurar ComboBox
+                // ... (configuración ComboBox)
                 ComboCategorias.DataSource = _categorias;
                 ComboCategorias.DisplayMember = "Nombre";
                 ComboCategorias.ValueMember = "Id";
-                ComboCategorias.SelectedItem = null;
+
+                // **Elimina o comenta esta línea: ComboCategorias.SelectedItem = null;** // Si quieres que inicie sin selección:
+                if (ComboCategorias.Items.Count > 0)
+                {
+                    ComboCategorias.SelectedIndex = -1;
+                }
+
+                if (!_categorias.Any())
+                {
+                    // Muestra este mensaje solo si la lista está vacía, no si falla la carga.
+                    MessageBox.Show("No se encontraron categorías disponibles.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al cargar categorías: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
+        
+            
+         }
+        
 
         private async Task CargarProductosAsync(string? filter = null)
         {
@@ -100,7 +114,7 @@ namespace Desktop.Views
             // Ocultar propiedades internas y la propiedad de navegación que ahora debería ser un DTO o estar ignorada.
             // Si el backend retorna un DTO (objeto anónimo), "Categoria" será "CategoriaNombre".
             // Si retorna el modelo Producto, ocultamos "Categoria".
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "Categoria");
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad","Categoria");
 
             // Aplicar formato de moneda
             if (GridData.Columns.Contains("Precio"))
@@ -178,21 +192,28 @@ namespace Desktop.Views
 
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
+            // Validación
             if (_currentProducto == null || ComboCategorias.SelectedItem == null)
             {
                 MessageBox.Show("Debe completar todos los campos requeridos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // 1. Mapeo de datos
-            _currentProducto.Nombre = TxtNombre.Text;
-            _currentProducto.Precio = (int)NumericPrecio.Value;
-            _currentProducto.Stock = (int)NumericStock.Value;
+            if (string.IsNullOrWhiteSpace(TxtNombre.Text))
+            {
+                MessageBox.Show("El nombre del producto es requerido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-            // 2. Asignar solo el ID de la categoría (Lo que el backend espera)
+            // 1. Mapeo de datos (Conversión correcta a decimal)
+            _currentProducto.Nombre = TxtNombre.Text.Trim();
+            _currentProducto.Precio = NumericPrecio.Value; // NumericUpDown ya retorna decimal
+            _currentProducto.Stock = (int)NumericStock.Value;
+            _currentProducto.Unidad = "kg"; // Establecer una unidad por defecto si no tienes un campo
+
+            // 2. Asignar solo el ID de la categoría
             _currentProducto.CategoriaId = ((Categoria)ComboCategorias.SelectedItem).Id;
-            // IMPORTANTE: NO ASIGNAR el objeto de navegación Categoria aquí, ya que causó el ciclo.
-            _currentProducto.Categoria = null;
+            _currentProducto.Categoria = null; // No enviar el objeto de navegación
 
             bool success = false;
             string action = _currentProducto.Id == 0 ? "agregado" : "modificado";
@@ -211,7 +232,7 @@ namespace Desktop.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al guardar el producto: {ex.Message}\n\nDetalles internos: {ex.InnerException?.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -231,16 +252,26 @@ namespace Desktop.Views
                 MessageBox.Show("Error al guardar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void BtnModificar_Click(object sender, EventArgs e)
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                // El producto es del DTO/Tipo Anónimo. Necesitas obtener el objeto completo si quieres la Categoría para el ComboBox
-                // Sin embargo, si el DTO tiene CategoriaId, es suficiente.
+                // El GridData contiene un tipo anónimo desde el servidor
+                // { Id, Nombre, Precio, Stock, Unidad, CategoriaId, CategoriaNombre }
+                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
 
-                // Si el GridData.DataSource es List<Producto>:
-                _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
+                // Crear un Producto a partir del tipo anónimo
+                _currentProducto = new Producto
+                {
+                    Id = productoDTO.Id,
+                    Nombre = productoDTO.Nombre,
+                    Precio = productoDTO.Precio,
+                    Stock = productoDTO.Stock,
+                    Unidad = productoDTO.Unidad,
+                    CategoriaId = productoDTO.CategoriaId,
+                    Categoria = null,
+                    IsDeleted = false
+                };
 
                 // Mapear a los controles
                 TxtNombre.Text = _currentProducto.Nombre;
@@ -269,14 +300,16 @@ namespace Desktop.Views
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
-                var respuesta = MessageBox.Show($"¿Seguro que quieres eliminar (lógicamente) el Producto: {entitySelected.Nombre}?", "Borrar Producto", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                // El GridData contiene un tipo anónimo desde el servidor
+                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
+                
+                var respuesta = MessageBox.Show($"¿Seguro que quieres eliminar (lógicamente) el Producto: {productoDTO.Nombre}?", "Borrar Producto", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
                 {
-                    if (await _productoService.DeleteAsync(entitySelected.Id))
+                    if (await _productoService.DeleteAsync(productoDTO.Id))
                     {
-                        LabelStatusMessage.Text = $"Producto {entitySelected.Nombre} eliminado correctamente";
+                        LabelStatusMessage.Text = $"Producto {productoDTO.Nombre} eliminado correctamente";
                         TimerStatusBar.Start();
                         await CargarProductosAsync();
                     }
@@ -298,14 +331,16 @@ namespace Desktop.Views
 
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
-                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar el Producto: {entitySelected.Nombre}?", "Confirmar Restauración", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                // El GridData contiene un tipo anónimo desde el servidor
+                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
+                
+                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar el Producto: {productoDTO.Nombre}?", "Confirmar Restauración", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
                 {
-                    if (await _productoService.RestoreAsync(entitySelected.Id))
+                    if (await _productoService.RestoreAsync(productoDTO.Id))
                     {
-                        LabelStatusMessage.Text = $"Producto {entitySelected.Nombre} restaurado correctamente";
+                        LabelStatusMessage.Text = $"Producto {productoDTO.Nombre} restaurado correctamente";
                         TimerStatusBar.Start();
                         await CargarProductosAsync();
                     }

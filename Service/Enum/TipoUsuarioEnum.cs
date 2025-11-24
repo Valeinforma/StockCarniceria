@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Service.Enum
 {
-    public enum TipoPagoEnum
+    public enum TipoUsuarioEnum
     {
-        Efectivo = 1,
-        TarjetaCredito = 2,
-        TarjetaDebito = 3,
-        Transferencia = 4,
+        Vendedor = 1,
+        Cliente = 2
     }
 }

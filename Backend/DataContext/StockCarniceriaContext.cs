@@ -22,14 +22,8 @@ public class StockCarniceriaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+       
 
-        // Datos Semilla para Categorias
-        modelBuilder.Entity<Categoria>().HasData(
-            new Categoria { Id = 1, Nombre = "Carnes Rojas", IsDeleted = false },
-            new Categoria { Id = 2, Nombre = "Carnes Blancas", IsDeleted = false },
-            new Categoria { Id = 3, Nombre = "Embutidos", IsDeleted = false },
-            new Categoria { Id = 4, Nombre = "Mariscos", IsDeleted = false }
-        );
 
         // Datos Semilla para Proveedores
         modelBuilder.Entity<Proveedor>().HasData(
@@ -91,7 +85,6 @@ public class StockCarniceriaContext : DbContext
             new Venta
             {
                 Id = 1,
-                IdVenta = 1001,
                 Fecha = DateTime.Now.AddDays(-7),
                 UsuarioId = 2,
                 Cliente = "Juan Pérez",
