@@ -25,14 +25,20 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DetalleVenta>>> GetDetallesVenta()
         {
-            return await _context.DetallesVenta.ToListAsync();
+            return await _context.DetallesVenta
+                .Include(dv => dv.venta)
+                .Include(dv => dv.producto)
+                .ToListAsync();
         }
 
         // GET: api/DetalleVentas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DetalleVenta>> GetDetalleVenta(int id)
         {
-            var detalleVenta = await _context.DetallesVenta.FindAsync(id);
+            var detalleVenta = await _context.DetallesVenta
+                .Include(dv => dv.venta)
+                .Include(dv => dv.producto)
+                .FirstOrDefaultAsync(dv => dv.Id == id);
 
             if (detalleVenta == null)
             {
@@ -42,7 +48,6 @@ namespace Backend.Controllers
             return detalleVenta;
         }
 
-        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDetalleVenta(int id, DetalleVenta detalleVenta)
         {
@@ -73,7 +78,6 @@ namespace Backend.Controllers
         }
 
         // POST: api/DetalleVentas
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<DetalleVenta>> PostDetalleVenta(DetalleVenta detalleVenta)
         {
@@ -93,33 +97,37 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            _context.DetallesVenta.Remove(detalleVenta);
+            detalleVenta.IsDeleted = true;
+            _context.DetallesVenta.Update(detalleVenta);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
         [HttpPut("restore/{id}")]
         public async Task<IActionResult> RestoreDetalleVenta(int id)
         {
-            var DetalleVenta = await _context.DetallesVenta.IgnoreQueryFilters
-                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
-            if (DetalleVenta == null)
+            var detalleVenta = await _context.DetallesVenta.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(dv => dv.Id.Equals(id));
+            if (detalleVenta == null)
             {
                 return NotFound();
             }
-            DetalleVenta.IsDeleted = true;
-            _context.DetallesVenta.Update(DetalleVenta);
+
+            detalleVenta.IsDeleted = false;
+            _context.DetallesVenta.Update(detalleVenta);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-
-        // GET: api/Capacitaciones
+        // GET: api/DetalleVentas/deleteds
         [HttpGet("deleteds/")]
         public async Task<ActionResult<IEnumerable<DetalleVenta>>> GetDetallesVentaDeleteds()
         {
-            return await _context.DetallesVenta.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+            return await _context.DetallesVenta.IgnoreQueryFilters()
+                .Where(dv => dv.IsDeleted)
+                .ToListAsync();
         }
 
         private bool DetalleVentaExists(int id)

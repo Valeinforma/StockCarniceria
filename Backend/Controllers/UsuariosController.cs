@@ -23,33 +23,76 @@ namespace Backend.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios([FromQuery] string? filter = null)
         {
-            return await _context.Usuarios.ToListAsync();
+            if (_context.Usuarios == null)
+            {
+                return StatusCode(500, "El conjunto de entidades 'Usuarios' no está disponible.");
+            }
+
+            try
+            {
+                var query = _context.Usuarios
+                    .Where(u => !u.IsDeleted)
+                    .AsNoTracking()
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    var lowerFilter = filter.Trim().ToLower();
+                    query = query.Where(u => u.Nombre.ToLower().Contains(lowerFilter));
+                }
+
+                var usuarios = await query.ToListAsync();
+
+                if (!usuarios.Any())
+                {
+                    return NotFound("No se encontraron usuarios activos que coincidan con los criterios.");
+                }
+
+                return Ok(usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al obtener usuarios: {ex.Message}");
+            }
         }
 
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuarios>> GetUsuarios(int id)
         {
-            var usuarios = await _context.Usuarios.FindAsync(id);
-
-            if (usuarios == null)
+            if (_context.Usuarios == null)
             {
                 return NotFound();
             }
 
-            return usuarios;
+            try
+            {
+                var usuarios = await _context.Usuarios
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+
+                if (usuarios == null)
+                {
+                    return NotFound($"Usuario con ID {id} no encontrado o está eliminado.");
+                }
+
+                return Ok(usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
         // PUT: api/Usuarios/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuarios(int id, Usuarios usuarios)
         {
             if (id != usuarios.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID de la ruta no coincide con el ID del usuario.");
             }
 
             _context.Entry(usuarios).State = EntityState.Modified;
@@ -64,64 +107,122 @@ namespace Backend.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al actualizar: {ex.Message}");
             }
 
             return NoContent();
         }
 
         // POST: api/Usuarios
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Usuarios>> PostUsuarios(Usuarios usuarios)
         {
-            _context.Usuarios.Add(usuarios);
-            await _context.SaveChangesAsync();
+            if (_context.Usuarios == null)
+            {
+                return Problem("El conjunto de entidades 'Usuarios' es nulo.");
+            }
 
-            return CreatedAtAction("GetUsuarios", new { id = usuarios.Id }, usuarios);
+            try
+            {
+                usuarios.IsDeleted = false;
+                _context.Usuarios.Add(usuarios);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetUsuarios), new { id = usuarios.Id }, usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al crear: {ex.Message}");
+            }
         }
 
         // DELETE: api/Usuarios/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuarios(int id)
         {
-            var usuarios = await _context.Usuarios.FindAsync(id);
-            if (usuarios == null)
+            try
             {
-                return NotFound();
+                var usuarios = await _context.Usuarios.FindAsync(id);
+
+                if (usuarios == null)
+                {
+                    return NotFound();
+                }
+
+                if (usuarios.IsDeleted)
+                {
+                    return BadRequest("El usuario ya se encuentra eliminado lógicamente.");
+                }
+
+                usuarios.IsDeleted = true;
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Usuarios.Remove(usuarios);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al eliminar: {ex.Message}");
+            }
         }
 
+        // PUT: api/Usuarios/restore/5
         [HttpPut("restore/{id}")]
-        public async Task<IActionResult> RestoreUsuatios(int id)
+        public async Task<IActionResult> RestoreUsuarios(int id)
         {
-            var Usuarios = await _context.Usuarios.IgnoreQueryFilters
-                ().FirstOrDefaultAsync(c => c.Id.Equals(id));
-            if (Usuarios == null)
+            try
             {
-                return NotFound();
-            }
-            Usuarios.IsDeleted = true;
-            _context.Usuarios.Update(Usuarios);
-            await _context.SaveChangesAsync();
+                var usuarios = await _context.Usuarios
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(u => u.Id == id);
 
-            return NoContent();
+                if (usuarios == null)
+                {
+                    return NotFound($"Usuario con ID {id} no encontrado.");
+                }
+
+                if (!usuarios.IsDeleted)
+                {
+                    return BadRequest("El usuario no se encuentra eliminado.");
+                }
+
+                usuarios.IsDeleted = false;
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al restaurar: {ex.Message}");
+            }
         }
 
-
-        // GET: api/Capacitaciones
-        [HttpGet("deleteds/")]
+        // GET: api/Usuarios/deleteds
+        [HttpGet("deleteds")]
         public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuariosDeleteds()
         {
-            return await _context.Usuarios.IgnoreQueryFilters().Where(c => c.IsDeleted).ToListAsync();
+            try
+            {
+                var eliminados = await _context.Usuarios
+                    .IgnoreQueryFilters()
+                    .Where(u => u.IsDeleted)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                if (!eliminados.Any())
+                {
+                    return NotFound("No hay usuarios eliminados.");
+                }
+
+                return Ok(eliminados);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor al obtener eliminados: {ex.Message}");
+            }
         }
 
         private bool UsuariosExists(int id)
