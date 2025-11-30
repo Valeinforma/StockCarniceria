@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Àgora</title>
+    <title>StockCarnicería</title>
     <base href="/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
@@ -27,15 +27,10 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <!--<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>-->
-    <!-- Firebase Authentication -->
-    <!--<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>-->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <!-- Configuración de Firebase -->
     <script>
-
         const firebaseConfig = {
             apiKey: "AIzaSyDPyakUUz7DrOq-mKA8HrA0VecCul5dN4s",
             authDomain: "stockcarne-e9951.firebaseapp.com",
@@ -45,7 +40,8 @@
             appId: "1:820415986013:web:fd6ed93695d46bab05d0b4"
         };
         firebase.initializeApp(firebaseConfig);
-        console.log(firebase);
+        console.log("Firebase iniciado correctamente");
+
         window.firebaseAuth = {
             signInWithEmailPassword: async function (email, password, rememberPassword) {
                 try {
@@ -55,7 +51,7 @@
                         await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
                     }
                     const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                    console.log(userCredential);
+                    console.log("Usuario autenticado:", userCredential.user);
                     return userCredential.user;
                 } catch (error) {
                     console.error("Error en autenticación:", error.message);
@@ -64,30 +60,27 @@
             },
             createUserWithEmailAndPassword: async function (email, password, displayName) {
                 try {
-                    //imprimo por consola los parametros que ll
-                    console.log(`email${email} password=${password},name=${name}`)
+                    console.log(`Registrando usuario: email=${email}, password=${password}, displayName=${displayName}`);
+
                     const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                    // El usuario se ha creado correctamente
                     const user = userCredential.user;
 
                     // Actualizar el perfil del usuario
-                    user.updateProfile({
+                    await user.updateProfile({
                         displayName: displayName
                     });
 
                     // Enviar correo de verificación
-                    user.sendEmailVerification()
+                    await user.sendEmailVerification();
 
+                    console.log("Usuario registrado correctamente:", user.uid);
                     return userCredential.user.uid;
 
-
                 } catch (error) {
-                    console.error("Error en autenticación:", error.message);
+                    console.error("Error en registro:", error.message);
                     return null;
                 }
-
             },
-
             signOut: async function () {
                 await firebase.auth().signOut();
             },
@@ -95,8 +88,8 @@
                 return new Promise((resolve, reject) => {
                     firebase.auth().onAuthStateChanged((user) => {
                         if (user) {
-                            provider = user.providerData[0].providerId;
-                            console.log(provider);
+                            const provider = user.providerData[0].providerId;
+                            console.log("Proveedor:", provider);
 
                             if (provider == "facebook.com" || provider == "google.com") {
                                 user._delegate.emailVerified = true;
@@ -109,21 +102,21 @@
                 });
             },
             loginWithGoogle: async function () {
-                var provider = new firebase.auth.GoogleAuthProvider();
+                const provider = new firebase.auth.GoogleAuthProvider();
                 try {
-                    //const result = await firebase.auth().signInWithRedirect(provider);
                     const result = await firebase.auth().signInWithPopup(provider);
+                    console.log("Login con Google exitoso:", result.user);
                     return result.user;
                 } catch (error) {
-                    console.error("Error durante el inicio de sesión:", error.code, error.message);
+                    console.error("Error durante login con Google:", error.code, error.message);
                     return null;
                 }
             }
         };
-
-
     </script>
+
     <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
+
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

@@ -22,7 +22,7 @@ namespace Backend.Controllers
 
         // GET: api/Productos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetProductos([FromQuery] string? filter = null)
+        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = null)
         {
             if (_context.Productos == null)
             {
@@ -34,6 +34,7 @@ namespace Backend.Controllers
                 var query = _context.Productos
                     .Include(p => p.Categoria)
                     .Include(p => p.proveedor)
+                    .Include(p => p.DetallesVenta)
                     .Where(p => !p.IsDeleted)
                     .AsNoTracking()
                     .AsQueryable();
@@ -44,20 +45,7 @@ namespace Backend.Controllers
                     query = query.Where(p => p.Nombre.ToLower().Contains(lowerFilter));
                 }
 
-                var productos = await query
-                    .Select(p => new
-                    {
-                        p.Id,
-                        p.Nombre,
-                        p.PrecioUnitario,
-                        p.Stock,
-                        p.Unidad,
-                        p.CategoriaId,
-                        CategoriaNombre = p.Categoria.Nombre,
-                        p.ProveedorId,
-                        ProveedorNombre = p.proveedor.Nombre
-                    })
-                    .ToListAsync();
+                var productos = await query.ToListAsync();
 
                 if (!productos.Any())
                 {

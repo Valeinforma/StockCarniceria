@@ -1,19 +1,70 @@
-﻿<div class="card text-center">
-    <div class="card-header">
-        Orador: @producto?.Nombre
+﻿@using Service.Models
+
+<div class="card text-center shadow-sm h-100">
+    
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">@producto?.Nombre</h5>
     </div>
     
-   
-    <div class="card-body">
-        <h5 class="card-title">@producto?.Categoria</h5>
-        <p class="card-text">@producto?.PrecioUnitario</p>
-        <a href="#" class="btn btn-primary">Informacion</a>
+    <div class="card-body d-flex flex-column justify-content-between">
+        
+        <h6 class="card-title text-muted mb-3">
+            Precio: **$@producto?.PrecioUnitario.ToString("N2")** / @producto?.Unidad
+        </h6>
+        
+        @if (producto is not null && producto.Stock < 10)
+        {
+            <p class="card-text fw-bold text-danger">Stock bajo: **@producto.Stock** unidades</p>
+        }
+        else if (producto is not null)
+        {
+            <p class="card-text fw-bold text-success">En Stock: **@producto.Stock** unidades</p>
+        }
+        else
+        {
+            <p class="card-text">Stock: N/A</p>
+        }
+        
+        <a href="#" class="btn btn-sm btn-outline-primary mt-3">Ver Detalles</a>
+    </div>
+    
+    <div class="card-footer text-body-secondary small">
+        <div class="d-flex justify-content-between">
+            <span>ID: **@producto?.Id**</span>
+            
+            @if (NumeroDeVentas > 0)
+            {
+                <span class="text-info">Ventas: **@NumeroDeVentas**</span>
+            }
+            else
+            {
+                <span>Sin ventas</span>
+            }
+        </div>
+        
+        @if (producto?.proveedor is not null)
+        {
+            <div class="mt-1">
+                Proveedor: @producto.proveedor.ToString()
+            </div>
+        }
     </div>
 </div>
+
 @code {
     [Parameter]
     public Producto? producto { get; set; }
 
-
-
+    /// <summary>
+    /// Calcula el número de detalles de venta asociados a este producto.
+    /// </summary>
+    public int NumeroDeVentas 
+    {
+        get
+        {
+            // Retorna la cuenta de DetalleVenta si la colección no es nula.
+            // Si es nula, retorna 0.
+            return producto?.DetallesVenta?.Count ?? 0;
+        }
+    }
 }

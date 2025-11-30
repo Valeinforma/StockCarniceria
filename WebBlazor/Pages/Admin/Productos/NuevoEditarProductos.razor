@@ -1,53 +1,81 @@
 ﻿@page "/nuevoEditarProducto"
+
 @inject NavigationManager NavigationManager
-@inject IGenericService<Producto> _Productoservice
-@if (producto == null)
+@inject IGenericService<Producto> _productoService
+
+
+@if (producto is null)
 {
-    <p><em>Cargando...</em></p>
+    <p><em>Cargando @(isEditing ? "producto para editar" : "formulario")...</em></p>
 }
 else
 {
-    <h3>Productos Página</h3>
-    <div style="background-color: @(isEditing ? "lightyellow" : "white")">
-        <EditForm Model="producto" OnValidSubmit="Guardar">
-            <DataAnnotationsValidator />
-            <div class="container">
-                <div class="col-md-5">
-                    <div class="form-group">
-                        <label class="form-label">Nombre:</label>
-                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Nombre" />
+    <div class="card shadow-lg p-3">
+        <div class="card-body">
+            <!-- Marcado de color para distinguir edición -->
+            <div style="background-color: @(isEditing ? "#fff3cd" : "white"); padding: 1rem; border-radius: 8px;"> 
+                <EditForm Model="producto" OnValidSubmit="Guardar">
+                    <DataAnnotationsValidator />
+                    <div class="container">
+                        <div class="row g-3">
+                            <!-- Columna de 5 para los campos -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Nombre:</label>
+                                    <InputText class="form-control mb-2" @bind-Value="producto.Nombre" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Precio Unitario:</label>
+                                    <InputNumber class="form-control mb-2" @bind-Value="producto.PrecioUnitario" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Stock:</label>
+                                    <InputNumber class="form-control mb-2" @bind-Value="producto.Stock" />
+                                </div>
+                            </div>
+                            <!-- Columna de 5 para los campos secundarios -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Unidad (ej: kg, ud):</label>
+                                    <InputText class="form-control mb-2" @bind-Value="producto.Unidad" />
+                                </div>
+                                <!-- ⚠️ PELIGRO: Esto asume que Categoria está cargada o inicializada -->
+                                <!-- En un proyecto real, usarías un Select con CategoryId -->
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Categoría ID:</label>
+                                    <InputNumber class="form-control mb-2" @bind-Value="producto.CategoriaId" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Proveedor ID (Temporal):</label>
+                                    <InputNumber class="form-control mb-2" @bind-Value="producto.ProveedorId" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ValidationSummary class="alert alert-warning mt-3" />
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary me-2" type="submit">@guardarButtonText</button>
+                            <button class="btn btn-danger" type="button" @onclick="Cancelar">Cancelar</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Precio:</label>
-                        <InputNumber class="form-control mb-2" type="number" @bind-Value="producto.PrecioUnitario" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Stock:</label>
-                        <InputNumber class="form-control mb-2" type="number" @bind-Value="producto.Stock" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Unidad:</label>
-                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Unidad" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Categoría:</label>
-                        <InputText class="form-control mb-2" type="text" @bind-Value="producto.Categoria.Nombre" />
-                    </div>
-                </div>
-                <ValidationSummary />
-                <button class="btn btn-primary" type="submit">@guardarButtonText</button>
-                <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+                </EditForm>
             </div>
-        </EditForm>
+        </div>
     </div>
 }
+
 @code {
-    [SupplyParameterFromQuery]
+    // Usamos SupplyParameterFromQuery para leer de la URL (ruta con ?) o de la ruta (ruta con /{id})
+    [SupplyParameterFromQuery] 
     [Parameter]
     public int? idProducto { get; set; }
-    private Producto producto;
+    
+    // ⚠️ CRÍTICO: Inicializar a null. Esto maneja el estado "Cargando..."
+    private Producto? producto; 
 
-    private bool isEditing => idProducto != null;
+    private bool isEditing => idProducto.HasValue;
     private string guardarButtonText => isEditing ? "Actualizar" : "Agregar";
     private string tituloPagina => isEditing ? "Editando Producto" : "Agregando nuevo Producto";
 
@@ -55,25 +83,29 @@ else
     {
         if (idProducto != null)
         {
-            producto = await _Productoservice.GetByIdAsync((int)idProducto);
+            producto = await _productoService.GetByIdAsync((int)idProducto);
         }
         else
         {
-            producto = new Producto();
+            producto = new Producto
+            {
+                Categoria = new Categoria()
+            };
         }
     }
 
     private async Task Guardar()
     {
+        //logger.LogInformation(campania.PropertiesToString());
         if (idProducto != null)
-            await _Productoservice.UpdateAsync(producto);
+            await _productoService.UpdateAsync(producto);
         else
-            await _Productoservice.AddAsync(producto);
+            await _productoService.AddAsync(producto);
         NavigationManager.NavigateTo($"productos");
     }
 
-    private async Task Cancelar()
+    private void Cancelar()
     {
-        NavigationManager.NavigateTo($"productos");
+        NavigationManager.NavigateTo("/productos");
     }
 }

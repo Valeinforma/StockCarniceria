@@ -1,12 +1,14 @@
 ﻿@page "/productos"
+@using Service.Models
 
 @inject IGenericService<Producto> _serviceProducto
 @inject NavigationManager NavigationManager
 @inject FirebaseAuthService _authService
 @inject SweetAlertService sweetAlert
-<PageTitle>productos</PageTitle>
+<PageTitle>Inventario de Productos</PageTitle>
 
-<PageHeader Title="Productos" Description="Admistra aqui los productos" />
+<!-- Componente asumido para el título de la página -->
+<PageHeader Title="Inventario de Productos" Description="Administra, edita y elimina los productos de la carnicería." />
 
 @if (productos == null)
 {
@@ -18,41 +20,42 @@ else if (!productos.Any())
 }
 else
 {
-	<NavLink class="btn btn-primary" href=@($"NuevoEditarProductos")>
-		Agregar producto
+	<NavLink class="btn btn-primary mb-3" href=@($"NuevoEditarProducto")>
+		<span class="bi bi-plus-circle"></span> Agregar producto
 	</NavLink>
-	<table class="table">
+	
+	<table class="table table-hover table-striped">
 		<thead>
 			<tr>
-				
+				<th>ID</th>
 				<th>Nombre</th>
-				<th>Categoria</th>
-				<th>Precio</th>
-
-				
-				
-
-				<th colspan="2">Acciones</th>
-
+				<th>Categoría</th>
+				<th>Precio Unitario</th>
+				<th>Stock</th>
+				<th>Unidad</th>
+				<th colspan="2" class="text-center">Acciones</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach (var pro in productos)
 			{
 				<tr>
-					
+					<td>@pro.Id</td>
 					<td>@pro.Nombre</td>
-					<td>@pro.Categoria</td>
-					<td>@pro.PrecioUnitario</td>
+					<td>@pro.Categoria?.Nombre</td>
+					<td>$@pro.PrecioUnitario.ToString("N2")</td>
+					<td>@pro.Stock</td>
+					<td>@pro.Unidad</td>
 				
-					<td>
-						<button class="btn btn-danger" @onclick="() => DeleteProducto(pro)">Eliminar</button>
-					</td>
-
-					<td>
-						<NavLink class="btn btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
-							Editar
+					<td class="text-center">
+						<NavLink class="btn btn-sm btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
+							<span class="bi bi-pencil"></span> Editar
 						</NavLink>
+					</td>
+					<td class="text-center">
+						<button class="btn btn-sm btn-danger" @onclick="() => DeleteProducto(pro)">
+							<span class="bi bi-trash"></span> Eliminar
+						</button>
 					</td>
 				</tr>
 			}
@@ -63,17 +66,36 @@ else
 @code {
 	private List<Producto>? productos;
 
+	// ----------------------------------------------------
+	// LÓGICA DE INICIALIZACIÓN
+	// ----------------------------------------------------
 	protected override async Task OnInitializedAsync()
 	{
+		// 1. Verificación de Autenticación (como en el ejemplo funcional)
 		if (!await _authService.IsUserAuthenticated())
 		{
 			NavigationManager.NavigateTo("/login");
 			return;
 		}
 
-		productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+		// 2. Carga de Productos
+		try
+		{
+			// ⚠️ NOTA: Si GetByIdAsync falla por falta de Categoria, deberás modificar el servicio
+			// para que use .Include(p => p.Categoria) si usas Entity Framework Core.
+			productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+		}
+		catch (Exception ex)
+		{
+			// Manejo de errores de carga
+			await sweetAlert.FireAsync("Error de Carga", $"No se pudieron cargar los productos: {ex.Message}", SweetAlertIcon.Error);
+			productos = new List<Producto>(); // Inicializa a lista vacía para evitar el estado de 'null'
+		}
 	}
 
+	// ----------------------------------------------------
+	// LÓGICA DE ELIMINACIÓN
+	// ----------------------------------------------------
 	private async Task DeleteProducto(Producto producto)
 	{
 		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions
@@ -91,11 +113,11 @@ else
 			{
 				productos?.Remove(producto);
 				StateHasChanged();
+				await sweetAlert.FireAsync("Eliminado", $"El producto '{producto.Nombre}' ha sido eliminado.", SweetAlertIcon.Success);
 			}else
 			{
-				await sweetAlert.FireAsync("Error", "No se pudo eliminar el producto.", SweetAlertIcon.Error);
+				await sweetAlert.FireAsync("Error", "No se pudo eliminar el producto. Revise las dependencias.", SweetAlertIcon.Error);
 			}
 		}
 	}
-	
 }

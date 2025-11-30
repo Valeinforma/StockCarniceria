@@ -1,5 +1,5 @@
-﻿using Service.Enum;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Text.Json.Serialization;
+using Service.Enum;
 
 namespace Service.Models
 {
@@ -9,25 +9,19 @@ namespace Service.Models
 
         public DateTime Fecha { get; set; }
 
-        // --- Claves Foráneas y Propiedades de Navegación de Usuarios ---
         public int? VendedorId { get; set; }
-        public Usuarios? Vendedor { get; set; } // Propiedad de navegación (PascalCase)
-
-
+        public Usuarios? Vendedor { get; set; }
 
         public int? ClienteId { get; set; }
-        public Usuarios? Cliente { get; set; } // Propiedad de navegación (PascalCase)
+        public Usuarios? Cliente { get; set; }
 
-        // --- Nombre del Cliente Anónimo (si es necesario) ---
-        public string? NombreClienteSinUsuario { get; set; } 
+        public string? NombreClienteSinUsuario { get; set; }
 
-        // --- Relación con los items/productos de la venta ---
+        [JsonIgnore]
         public ICollection<DetalleVenta>? Items { get; set; }
 
-        // --- Propiedades de la Venta ---
-        public decimal PrecioTotal { get; set; } // Renombrada para mayor claridad
+        public decimal PrecioTotal { get; set; }
         public TipoPagoEnum TipoPagoEnum { get; set; } = TipoPagoEnum.Efectivo;
         public bool IsDeleted { get; set; } = false;
     }
-
 }

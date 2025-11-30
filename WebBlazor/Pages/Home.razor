@@ -1,70 +1,30 @@
 ﻿@page "/"
-@using Service.Services
 
-@inject  IProductoService _productoService
+<PageTitle>Inicio - StockCarniceria</PageTitle>
 
-<PageTitle>Inicio</PageTitle>
+<!-- Contenedor principal centrado y con margen superior -->
+<div class="container mt-5">
+
+    <!-- Encabezado de la Plataforma -->
+    <div class="mb-5 p-4 bg-light rounded-3 shadow-sm text-center">
+        <h1 class="display-5 fw-bold text-success">StockCarniceria</h1>
+        <p class="fs-4 text-muted">Plataforma de Gestión de Inventario y Ventas</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h4 class="text-primary mb-4 border-bottom pb-2">Bienvenido al Panel de Control</h4>
+            <p class="lead">StockCarniceria es una plataforma diseñada para gestionar de manera eficiente el inventario, control de stock, y optimización de ventas de productos cárnicos. Su objetivo principal es brindar acceso rápido a las funciones de gestión de productos, categorías y pedidos.</p>
+            <hr />
 
 
-
-<PageHeader Title="StockCarniceria" Description="Plataforma de Gestíon de Productos"/>
-
-<h4>StockCarniceria es una plataforma diseñada para gestionar productos de una carnicería. Permite administrar el inventario, controlar el stock, y optimizar la gestión de ventas y compras.</h4>
-@if (ProductosPorCategoria is null || ProductosPorNombre is null)
-{
-    <p><em>Cargando productos...</em></p>
-}
-else
-{
-    if (!ProductosPorCategoria.Any())
-    {
-        <p>No hay productos por categoria.</p>
-    }
-    else
-    {
-        <h3>productos por nombre</h3>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            @foreach (var producto in ProductosPorNombre)
-            {
-                <div class="col">
-                    <CardProducto producto ="producto" />
-                </div>
-            }
+            <div class="mt-5 pt-3 text-center border-top">
+                <p class="text-muted small">Plataforma educativa: Desarrollo 2do año - TSDS - 2025</p>
+            </div>
         </div>
-    }
-
-    if (!ProductosPorNombre.Any())
-    {
-        <p>No hay capacitaciones próximas programadas en este momento.</p>
-    }
-    else
-    {
-        <h3>Capacitaciones Próximas</h3>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            @foreach (var producto in ProductosPorNombre)
-            {
-                <div class="col">
-                    <CardProducto producto="producto" />
-                </div>
-            }
-        </div>
-    }
-}
+    </div>
+</div>
 
 @code {
-    private List<Producto>? ProductosPorCategoria;
-    private List<Producto>? ProductosPorNombre;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // FIX: Llama a GetProductosPorCategoriaAsync sin argumentos, ya que no acepta ninguno.
-        var ProductosPorCategoriaTask = _productoService.GetProductosPorCategoriaAsync();
-
-        var ProductosPorNombreTask = _productoService.BuscarProductosPorNombreAsync();
-
-        await Task.WhenAll(ProductosPorCategoriaTask, ProductosPorNombreTask);
-
-        ProductosPorCategoria = await ProductosPorCategoriaTask;
-        ProductosPorNombre = await ProductosPorNombreTask;
-    }
+    // Componente Blazor sin inyecciones ni lógica asíncrona en C#, es puramente estático.
 }
