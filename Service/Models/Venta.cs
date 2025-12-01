@@ -10,10 +10,10 @@ namespace Service.Models
         public DateTime Fecha { get; set; }
 
         public int? VendedorId { get; set; }
-        public Usuarios? Vendedor { get; set; }
+        public Usuario? Vendedor { get; set; }
 
         public int? ClienteId { get; set; }
-        public Usuarios? Cliente { get; set; }
+        public Usuario? Cliente { get; set; }
 
         public string? NombreClienteSinUsuario { get; set; }
 

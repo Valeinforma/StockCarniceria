@@ -1,10 +1,76 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
-<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <Style TargetType="ActivityIndicator">
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="HeaderTitleStyle">
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="White"/>
+    </Style>
+    <Style TargetType="Label" x:Key="SectionTitleLabelStyle">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{StaticResource SecondaryDark}"/>
+        <Setter Property="Margin" Value="0,15,0,5"/>
+    </Style>
+    <Style TargetType="Label" x:Key="ProductTitleLabelStyle">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{StaticResource SecondaryDark}"/>
+    </Style>
+    <Style TargetType="Label" x:Key="CategoryLabelStyle">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="TextColor" Value="#666666"/>
+        <Setter Property="Margin" Value="5,0,0,0"/>
+    </Style>
+    <Style TargetType="Label" x:Key="PriceLabelStyle">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{StaticResource AccentGold}"/>
+        <Setter Property="HorizontalOptions" Value="End"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+    </Style>
+
+    <Style TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="15,10"/>
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderWidth" Value="1"/>
+        <Setter Property="Margin" Value="0,10"/>
+    </Style>
+    <Style TargetType="Button" x:Key="OutlineButtonStyle">
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="TextColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderWidth" Value="1"/>
+    </Style>
+
+    <Style TargetType="Entry">
+        <Setter Property="PlaceholderColor" Value="{StaticResource PlaceholderColor}"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="HeightRequest" Value="45"/>
+    </Style>
+
+    <Style TargetType="Frame">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="HasShadow" Value="True"/>
+        <Setter Property="BorderColor" Value="{StaticResource BorderColor}"/>
+    </Style>
+
+</ResourceDictionary>
+
+<Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>
 
@@ -23,7 +89,7 @@
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
 
-    <Style TargetType="Button">
+    <Style TargetType="Button" x:Key="PrimaryButtonStyle">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -47,6 +113,31 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+
+    <Style TargetType="Label" x:Key="SectionTitleLabelStyle">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="Margin" Value="0,15,0,5"/>
+    </Style>
+
+    <Style TargetType="Button" x:Key="RedButtonStyle">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="15,10"/>
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderWidth" Value="1"/>
+        <Setter Property="Margin" Value="0,10"/>
+    </Style>
+
+    <Style TargetType="Button" x:Key="OutlineButtonStyle">
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="TextColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryRed}"/>
+        <Setter Property="BorderWidth" Value="1"/>
     </Style>
 
     <Style TargetType="CheckBox">
@@ -424,4 +515,4 @@
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
 
-</ResourceDictionary>
+<ResourceDictionary>

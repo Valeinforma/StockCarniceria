@@ -11,7 +11,7 @@ public class StockCarniceriaContext : DbContext
     public DbSet<Proveedor> Proveedores { get; set; }
     public DbSet<Venta> Ventas { get; set; }
     public DbSet<DetalleVenta> DetallesVenta { get; set; }
-    public DbSet<Usuarios> Usuarios { get; set; }
+    public DbSet<Usuario> Usuarios { get; set; }
     
 
 
@@ -24,13 +24,13 @@ public class StockCarniceriaContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Datos Semilla para Usuarios
-        modelBuilder.Entity<Usuarios>().HasData(
-            new Usuarios { Id = 1, Nombre = "Carlos Mendez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false },
-            new Usuarios { Id = 2, Nombre = "Ana González", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false },
-            new Usuarios { Id = 3, Nombre = "Juan Pérez", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
-            new Usuarios { Id = 4, Nombre = "María García", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
-            new Usuarios { Id = 5, Nombre = "Roberto López", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
-            new Usuarios { Id = 6, Nombre = "Sofía Martínez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false }
+        modelBuilder.Entity<Usuario>().HasData(
+            new Usuario { Id = 1, Nombre = "Carlos Mendez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false },
+            new Usuario { Id = 2, Nombre = "Ana González", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false },
+            new Usuario { Id = 3, Nombre = "Juan Pérez", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
+            new Usuario { Id = 4, Nombre = "María García", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
+            new Usuario { Id = 5, Nombre = "Roberto López", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
+            new Usuario { Id = 6, Nombre = "Sofía Martínez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false }
         );
         // Datos Semilla para Categorias
         modelBuilder.Entity<Categoria>().HasData(
@@ -90,7 +90,7 @@ public class StockCarniceriaContext : DbContext
         modelBuilder.Entity<Proveedor>().HasQueryFilter(p => !p.IsDeleted);
         modelBuilder.Entity<Venta>().HasQueryFilter(v => !v.IsDeleted);
         modelBuilder.Entity<DetalleVenta>().HasQueryFilter(dv => !dv.IsDeleted);
-        modelBuilder.Entity<Usuarios>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<Usuario>().HasQueryFilter(u => !u.IsDeleted);
 
 
     }

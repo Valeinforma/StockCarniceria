@@ -69,6 +69,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\Admin\AddEditProductoView.xaml.cs">
+	    <DependentUpon>AddEditProductoView.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Admin\AdminProductosView.xaml.cs">
+	    <DependentUpon>AdminProductosView.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\StockCarniceriaShell.xaml.cs">
 	    <DependentUpon>StockCarniceriaShell.xaml</DependentUpon>
 	  </Compile>
@@ -84,10 +90,10 @@
 	  <MauiXaml Update="ContentViews\FlyoutHeader.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Admin\AddEditCapacitacionView.xaml">
+	  <MauiXaml Update="Views\Admin\AddEditProductoView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Admin\AdminCapacitacionesView.xaml">
+	  <MauiXaml Update="Views\Admin\AdminProductosView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\StockCarniceriaShell.xaml">

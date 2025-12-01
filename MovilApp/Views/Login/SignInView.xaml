@@ -5,7 +5,7 @@
              x:Class="MovilApp.Views.Login.SignInView"
              Title="CrearCuenta">
     <ContentPage.BindingContext>
-        <login:SigInViewModel/>
+        <login:SignInViewModel/>
     </ContentPage.BindingContext>
     <ScrollView>
         <VerticalStackLayout Margin="20">

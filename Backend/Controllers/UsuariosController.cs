@@ -23,7 +23,7 @@ namespace Backend.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios([FromQuery] string? filter = null)
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios([FromQuery] string? filter = null)
         {
             if (_context.Usuarios == null)
             {
@@ -60,7 +60,7 @@ namespace Backend.Controllers
 
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuarios>> GetUsuarios(int id)
+        public async Task<ActionResult<Usuario>> GetUsuarios(int id)
         {
             if (_context.Usuarios == null)
             {
@@ -88,7 +88,7 @@ namespace Backend.Controllers
 
         // PUT: api/Usuarios/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarios(int id, Usuarios usuarios)
+        public async Task<IActionResult> PutUsuarios(int id, Usuario usuarios)
         {
             if (id != usuarios.Id)
             {
@@ -119,7 +119,7 @@ namespace Backend.Controllers
 
         // POST: api/Usuarios
         [HttpPost]
-        public async Task<ActionResult<Usuarios>> PostUsuarios(Usuarios usuarios)
+        public async Task<ActionResult<Usuario>> PostUsuarios(Usuario usuarios)
         {
             if (_context.Usuarios == null)
             {
@@ -202,7 +202,7 @@ namespace Backend.Controllers
 
         // GET: api/Usuarios/deleteds
         [HttpGet("deleteds")]
-        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuariosDeleteds()
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuariosDeleteds()
         {
             try
             {

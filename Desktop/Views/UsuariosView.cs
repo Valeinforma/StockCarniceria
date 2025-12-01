@@ -10,10 +10,10 @@ namespace Desktop.Views
 {
     public partial class UsuariosView : Form
     {
-        GenericService<Usuarios> _usuarioService = new();
+        GenericService<Usuario> _usuarioService = new();
 
-        Usuarios _currentUsuario;
-        List<Usuarios>? _usuario;
+        Usuario _currentUsuario;
+        List<Usuario>? _usuario;
         FirebaseAuthClient _firebaseAuthClient;
 
         public UsuariosView()
@@ -63,8 +63,6 @@ namespace Desktop.Views
                     {
                         u.Id,
                         u.Nombre,
-                        u.Email,
-                        u.Rol,
                         Eliminado = u.IsDeleted ? "Sí" : "No"
                     }).ToList();
 
@@ -99,7 +97,7 @@ namespace Desktop.Views
             //checheamos que haya peliculas seleccionadas
             if (DataGrid.RowCount > 0 && DataGrid.SelectedRows.Count > 0)
             {
-                Usuarios entitySelected = (Usuarios)DataGrid.SelectedRows[0].DataBoundItem;
+                Usuario entitySelected = (Usuario)DataGrid.SelectedRows[0].DataBoundItem;
                 var respuesta = MessageBox.Show($"¿Seguro que desea eliminar el usuario {entitySelected.Nombre}?", "Confirmar Eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (respuesta == DialogResult.Yes)
                 {
@@ -158,20 +156,20 @@ namespace Desktop.Views
             if (!DataControl())
                 return;
             {
-                Usuarios usuariosAGuardar = GetUserDataFromScreen();
+                Usuario usuarioAGuardar = GetUserDataFromScreen();
                 bool responseSuccessfull = false;
                 if (_currentUsuario != null)
                 {
-                    responseSuccessfull = await _usuarioService.UpdateAsync(usuariosAGuardar);
+                    responseSuccessfull = await _usuarioService.UpdateAsync(usuarioAGuardar);
                     if (responseSuccessfull && !string.IsNullOrWhiteSpace(TextPassword.Text) && !string.IsNullOrWhiteSpace(TxtPassword2.Text))
                     {
-                        await UpdatePasswordInFirebase(usuariosAGuardar);
+                        await UpdatePasswordInFirebase(usuarioAGuardar);
                     }
                     if (_currentUsuario == null)//agregando un nuevo usuario
                     {
                         try
                         {
-                            var nuevoUsuario = await _usuarioService.AddAsync(usuariosAGuardar);
+                            var nuevoUsuario = await _usuarioService.AddAsync(usuarioAGuardar);
                             responseSuccessfull = nuevoUsuario != null;
                             if (responseSuccessfull)
                                 await CreateUserInFirebase(nuevoUsuario);// Crear el usuario en Firebase Authentication
@@ -187,7 +185,7 @@ namespace Desktop.Views
                 else
                 {
                     
-                    var nuevoUsuario = await _usuarioService.AddAsync(usuariosAGuardar);
+                    var nuevoUsuario = await _usuarioService.AddAsync(usuarioAGuardar);
                     responseSuccessfull = nuevoUsuario != null;
                     if (responseSuccessfull)
                     {
@@ -195,7 +193,6 @@ namespace Desktop.Views
                         try
                         {
                             var userCredential = await _firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(
-                                nuevoUsuario.Email,
                                 TxtPassword2.Text.Trim(),
                                 nuevoUsuario.Nombre// Contraseña por defecto, se recomienda cambiarla luego
                             );
@@ -218,7 +215,7 @@ namespace Desktop.Views
                 { 
 
                     _currentUsuario = null; // Reset the modified movie after saving
-                    LabelStatusMessage.Text = $"Usuario {usuariosAGuardar.Nombre} guardado correctamente";
+                    LabelStatusMessage.Text = $"Usuario {usuarioAGuardar.Nombre} guardado correctamente";
                     TimerStatusBar.Start(); // Iniciar el temporizador para mostrar el mensaje en la barra de estado
                     await GetAllData();
                     LimpiarControlesAgregarEditar();
@@ -231,14 +228,15 @@ namespace Desktop.Views
         }
 
 
-        // Cambia la firma del método UpdatePasswordInFirebase:
-        private async Task UpdatePasswordInFirebase(Usuarios usuarioAGuardar)
+        // Reemplaza la llamada incorrecta en UpdatePasswordInFirebase por el método adecuado para iniciar sesión con email y contraseña.
+        private async Task UpdatePasswordInFirebase(Usuario usuarioAGuardar)
         {
             try
             {
+                // Debes usar el método SignInWithEmailAndPasswordAsync, que recibe email y contraseña.
                 var userCredential = await _firebaseAuthClient.SignInWithEmailAndPasswordAsync(
-                    usuarioAGuardar.Email,
-                    TxtPassword2.Text.Trim()
+                    TxtEmail.Text.Trim(),
+                    TextPassword.Text.Trim()
                 );
                 await userCredential.User.ChangePasswordAsync(TxtPassword2.Text.Trim());
             }
@@ -249,12 +247,11 @@ namespace Desktop.Views
         }
 
         // Cambia la firma del método CreateUserInFirebase:
-        private async Task CreateUserInFirebase(Usuarios? nuevoUsuario)
+        private async Task CreateUserInFirebase(Usuario? nuevoUsuario)
         {
             try
             {
                 var userCredential = await _firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(
-                    nuevoUsuario.Email,
                     TxtPassword2.Text.Trim(),
                     nuevoUsuario.Nombre
                 );
@@ -268,13 +265,12 @@ namespace Desktop.Views
 
 
         // Cambia el método GetUserDataFromScreen:
-        private Usuarios GetUserDataFromScreen()
+        private Usuario GetUserDataFromScreen()
         {
-            return new Usuarios
+            return new Usuario
             {
                 Id = _currentUsuario != null ? _currentUsuario.Id : 0,
                 Nombre = TxtNombre.Text.Trim(),
-                Email = TxtEmail.Text.Trim(),
 
             };
         }
@@ -326,9 +322,8 @@ namespace Desktop.Views
             //checheamos que haya una capacitación seleccionada
             if (DataGrid.RowCount > 0 && DataGrid.SelectedRows.Count > 0)
             {
-                _currentUsuario = (Usuarios)DataGrid.SelectedRows[0].DataBoundItem;
+                _currentUsuario = (Usuario)DataGrid.SelectedRows[0].DataBoundItem;
                 TxtNombre.Text = _currentUsuario.Nombre;
-                TxtEmail.Text = _currentUsuario.Email;
 
 
 
@@ -372,7 +367,7 @@ namespace Desktop.Views
             //checheamos que haya peliculas seleccionadas
             if (DataGrid.RowCount > 0 && DataGrid.SelectedRows.Count > 0)
             {
-                Usuarios entitySelected = (Usuarios)DataGrid.SelectedRows[0].DataBoundItem;
+                Usuario entitySelected = (Usuario)DataGrid.SelectedRows[0].DataBoundItem;
                 var respuesta = MessageBox.Show($"¿Seguro que recuper el usuario {entitySelected.Nombre}?", "Confirmar Restauración", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (respuesta == DialogResult.Yes)
                 {

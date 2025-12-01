@@ -207,7 +207,7 @@ namespace Desktop.Views
 
             // 1. Mapeo de datos (Conversión correcta a decimal)
             _currentProducto.Nombre = TxtNombre.Text.Trim();
-            _currentProducto.Precio = NumericPrecio.Value; // NumericUpDown ya retorna decimal
+            _currentProducto.PrecioUnitario = NumericPrecio.Value; // NumericUpDown ya retorna decimal
             _currentProducto.Stock = (int)NumericStock.Value;
             _currentProducto.Unidad = "kg"; // Establecer una unidad por defecto si no tienes un campo
 
@@ -265,7 +265,7 @@ namespace Desktop.Views
                 {
                     Id = productoDTO.Id,
                     Nombre = productoDTO.Nombre,
-                    Precio = productoDTO.Precio,
+                    PrecioUnitario = productoDTO.Precio,
                     Stock = productoDTO.Stock,
                     Unidad = productoDTO.Unidad,
                     CategoriaId = productoDTO.CategoriaId,
@@ -275,7 +275,7 @@ namespace Desktop.Views
 
                 // Mapear a los controles
                 TxtNombre.Text = _currentProducto.Nombre;
-                NumericPrecio.Value = _currentProducto.Precio;
+                NumericPrecio.Value = _currentProducto.PrecioUnitario;
                 NumericStock.Value = _currentProducto.Stock;
 
                 // Seleccionar la categoría

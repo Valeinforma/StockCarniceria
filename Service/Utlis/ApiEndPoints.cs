@@ -24,6 +24,7 @@ namespace Service.Utlis
             {
                 nameof(Categoria) => Categoria,
                 nameof(Usuario) => Usuario,
+                "Usuarios" => Usuario,
                 nameof(DetalleCompra) => DetalleCompra,
                 nameof(DetalleVenta) => DetalleVenta,
                 nameof(Producto) => Producto,

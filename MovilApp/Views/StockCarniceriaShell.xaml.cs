@@ -1,19 +1,23 @@
 using MovilApp.ViewModels;
-using MovilApp.Views.Login;
+using MovilApp.Views.Login; 
 
 namespace MovilApp.Views;
-    
+
 public partial class StockCarniceriaShell : Shell
 {
-    //public StockCarniceriaModel ViewModel => (StockCarniceriaShellViewModel)BindingContext;
+    // 1. Propiedad ViewModel (Descomentada y Corregida)
+    public StockCarniceriaShellViewModel ViewModel => (StockCarniceriaShellViewModel)BindingContext;
 
-    //public StockCarniceriaShell()
-    //{
-    //    InitializeComponent();
-    //}
+    // 2. Constructor (Descomentado y Obligatorio)
+    public StockCarniceriaShell()
+    {
+        InitializeComponent();
+    }
 
-    //public void SetLoginState(bool isLoggedIn)
-    //{
-    //   ViewModel.SetLoginState(isLoggedIn);
-    //}
+    // 3. Método de Estado de Sesión (Descomentado y Esencial)
+    public void SetLoginState(bool isLoggedIn)
+    {
+        // Esto asume que tienes un método SetLoginState en StockCarniceriaShellViewModel
+        ViewModel.SetLoginState(isLoggedIn);
+    }
 }
