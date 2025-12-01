@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<?xaml-comp compile="true" ?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
@@ -14,11 +13,8 @@
     <Color x:Key="TextColorDark">#EEEEEE</Color>
     <Color x:Key="PlaceholderColor">#888888</Color>
 
-<Color x:Key="PrimaryRed">#B70000</Color>    <Color x:Key="SecondaryDark">#333333</Color> <Color x:Key="AccentGold">#FFC107</Color>    <Color x:Key="SuccessGreen">#4CAF50</Color>  <Color x:Key="CardBackground">#FFFFFF</Color> <Color x:Key="BorderColor">#E0E0E0</Color>  <Color x:Key="PageBackground">#F5F5F5</Color> <Color x:Key="TextColorLight">#333333</Color> <Color x:Key="TextColorDark">#EEEEEE</Color> <Color x:Key="PlaceholderColor">#888888</Color> </ResourceDictionary>
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="TextColorLight">#333333</Color>
-    <Color x:Key="TextColorDark">#EEEEEE</Color>
     <Color x:Key="Primary">#512BD4</Color>
     <Color x:Key="PrimaryDark">#ac99ea</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
@@ -55,4 +51,4 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
-<ResourceDictionary>
+</ResourceDictionary>

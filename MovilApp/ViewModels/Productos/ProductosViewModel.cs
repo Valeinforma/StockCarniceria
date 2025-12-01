@@ -96,5 +96,15 @@ namespace MovilApp.ViewModels.Productos
             // Como ya lo hicimos en el constructor, aquí solo llamamos al método del comando:
             BuscarCommand.Execute(null);
         }
+
+        // COMANDO PARA VOLVER
+        [RelayCommand]
+        private async Task Volver()
+        {
+            if (Application.Current?.MainPage is NavigationPage navPage)
+            {
+                await navPage.PopAsync();
+            }
+        }
     }
 }

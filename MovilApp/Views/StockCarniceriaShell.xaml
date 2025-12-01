@@ -8,11 +8,17 @@
     xmlns:contentviews="clr-namespace:MovilApp.ContentViews"
     xmlns:viewmodels="clr-namespace:MovilApp.ViewModels"
     xmlns:views="clr-namespace:MovilApp.Views.StockCarniceria"
-    FlyoutBehavior="Disabled"
-    Title="StockCarniceria">
+    Title="StockCarniceria"
+    Shell.FlyoutBehavior="Flyout"
+    Shell.BackgroundColor="#B70000"
+    Shell.ForegroundColor="White"
+    Shell.TitleColor="White"
+    Shell.TabBarBackgroundColor="#B70000"
+    Shell.TabBarForegroundColor="White"
+    Shell.FlyoutBackgroundColor="#333333">
 
     <Shell.BindingContext>
-        <viewmodels:StockCarniceriaShellViewModel />
+        <viewmodels:StockCarniceriaShellViewModel/>
     </Shell.BindingContext>
 
     <Shell.FlyoutHeader>
@@ -35,34 +41,34 @@
         Route="Registrarse"
         FlyoutItemIsVisible="False"/>
 
-    <FlyoutItem 
-        Route="nuestra_app" 
-        FlyoutDisplayOptions="AsMultipleItems" 
-        x:Name="FlyoutItemsPrincipal" 
+    <FlyoutItem
+        Route="nuestra_app"
+        FlyoutDisplayOptions="AsMultipleItems"
+        x:Name="FlyoutItemsPrincipal"
         IsEnabled="{Binding UserIsLogged}">
 
         <ShellContent
-            Title="Home"
+            Title="Menú Principal"
             ContentTemplate="{DataTemplate local:MainPage}"
             Route="MainPage" />
 
     </FlyoutItem>
 
-    <FlyoutItem 
-        Title=" Buscar Productos" 
-        Icon="search.png"
+    <FlyoutItem
+        Title="🥩 Buscar Cortes"
+        Icon="meat_cut.png"
         IsEnabled="{Binding UserIsLogged}">
 
         <ShellContent
-            Title="Buscar Productos"
+            Title="Inventario de Productos"
             ContentTemplate="{DataTemplate views:ProductosView}"
             Route="BuscarProductos" />
 
     </FlyoutItem>
 
-    <MenuItem 
+    <MenuItem
         Text="Cerrar sesión"
         Command="{Binding LogoutCommand}"
-        IconImageSource="random.png"
+        IconImageSource="logout.png"
         IsEnabled="{Binding UserIsLogged}"/>
 </Shell>

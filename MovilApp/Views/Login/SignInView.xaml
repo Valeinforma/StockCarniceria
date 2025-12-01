@@ -11,7 +11,7 @@
         <VerticalStackLayout Margin="20">
             <Label 
              FontSize="Title"
-             Text="Creando nueva cuenta en InstitutoApp"
+             Text="Creando nueva cuenta en StockCarniceriaApp"
              VerticalOptions="Center" 
              HorizontalOptions="Center" />
             <Grid RowDefinitions="2*,2*,2*,2*,*" ColumnDefinitions="*,*">
