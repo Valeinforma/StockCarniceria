@@ -3,40 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MovilApp.ViewModels.Productos"
              x:Class="MovilApp.Views.StockCarniceria.ProductosView"
-             Title="ProductosView">
+             Title="Inventario de Productos">
+
     <ContentPage.BindingContext>
         <vm:ProductosViewModel/>
     </ContentPage.BindingContext>
-    <Grid RowDefinitions="Auto, *">
-        <!-- Botón de regreso -->
-        <Button Grid.Row="0"
-                Text="←"
-                Command="{Binding VolverCommand}"
-                BackgroundColor="#f0f0f0"
-                TextColor="Black"
-                FontSize="24"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"
-                WidthRequest="50"
-                HeightRequest="50"
-                Margin="0,0,0,20"
-                Padding="0,0,0,10"/>
-        
-        <ScrollView Grid.Row="1" Padding="20">
-            <StackLayout Spacing="20">
 
-                <!-- Encabezado -->
-                <Frame BackgroundColor="#8B0000" 
+    <Grid RowDefinitions="Auto, *">
+
+        <ScrollView Grid.Row="0" Grid.RowSpan="2">
+            <VerticalStackLayout Spacing="20" Padding="20">
+
+
+                <!-- Encabezado principal -->
+                <Frame BackgroundColor="#B70000" 
                     Padding="20" 
                     CornerRadius="15" 
                     HasShadow="True">
                     <StackLayout>
-                        <Label Text="🥩 Buscar Producto" 
+                        <Label Text="Inventario de Cortes" 
                             FontSize="26" 
                             FontAttributes="Bold"
                             TextColor="White"
                             HorizontalOptions="Center"/>
-                        <Label Text="Encuentra el producto que buscas" 
+                        <Label Text="Administra y busca tus productos cárnicos" 
                             FontSize="14"
                             TextColor="#FFE4E1"
                             HorizontalOptions="Center"/>
@@ -50,43 +40,50 @@
                     HasShadow="True"
                     BorderColor="#D2691E">
                     <StackLayout Spacing="15">
-                        <Label Text="¿Qué producto estas buscando?" 
+                        <Label Text="¿Qué producto estás buscando?" 
                             FontSize="16"
                             FontAttributes="Bold"
                             TextColor="#3E2723"/>
 
-                        <!-- SearchBar mejorado -->
+                        <!-- SearchBar -->
                         <Frame BackgroundColor="#FFF8F0" 
                             Padding="5" 
                             CornerRadius="10"
                             HasShadow="False"
                             BorderColor="#D2691E">
-                            <SearchBar Placeholder="Buscar por título, producto.." 
-                                    Text="{Binding TextoBusqueda}"
-                                    SearchCommand="{Binding BuscarCommand}"
-                                    BackgroundColor="Transparent"
-                                    PlaceholderColor="#8B7355"
-                                    TextColor="#3E2723"
-                                    FontSize="16"/>
+                            <SearchBar Placeholder="Buscar por título, producto..." 
+                                Text="{Binding TextoBusqueda}"
+                                SearchCommand="{Binding BuscarCommand}"
+                                BackgroundColor="Transparent"
+                                PlaceholderColor="#8B7355"
+                                TextColor="#3E2723"
+                                FontSize="16"/>
                         </Frame>
-                        <!-- Botón para mostrar/ocultar filtros -->
-                        <Button Text="🔍 Buscar" 
-                         Command="{Binding BuscarCommand}"
-                         BackgroundColor="#A0522D"
-                         TextColor="White"
-                         CornerRadius="8"
-                         FontSize="14"/>
 
+                        <!-- Botones de acción -->
+                        <Button Text="🔍 Buscar" 
+                            Command="{Binding BuscarCommand}"
+                            BackgroundColor="#A0522D"
+                            TextColor="White"
+                            CornerRadius="8"
+                            FontSize="14"/>
+
+                        <Button Text="🧹 Limpiar Búsqueda" 
+                            Command="{Binding LimpiarCommand}"
+                            BackgroundColor="#D3D3D3"
+                            TextColor="#3E2723"
+                            CornerRadius="8"
+                            FontSize="14"/>
 
                         <!-- Indicador de carga -->
                         <StackLayout IsVisible="{Binding EstaDescargando}" 
-                                 Orientation="Horizontal" 
-                                 HorizontalOptions="Center"
-                                 Spacing="10">
+                            Orientation="Horizontal" 
+                            HorizontalOptions="Center"
+                            Spacing="10">
                             <ActivityIndicator IsRunning="{Binding EstaDescargando}"
-                                           Color="#8B0000"/>
+                                Color="#B70000"/>
                             <Label Text="Buscando productos..." 
-                                TextColor="#8B0000"
+                                TextColor="#B70000"
                                 VerticalOptions="Center"
                                 FontSize="14"/>
                         </StackLayout>
@@ -95,6 +92,7 @@
 
                 <!-- Sección de resultados -->
                 <StackLayout Spacing="15">
+
                     <!-- Encabezado de resultados -->
                     <Frame BackgroundColor="#DEB887" 
                         Padding="12" 
@@ -102,7 +100,7 @@
                         HasShadow="True"
                         BorderColor="#8B4513">
                         <StackLayout>
-                            <Label Text=" Resultados de búsqueda" 
+                            <Label Text="Resultados de Inventario" 
                                 FontSize="18" 
                                 FontAttributes="Bold"
                                 TextColor="#3E2723"
@@ -114,7 +112,16 @@
                         </StackLayout>
                     </Frame>
 
-                    <!-- Lista de productos en cards mejoradas -->
+                    <!-- Mensaje de error -->
+                    <Label Text="{Binding MensajeError}"
+                        IsVisible="{Binding MensajeError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                        TextColor="#B70000"
+                        FontSize="16"
+                        HorizontalOptions="Center"
+                        FontAttributes="Italic"
+                        Margin="0,10,0,0"/>
+
+                    <!-- Lista de productos -->
                     <CollectionView ItemsSource="{Binding Productos}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
@@ -124,10 +131,16 @@
                                     CornerRadius="15"
                                     HasShadow="True"
                                     BorderColor="#D2691E">
-                                    <Grid ColumnDefinitions="Auto, *, Auto" 
-                                       RowDefinitions="Auto, Auto, Auto, Auto">
 
-                                        <!-- Ícono principal -->
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductosViewModel}}, Path=VerDetalleCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="Auto, *, Auto" 
+                                        RowDefinitions="Auto, Auto, Auto, Auto">
+
+                                        <!-- Icono principal -->
                                         <Label Grid.Column="0" Grid.Row="0" Grid.RowSpan="4"
                                             Text="🥩" 
                                             FontSize="40"
@@ -135,7 +148,7 @@
                                             HorizontalOptions="Center"
                                             Margin="0,0,15,0"/>
 
-                                        <!-- Título del producto -->
+                                        <!-- Nombre del producto -->
                                         <Label Grid.Column="1" Grid.Row="0"
                                             Text="{Binding Nombre}" 
                                             FontSize="18"
@@ -145,48 +158,58 @@
 
                                         <!-- Precio -->
                                         <StackLayout Grid.Column="1" Grid.Row="1" 
-                                                 Orientation="Horizontal" 
-                                                 Spacing="5"
-                                                 Margin="0,5,0,0">
+                                            Orientation="Horizontal" 
+                                            Spacing="5"
+                                            Margin="0,5,0,0">
                                             <Label Text="💲" FontSize="14"/>
                                             <Label Text="{Binding PrecioUnitario, StringFormat='${0:N2}'}" 
                                                 FontSize="16"
-                                                TextColor="#8B0000"
+                                                TextColor="#B70000"
                                                 FontAttributes="Bold"
                                                 LineBreakMode="NoWrap"/>
                                         </StackLayout>
 
                                         <!-- Categoría -->
                                         <StackLayout Grid.Column="1" Grid.Row="2" 
-                                                 Orientation="Horizontal" 
-                                                 Spacing="5"
-                                                 Margin="0,2,0,0">
+                                            Orientation="Horizontal" 
+                                            Spacing="5"
+                                            Margin="0,2,0,0">
                                             <Label Text="🏷️" FontSize="14"/>
-                                            <Label Text="{Binding Categoria}" 
+                                            <Label Text="{Binding Categoria.Nombre}" 
                                                 FontSize="14"
                                                 TextColor="#8B7355"/>
                                         </StackLayout>
 
+                                        <!-- Stock -->
+                                        <StackLayout Grid.Column="1" Grid.Row="3" 
+                                            Orientation="Horizontal" 
+                                            Spacing="5"
+                                            Margin="0,2,0,0">
+                                            <Label Text="📦" FontSize="14"/>
+                                            <Label Text="{Binding Stock, StringFormat='Stock: {0} {1}'}" 
+                                                FontSize="14"
+                                                TextColor="#8B7355"/>
+                                        </StackLayout>
 
-                                        <!-- Botón de acción -->
+                                        <!-- Botón de ver detalles -->
                                         <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"
-                                             Text="📋&#x0a;Ver"
-                                             BackgroundColor="#A0522D"
-                                             TextColor="White"
-                                             CornerRadius="10"
-                                             FontSize="12"
-                                             WidthRequest="60"
-                                             HeightRequest="60"
-                                             VerticalOptions="Center"/>
-
-
+                                            Text="Ver"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductosViewModel}}, Path=VerDetalleCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#A0522D"
+                                            TextColor="White"
+                                            CornerRadius="10"
+                                            FontSize="14"
+                                            WidthRequest="60"
+                                            HeightRequest="60"
+                                            VerticalOptions="Center"/>
                                     </Grid>
                                 </Frame>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </StackLayout>
-            </StackLayout>
+            </VerticalStackLayout>
         </ScrollView>
     </Grid>
 </ContentPage>

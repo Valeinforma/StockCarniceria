@@ -10,16 +10,21 @@ namespace Service.Models
 
         [JsonIgnore]
         public ICollection<DetalleVenta>? DetallesVenta { get; set; }
-        
+
         public int Stock { get; set; } = 0;
         public int ProveedorId { get; set; }
-        public Proveedor proveedor { get; set; } = null;
+
+        [JsonIgnore] // <<-- ¡Agregar este atributo!
+        public Proveedor? Proveedor { get; set; } = null; // Quitar '= null' es opcional aquí.
+
         public string Unidad { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
 
-        public Categoria Categoria { get; set; } = null!;
-        public int CategoriaId { get; set; }
-        
+        [JsonIgnore]
+        public Categoria? Categoria { get; set; } // ¡Tu corrección está perfecta!
+
+        public int CategoriaId { get; set; }
+
         public override string ToString()
         {
             return Nombre;

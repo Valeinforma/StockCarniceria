@@ -1,63 +1,96 @@
 ﻿@page "/nuevoEditarProducto"
 
+@using Service.Models
+@using Service.Services
+
 @inject NavigationManager NavigationManager
 @inject IGenericService<Producto> _productoService
+@inject IGenericService<Categoria> CategoriaService
+@inject IGenericService<Proveedor> ProveedorService
 
-
-@if (producto is null)
+@if (producto is null || ListaCategorias is null || ListaProveedores is null)
 {
     <p><em>Cargando @(isEditing ? "producto para editar" : "formulario")...</em></p>
 }
 else
 {
     <div class="card shadow-lg p-3">
+        <h3 class="card-header bg-primary text-white text-center">@tituloPagina</h3>
         <div class="card-body">
-            <!-- Marcado de color para distinguir edición -->
-            <div style="background-color: @(isEditing ? "#fff3cd" : "white"); padding: 1rem; border-radius: 8px;"> 
+            <div style="background-color: @(isEditing ? "#f8f9fa" : "white"); padding: 1rem; border-radius: 8px;">
                 <EditForm Model="producto" OnValidSubmit="Guardar">
                     <DataAnnotationsValidator />
                     <div class="container">
                         <div class="row g-3">
-                            <!-- Columna de 5 para los campos -->
+                            <!-- Columna de 6 para los campos principales -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label fw-bold">Nombre:</label>
                                     <InputText class="form-control mb-2" @bind-Value="producto.Nombre" />
+                                    <ValidationMessage For="@(() => producto.Nombre)" />
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label fw-bold">Precio Unitario:</label>
                                     <InputNumber class="form-control mb-2" @bind-Value="producto.PrecioUnitario" />
+                                    <ValidationMessage For="@(() => producto.PrecioUnitario)" />
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label fw-bold">Stock:</label>
                                     <InputNumber class="form-control mb-2" @bind-Value="producto.Stock" />
+                                    <ValidationMessage For="@(() => producto.Stock)" />
                                 </div>
                             </div>
-                            <!-- Columna de 5 para los campos secundarios -->
+                            <!-- Columna de 6 para los campos secundarios -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label fw-bold">Unidad (ej: kg, ud):</label>
                                     <InputText class="form-control mb-2" @bind-Value="producto.Unidad" />
+                                    <ValidationMessage For="@(() => producto.Unidad)" />
                                 </div>
-                                <!-- ⚠️ PELIGRO: Esto asume que Categoria está cargada o inicializada -->
-                                <!-- En un proyecto real, usarías un Select con CategoryId -->
+
+                                <!-- Selector de Categoría -->
                                 <div class="form-group">
-                                    <label class="form-label fw-bold">Categoría ID:</label>
-                                    <InputNumber class="form-control mb-2" @bind-Value="producto.CategoriaId" />
+                                    <label class="form-label fw-bold">Categoría:</label>
+                                    <InputSelect id="categoria" @bind-Value="producto.CategoriaId" class="form-select mb-2" @onchange="OnCategoryChange">
+                                        <option value="0">-- Seleccione una Categoría --</option>
+                                        @if (ListaCategorias != null)
+                                        {
+                                            @foreach (var cat in ListaCategorias)
+                                            {
+                                                <option value="@cat.Id">@cat.Nombre</option>
+                                            }
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => producto.CategoriaId)" />
                                 </div>
-                                
+
+                                <!-- Selector de Proveedor -->
                                 <div class="form-group">
-                                    <label class="form-label fw-bold">Proveedor ID (Temporal):</label>
-                                    <InputNumber class="form-control mb-2" @bind-Value="producto.ProveedorId" />
+                                    <label class="form-label fw-bold">Proveedor:</label>
+                                    <InputSelect id="proveedor" @bind-Value="producto.ProveedorId" class="form-select mb-2" @onchange="OnSupplierChange">
+                                        <option value="0">-- Seleccione un Proveedor --</option>
+                                        @if (ListaProveedores != null)
+                                        {
+                                            @foreach (var prov in ListaProveedores)
+                                            {
+                                                <option value="@prov.Id">@prov.Nombre</option>
+                                            }
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => producto.ProveedorId)" />
                                 </div>
                             </div>
                         </div>
-                        
+
                         <ValidationSummary class="alert alert-warning mt-3" />
 
                         <div class="mt-4">
-                            <button class="btn btn-primary me-2" type="submit">@guardarButtonText</button>
-                            <button class="btn btn-danger" type="button" @onclick="Cancelar">Cancelar</button>
+                            <button class="btn btn-primary me-2" type="submit">
+                                <i class="oi oi-check"></i> @guardarButtonText
+                            </button>
+                            <button class="btn btn-danger" type="button" @onclick="Cancelar">
+                                <i class="oi oi-x"></i> Cancelar
+                            </button>
                         </div>
                     </div>
                 </EditForm>
@@ -67,41 +100,142 @@ else
 }
 
 @code {
-    // Usamos SupplyParameterFromQuery para leer de la URL (ruta con ?) o de la ruta (ruta con /{id})
-    [SupplyParameterFromQuery] 
+    [SupplyParameterFromQuery]
     [Parameter]
     public int? idProducto { get; set; }
-    
-    // ⚠️ CRÍTICO: Inicializar a null. Esto maneja el estado "Cargando..."
-    private Producto? producto; 
 
-    private bool isEditing => idProducto.HasValue;
+    private Producto? producto;
+    private List<Categoria>? ListaCategorias;
+    private List<Proveedor>? ListaProveedores;
+
+    private bool isEditing => idProducto.HasValue && idProducto.Value > 0;
     private string guardarButtonText => isEditing ? "Actualizar" : "Agregar";
     private string tituloPagina => isEditing ? "Editando Producto" : "Agregando nuevo Producto";
 
     protected override async Task OnInitializedAsync()
     {
-        if (idProducto != null)
+        // Cargar listas de categorías y proveedores
+        ListaCategorias = (await CategoriaService.GetAllAsync())?.ToList();
+        ListaProveedores = (await ProveedorService.GetAllAsync())?.ToList();
+
+        if (isEditing)
         {
-            producto = await _productoService.GetByIdAsync((int)idProducto);
+            producto = await _productoService.GetByIdAsync((int)idProducto!);
+
+            if (producto != null)
+            {
+                // Sincronizar IDs si las relaciones existen
+                if (producto.Categoria != null)
+                {
+                    producto.CategoriaId = producto.Categoria.Id;
+                }
+                if (producto.Proveedor != null)
+                {
+                    producto.ProveedorId = producto.Proveedor.Id;
+                }
+            }
         }
         else
         {
+            // Inicializar nuevo producto con relaciones vacías
             producto = new Producto
             {
-                Categoria = new Categoria()
+                Categoria = new Categoria(),
+                Proveedor = new Proveedor()
             };
+        }
+    }
+
+    private void OnCategoryChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int selectedId) && selectedId != 0 && ListaCategorias != null)
+        {
+            var selectedCategory = ListaCategorias.FirstOrDefault(c => c.Id == selectedId);
+            if (selectedCategory != null && producto != null)
+            {
+                producto.Categoria = selectedCategory;
+                producto.CategoriaId = selectedId;
+            }
+        }
+        else if (producto != null)
+        {
+            producto.Categoria = new Categoria();
+            producto.CategoriaId = 0;
+        }
+    }
+
+    private void OnSupplierChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int selectedId) && selectedId != 0 && ListaProveedores != null)
+        {
+            var selectedSupplier = ListaProveedores.FirstOrDefault(p => p.Id == selectedId);
+            if (selectedSupplier != null && producto != null)
+            {
+                producto.Proveedor = selectedSupplier;
+                producto.ProveedorId = selectedId;
+            }
+        }
+        else if (producto != null)
+        {
+            producto.Proveedor = new Proveedor();
+            producto.ProveedorId = 0;
         }
     }
 
     private async Task Guardar()
     {
-        //logger.LogInformation(campania.PropertiesToString());
-        if (idProducto != null)
-            await _productoService.UpdateAsync(producto);
-        else
-            await _productoService.AddAsync(producto);
-        NavigationManager.NavigateTo($"productos");
+        try
+        {
+            // Validar que producto no sea null
+            if (producto == null)
+            {
+                Console.WriteLine("Error: El producto no puede ser nulo.");
+                return;
+            }
+
+            // Sincronizar IDs con los objetos de navegación
+            if (producto.Categoria != null && producto.Categoria.Id > 0)
+            {
+                producto.CategoriaId = producto.Categoria.Id;
+            }
+            if (producto.Proveedor != null && producto.Proveedor.Id > 0)
+            {
+                producto.ProveedorId = producto.Proveedor.Id;
+            }
+
+            // Validar que se hayan seleccionado categoría y proveedor
+            if (producto.CategoriaId == 0 || producto.ProveedorId == 0)
+            {
+                Console.WriteLine("Por favor, selecciona una Categoría y un Proveedor válidos.");
+                return;
+            }
+
+            // Desvincular objetos de navegación para enviar solo IDs a la API
+            var tempCategoria = producto.Categoria;
+            var tempProveedor = producto.Proveedor;
+
+            producto.Categoria = null;
+            producto.Proveedor = null;
+
+            if (isEditing)
+            {
+                await _productoService.UpdateAsync(producto);
+            }
+            else
+            {
+                await _productoService.AddAsync(producto);
+            }
+
+            // Opcional: restaurar objetos si el componente se mantiene en memoria
+            producto.Categoria = tempCategoria;
+            producto.Proveedor = tempProveedor;
+
+            NavigationManager.NavigateTo("productos");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar: {ex.Message}");
+        }
     }
 
     private void Cancelar()

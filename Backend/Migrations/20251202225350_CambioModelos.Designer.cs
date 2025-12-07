@@ -4,6 +4,7 @@ using Backend.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(StockCarniceriaContext))]
-    partial class StockCarniceriaContextModelSnapshot : ModelSnapshot
+    [Migration("20251202225350_CambioModelos")]
+    partial class CambioModelos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -503,7 +506,7 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             ClienteId = 3,
-                            Fecha = new DateTime(2025, 11, 30, 19, 1, 10, 51, DateTimeKind.Local).AddTicks(8822),
+                            Fecha = new DateTime(2025, 11, 25, 19, 53, 47, 346, DateTimeKind.Local).AddTicks(7216),
                             IsDeleted = false,
                             PrecioTotal = 76.50m,
                             TipoPagoEnum = 1,
@@ -513,7 +516,7 @@ namespace Backend.Migrations
                         {
                             Id = 2,
                             ClienteId = 4,
-                            Fecha = new DateTime(2025, 12, 2, 19, 1, 10, 51, DateTimeKind.Local).AddTicks(8852),
+                            Fecha = new DateTime(2025, 11, 27, 19, 53, 47, 346, DateTimeKind.Local).AddTicks(7247),
                             IsDeleted = false,
                             PrecioTotal = 57.49m,
                             TipoPagoEnum = 2,
@@ -523,7 +526,7 @@ namespace Backend.Migrations
                         {
                             Id = 3,
                             ClienteId = 5,
-                            Fecha = new DateTime(2025, 12, 5, 19, 1, 10, 51, DateTimeKind.Local).AddTicks(8856),
+                            Fecha = new DateTime(2025, 11, 30, 19, 53, 47, 346, DateTimeKind.Local).AddTicks(7251),
                             IsDeleted = false,
                             PrecioTotal = 94.99m,
                             TipoPagoEnum = 3,
@@ -532,7 +535,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 4,
-                            Fecha = new DateTime(2025, 12, 6, 19, 1, 10, 51, DateTimeKind.Local).AddTicks(8862),
+                            Fecha = new DateTime(2025, 12, 1, 19, 53, 47, 346, DateTimeKind.Local).AddTicks(7255),
                             IsDeleted = false,
                             NombreClienteSinUsuario = "Cliente Anónimo",
                             PrecioTotal = 45.75m,
@@ -568,7 +571,7 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Service.Models.Proveedor", "Proveedor")
+                    b.HasOne("Service.Models.Proveedor", "proveedor")
                         .WithMany()
                         .HasForeignKey("ProveedorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -576,7 +579,7 @@ namespace Backend.Migrations
 
                     b.Navigation("Categoria");
 
-                    b.Navigation("Proveedor");
+                    b.Navigation("proveedor");
                 });
 
             modelBuilder.Entity("Service.Models.Venta", b =>

@@ -8,6 +8,7 @@
     xmlns:contentviews="clr-namespace:MovilApp.ContentViews"
     xmlns:viewmodels="clr-namespace:MovilApp.ViewModels"
     xmlns:views="clr-namespace:MovilApp.Views.StockCarniceria"
+    xmlns:admin="clr-namespace:MovilApp.Views.Admin"
     Title="StockCarniceria"
     Shell.FlyoutBehavior="Flyout"
     Shell.BackgroundColor="#B70000"
@@ -48,10 +49,24 @@
         IsEnabled="{Binding UserIsLogged}">
 
         <ShellContent
-            Title="Menú Principal"
+            Title="Home" 
             ContentTemplate="{DataTemplate local:MainPage}"
             Route="MainPage" />
 
+        <Tab Title="Admin Productos"
+             Route="productos"
+             Icon="cart.png">
+            <ShellContent
+                Title="Lista"
+                Icon="list.png"
+                ContentTemplate="{DataTemplate views:ProductosView}"
+                Route="ListaProductos" />
+            <ShellContent
+                Title="Agregar Producto"
+                Icon="add.png"
+                ContentTemplate="{DataTemplate admin:AddEditProductoView}"
+                Route="AgregarProducto" />
+        </Tab>
     </FlyoutItem>
 
     <FlyoutItem

@@ -1,11 +1,13 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Service.Models
 {
     public class Categoria  
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        
+        public string Nombre { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
         
         [JsonIgnore]

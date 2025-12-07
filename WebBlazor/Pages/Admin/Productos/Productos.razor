@@ -66,9 +66,7 @@ else
 @code {
 	private List<Producto>? productos;
 
-	// ----------------------------------------------------
-	// LÓGICA DE INICIALIZACIÓN
-	// ----------------------------------------------------
+	
 	protected override async Task OnInitializedAsync()
 	{
 		// 1. Verificación de Autenticación (como en el ejemplo funcional)
@@ -93,9 +91,6 @@ else
 		}
 	}
 
-	// ----------------------------------------------------
-	// LÓGICA DE ELIMINACIÓN
-	// ----------------------------------------------------
 	private async Task DeleteProducto(Producto producto)
 	{
 		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions

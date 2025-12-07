@@ -16,7 +16,7 @@ namespace Desktop.Views
         private readonly GenericService<Producto> _productoService = new GenericService<Producto>();
         private readonly GenericService<Categoria> _categoriaService = new GenericService<Categoria>();
 
-        // Variables de Estado (usando Nullable Reference Types, si están habilitados)
+        // Variables de Estado
         private Categoria? _currentCategoria;
         private Producto? _currentProducto;
         private List<Producto>? _productos;
@@ -26,11 +26,11 @@ namespace Desktop.Views
         {
             InitializeComponent();
 
-            // Suscribir eventos una sola vez
+            // Suscribir eventos
             checkBoxEliminados.CheckedChanged += DisplayHideControlsRestoreButton;
-            checkBoxEliminados.CheckedChanged += CheckBoxEliminados_CheckedChangedAsync;
+            checkBoxEliminados.CheckedChanged += CheckBoxEliminados_CheckedChanged;
 
-            // Iniciar la carga de datos al abrir la vista
+            // Iniciar la carga de datos
             _ = InitializeDataAsync();
         }
 
@@ -38,64 +38,50 @@ namespace Desktop.Views
 
         private async Task InitializeDataAsync()
         {
-            // 1. Cargar la lista de categorías (necesario para el ComboBox)
+            // 1. Cargar la lista de categorías (para el ComboBox)
             await CargarCategoriasAsync();
 
             // 2. Cargar la lista inicial de productos (activos)
-            await CargarProductosAsync();
+            await GetAllData();
         }
 
         private async Task CargarCategoriasAsync()
         {
-           
-            
             try
             {
                 _categorias = await _categoriaService.GetAllAsync();
 
-                if (_categorias == null) // Manejar el nulo por si la API falla
+                if (_categorias == null)
                 {
-                    _categorias = new List<Categoria>(); // Asegurar que no sea nulo
+                    _categorias = new List<Categoria>();
                 }
 
-                // ... (configuración ComboBox)
                 ComboCategorias.DataSource = _categorias;
                 ComboCategorias.DisplayMember = "Nombre";
                 ComboCategorias.ValueMember = "Id";
 
-                // **Elimina o comenta esta línea: ComboCategorias.SelectedItem = null;** // Si quieres que inicie sin selección:
                 if (ComboCategorias.Items.Count > 0)
                 {
                     ComboCategorias.SelectedIndex = -1;
                 }
-
-                if (!_categorias.Any())
-                {
-                    // Muestra este mensaje solo si la lista está vacía, no si falla la carga.
-                    MessageBox.Show("No se encontraron categorías disponibles.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
             }
-            catch (Exception ex)
+            catch (Exception ex) // <-- ¡Asegúrate de tener este bloque!
             {
-                MessageBox.Show($"Error al cargar categorías: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Muestra el mensaje de la excepción para ver el detalle de la API.
+                MessageBox.Show($"Error al cargar categorías: {ex.Message}", "Error de Conexión/API", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        
-            
-         }
-        
+        }
 
-        private async Task CargarProductosAsync(string? filter = null)
+        private async Task GetAllData(string? filter = null)
         {
             try
             {
                 if (checkBoxEliminados.Checked)
                 {
-                    // Usa el nuevo endpoint: GET api/Productos/deleteds
                     _productos = await _productoService.GetAllDeletedAsync();
                 }
                 else
                 {
-                    // Usa el endpoint: GET api/Productos?filter={filter}
                     _productos = await _productoService.GetAllAsync(filter);
                 }
 
@@ -111,16 +97,22 @@ namespace Desktop.Views
         {
             GridData.DataSource = _productos;
 
-            // Ocultar propiedades internas y la propiedad de navegación que ahora debería ser un DTO o estar ignorada.
-            // Si el backend retorna un DTO (objeto anónimo), "Categoria" será "CategoriaNombre".
-            // Si retorna el modelo Producto, ocultamos "Categoria".
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad","Categoria");
+            // Ocultar propiedades internas y las propiedades de navegación innecesarias para la edición
+            // NOTA: Se deja 'Categoria' visible para mostrar el nombre.
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "DetallesVenta", "ProveedorId", "Proveedor");
 
             // Aplicar formato de moneda
-            if (GridData.Columns.Contains("Precio"))
+            if (GridData.Columns.Contains("PrecioUnitario"))
             {
-                GridData.Columns["Precio"].DefaultCellStyle.Format = "C2";
-                GridData.Columns["Precio"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                GridData.Columns["PrecioUnitario"].HeaderText = "Precio";
+                GridData.Columns["PrecioUnitario"].DefaultCellStyle.Format = "C2";
+                GridData.Columns["PrecioUnitario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+
+            // Si el grid contiene la columna Categoria (como objeto de navegación)
+            if (GridData.Columns.Contains("Categoria"))
+            {
+                GridData.Columns["Categoria"].HeaderText = "Categoría";
             }
         }
 
@@ -138,10 +130,9 @@ namespace Desktop.Views
             BtnBuscar.Enabled = !isDeletedMode;
         }
 
-        private async void CheckBoxEliminados_CheckedChangedAsync(object? sender, EventArgs e)
+        private async void CheckBoxEliminados_CheckedChanged(object sender, EventArgs e)
         {
-            // Recarga el listado de productos usando el modo (Activo/Eliminado)
-            await CargarProductosAsync();
+            await GetAllData();
         }
 
         private void GridData_SelectionChanged(object sender, EventArgs e)
@@ -157,7 +148,6 @@ namespace Desktop.Views
 
         private void ComboCategorias_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Opcional: Mantener la referencia a la categoría seleccionada
             _currentCategoria = ComboCategorias.SelectedItem as Categoria;
         }
 
@@ -192,10 +182,10 @@ namespace Desktop.Views
 
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
-            // Validación
-            if (_currentProducto == null || ComboCategorias.SelectedItem == null)
+            // --- Validaciones ---
+            if (_currentProducto == null)
             {
-                MessageBox.Show("Debe completar todos los campos requeridos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No se pudo inicializar el objeto Producto para guardar.", "Error interno", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -205,43 +195,59 @@ namespace Desktop.Views
                 return;
             }
 
-            // 1. Mapeo de datos (Conversión correcta a decimal)
+            if (ComboCategorias.SelectedItem == null)
+            {
+                MessageBox.Show("Debe seleccionar una categoría.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 1. Mapeo de datos (Transferir valores de los controles al objeto _currentProducto)
             _currentProducto.Nombre = TxtNombre.Text.Trim();
-            _currentProducto.PrecioUnitario = NumericPrecio.Value; // NumericUpDown ya retorna decimal
+            _currentProducto.PrecioUnitario = NumericPrecio.Value;
             _currentProducto.Stock = (int)NumericStock.Value;
-            _currentProducto.Unidad = "kg"; // Establecer una unidad por defecto si no tienes un campo
+            _currentProducto.Unidad = "kg";
 
-            // 2. Asignar solo el ID de la categoría
+            // 2. Asignar la clave foránea (Foreign Key)
             _currentProducto.CategoriaId = ((Categoria)ComboCategorias.SelectedItem).Id;
-            _currentProducto.Categoria = null; // No enviar el objeto de navegación
 
+            // ** CORRECCIÓN: ANULAR TODAS las propiedades de navegación antes de enviar **
+            // Esto es crucial porque el objeto podría contener datos de Proveedor y Categoria 
+            // cargados durante la operación de Modificar (por el GridData), y el servidor
+            // rechaza esos objetos anidados en el POST/PUT.
+            _currentProducto.Categoria = null;
+            _currentProducto.Proveedor = null;
+            _currentProducto.DetallesVenta = null;
+
+            // 3. Lógica de Guardado (Add o Update)
             bool success = false;
             string action = _currentProducto.Id == 0 ? "agregado" : "modificado";
 
             try
             {
-                if (_currentProducto.Id == 0)
+                if (_currentProducto.Id == 0) // Producto nuevo (ADD)
                 {
                     var newProduct = await _productoService.AddAsync(_currentProducto);
                     success = newProduct != null;
                 }
-                else
+                else // Producto existente (UPDATE)
                 {
                     success = await _productoService.UpdateAsync(_currentProducto);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el producto: {ex.Message}\n\nDetalles internos: {ex.InnerException?.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // El error de BadRequest se captura aquí
+                MessageBox.Show($"Error al guardar el producto: {ex.Message}\n\nDetalles internos: {ex.InnerException?.Message}", "Error de Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // 4. Post-Proceso 
             if (success)
             {
                 LabelStatusMessage.Text = $"Producto {_currentProducto.Nombre} {action} correctamente";
                 TimerStatusBar.Start();
 
-                await CargarProductosAsync();
+                await GetAllData(); // Recargar la lista de productos
 
                 LimpiarControlAgregar();
                 TabControl.SelectedTab = tabPageLista;
@@ -249,29 +255,15 @@ namespace Desktop.Views
             }
             else
             {
-                MessageBox.Show("Error al guardar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al guardar el producto. El servicio de datos no indicó éxito.", "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void BtnModificar_Click(object sender, EventArgs e)
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                // El GridData contiene un tipo anónimo desde el servidor
-                // { Id, Nombre, Precio, Stock, Unidad, CategoriaId, CategoriaNombre }
-                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
-
-                // Crear un Producto a partir del tipo anónimo
-                _currentProducto = new Producto
-                {
-                    Id = productoDTO.Id,
-                    Nombre = productoDTO.Nombre,
-                    PrecioUnitario = productoDTO.Precio,
-                    Stock = productoDTO.Stock,
-                    Unidad = productoDTO.Unidad,
-                    CategoriaId = productoDTO.CategoriaId,
-                    Categoria = null,
-                    IsDeleted = false
-                };
+                _currentProducto = (Producto)GridData.SelectedRows[0].DataBoundItem;
 
                 // Mapear a los controles
                 TxtNombre.Text = _currentProducto.Nombre;
@@ -281,7 +273,8 @@ namespace Desktop.Views
                 // Seleccionar la categoría
                 if (_categorias != null && _currentProducto.CategoriaId != 0)
                 {
-                    ComboCategorias.SelectedItem = _categorias.FirstOrDefault(c => c.Id == _currentProducto.CategoriaId);
+                    var categoriaSeleccionada = _categorias.FirstOrDefault(c => c.Id == _currentProducto.CategoriaId);
+                    ComboCategorias.SelectedItem = categoriaSeleccionada;
                 }
                 else
                 {
@@ -292,7 +285,8 @@ namespace Desktop.Views
             }
             else
             {
-                MessageBox.Show("No hay Producto seleccionado", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Debe seleccionar un producto para modificarlo.", "Error de Selección",
+                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -300,18 +294,17 @@ namespace Desktop.Views
         {
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                // El GridData contiene un tipo anónimo desde el servidor
-                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
-                
-                var respuesta = MessageBox.Show($"¿Seguro que quieres eliminar (lógicamente) el Producto: {productoDTO.Nombre}?", "Borrar Producto", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
+
+                var respuesta = MessageBox.Show($"¿Seguro que quieres eliminar (lógicamente) el Producto: {entitySelected.Nombre}?", "Borrar Producto", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
                 {
-                    if (await _productoService.DeleteAsync(productoDTO.Id))
+                    if (await _productoService.DeleteAsync(entitySelected.Id))
                     {
-                        LabelStatusMessage.Text = $"Producto {productoDTO.Nombre} eliminado correctamente";
+                        LabelStatusMessage.Text = $"Producto {entitySelected.Nombre} eliminado correctamente";
                         TimerStatusBar.Start();
-                        await CargarProductosAsync();
+                        await GetAllData();
                     }
                     else
                     {
@@ -331,18 +324,17 @@ namespace Desktop.Views
 
             if (GridData.RowCount > 0 && GridData.SelectedRows.Count > 0)
             {
-                // El GridData contiene un tipo anónimo desde el servidor
-                dynamic productoDTO = GridData.SelectedRows[0].DataBoundItem;
-                
-                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar el Producto: {productoDTO.Nombre}?", "Confirmar Restauración", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                Producto entitySelected = (Producto)GridData.SelectedRows[0].DataBoundItem;
+
+                var respuesta = MessageBox.Show($"¿Seguro que quieres recuperar el Producto: {entitySelected.Nombre}?", "Confirmar Restauración", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (respuesta == DialogResult.Yes)
                 {
-                    if (await _productoService.RestoreAsync(productoDTO.Id))
+                    if (await _productoService.RestoreAsync(entitySelected.Id))
                     {
-                        LabelStatusMessage.Text = $"Producto {productoDTO.Nombre} restaurado correctamente";
+                        LabelStatusMessage.Text = $"Producto {entitySelected.Nombre} restaurado correctamente";
                         TimerStatusBar.Start();
-                        await CargarProductosAsync();
+                        await GetAllData();
                     }
                     else
                     {
@@ -356,14 +348,11 @@ namespace Desktop.Views
         {
             if (checkBoxEliminados.Checked)
             {
-                // No aplica buscar en eliminados, a menos que tu endpoint /deleteds también acepte filtro.
-                // Por simplicidad, recargamos la lista completa de eliminados o no hacemos nada.
                 MessageBox.Show("La búsqueda no está habilitada en la vista de productos eliminados.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            // Carga los productos activos filtrados
-            await CargarProductosAsync(TxtBuscar.Text);
+            await GetAllData(TxtBuscar.Text);
         }
     }
 }

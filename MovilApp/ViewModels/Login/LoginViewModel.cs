@@ -47,7 +47,7 @@ namespace MovilApp.ViewModels.Login
 
             _userRepository = new FileUserRepository("StockCarniceriaMovilApp");
             ChequearSiHayUsuarioAlmacenado();
-            // 🛑 SE ELIMINÓ LA INICIALIZACIÓN MANUAL DE COMANDOS 🛑
+            
         }
 
         // 1. COMANDO DE REGISTRO

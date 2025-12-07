@@ -5,81 +5,104 @@ using Service.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Maui.Controls; 
 
 namespace MovilApp.ViewModels.Productos
 {
-    partial class ProductosViewModel : ObservableObject
+    // La clase parcial es necesaria para que el Community Toolkit genere el código
+    public partial class ProductosViewModel : ObservableObject
     {
-        // 1. SERVICIOS 🛠️
-        // Utilizamos el servicio genérico
-        GenericService<Producto> _productosService = new();
+        // 1. SERVICIOS 
+        // Instancia del servicio genérico para el modelo 'Producto'
+        GenericService<Producto> _productosService = new();
 
-        // 2. PROPIEDADES OBSERVABLES ✨
-        [ObservableProperty]
+        // 2. PROPIEDADES OBSERVABLES 
+
+        [ObservableProperty]
         private string textoBusqueda = string.Empty;
 
-        // Propiedad que indica la actividad para la UI (usando la propiedad autogenerada 'EstaDescargando')
-        [ObservableProperty]
+        // Propiedad que indica la actividad para la UI 
+        [ObservableProperty]
         private bool estaDescargando;
 
-        // Colección principal de productos
-        [ObservableProperty]
+        // Colección principal de productos (enlazada al CollectionView)
+        [ObservableProperty]
         private ObservableCollection<Producto> productos = new();
 
         [ObservableProperty]
         private string mensajeError = string.Empty;
 
+        // Propiedad opcional para manejar el producto seleccionado si no usas el botón
+        [ObservableProperty]
+        private Producto productoSeleccionado;
 
-        // 3. COMANDOS ⚡
-        // Usaremos AsyncRelayCommand para la búsqueda.
-        public IRelayCommand BuscarCommand { get; }
+
+        // 3. COMANDOS 
+        // Búsqueda y Limpiar usando el patrón de inyección en el constructor.
+        public IRelayCommand BuscarCommand { get; }
         public IRelayCommand LimpiarCommand { get; }
 
+        // Comando para el botón "Ver Detalle" en la tarjeta del producto.
+        public IRelayCommand VerDetalleCommand { get; }
 
-        // 4. CONSTRUCTOR 🏗️
-        public ProductosViewModel()
+
+        // 4. CONSTRUCTOR 
+        public ProductosViewModel()
         {
-            // **CORRECCIÓN:** Usar AsyncRelayCommand para comandos asíncronos
-            BuscarCommand = new AsyncRelayCommand(OnBuscar);
+            // Usamos AsyncRelayCommand para la búsqueda ya que llama a un servicio (async)
+            BuscarCommand = new AsyncRelayCommand(OnBuscar);
 
-            // Usar RelayCommand para comandos síncronos
-            LimpiarCommand = new RelayCommand(OnLimpiar);
+            // Usamos RelayCommand para limpiar, llamando luego al comando de búsqueda
+            LimpiarCommand = new RelayCommand(OnLimpiar);
 
-            // Inicializar la carga de datos al iniciar el ViewModel
-            _ = InicializarAsync();
+            // Usamos RelayCommand<T> para pasar el objeto 'Producto' al método
+            VerDetalleCommand = new RelayCommand<Producto>(OnVerDetalle);
+
+            // Inicializar la carga de datos al iniciar el ViewModel
+            _ = InicializarAsync();
         }
 
-        // 5. MÉTODOS DE LÓGICA 🧠
+        // 5. MÉTODOS DE LÓGICA 
 
-        private async Task InicializarAsync()
+        private async Task InicializarAsync()
         {
-            // Llama a la búsqueda inicial para llenar la lista.
-            await OnBuscar();
+            // Llama a la búsqueda inicial para llenar la lista (con TextoBusqueda vacío)
+            await OnBuscar();
         }
 
 
-        // **CORRECCIÓN:** Cambiado a 'async Task' para mejor manejo asíncrono
-        private async Task OnBuscar()
+        // Método Asíncrono para buscar productos
+        private async Task OnBuscar()
         {
-            // Usar la propiedad generada (EstaDescargando)
             if (EstaDescargando) return;
 
             try
             {
-                // Iniciar indicador de actividad
                 EstaDescargando = true;
+                MensajeError = string.Empty; // Limpiar mensajes de error
 
-                // Llama al servicio para obtener productos (filtrados por TextoBusqueda)
-                var productosData = await _productosService.GetAllAsync(TextoBusqueda);
+                // Llama al servicio para obtener productos (filtrados por TextoBusqueda)
+                // Asumimos que GetAllAsync() maneja la lógica de filtrado del texto.
+                var productosData = await _productosService.GetAllAsync(TextoBusqueda);
 
-                // Asignar los resultados a la propiedad 'Productos'
-                Productos = productosData != null ?
-                            new ObservableCollection<Producto>(productosData)
-                            : new ObservableCollection<Producto>();
+                // Asignar los resultados a la propiedad 'Productos'
+                Productos = productosData != null
+              ? new ObservableCollection<Producto>(productosData)
+              : new ObservableCollection<Producto>();
+
+                if (Productos.Count == 0 && !string.IsNullOrWhiteSpace(TextoBusqueda))
+                {
+                    MensajeError = "No se encontraron productos que coincidan con la búsqueda.";
+                }
+            }
+            catch (Exception ex)
+            {
+                MensajeError = "Error al cargar los productos: " + ex.Message;
+                // Opcional: Mostrar alerta de error
+                await Shell.Current.DisplayAlert("Error", MensajeError, "OK");
             }
             finally
             {
-                // Detener indicador de actividad
                 EstaDescargando = false;
             }
         }
@@ -87,24 +110,31 @@ namespace MovilApp.ViewModels.Productos
 
         private void OnLimpiar()
         {
-            // Usar la propiedad generada (TextoBusqueda)
             TextoBusqueda = string.Empty;
 
             // Disparar la búsqueda nuevamente con el texto vacío.
-            // La llamada síncrona a un método asíncrono no es ideal, pero es el patrón de tu ejemplo.
-            // Lo más limpio sería que OnBuscar fuese también AsyncRelayCommand.Execute().
-            // Como ya lo hicimos en el constructor, aquí solo llamamos al método del comando:
             BuscarCommand.Execute(null);
         }
 
-        // COMANDO PARA VOLVER
-        [RelayCommand]
+        // Método para el botón "Ver Detalle" (enlazado al VerDetalleCommand)
+        private async void OnVerDetalle(Producto producto)
+        {
+            if (producto == null) return;
+
+            // 🚨 Aquí debes implementar la lógica de navegación real
+            await Shell.Current.DisplayAlert("Detalle de Producto",
+                $"Navegando a la página de detalle para: {producto.Nombre}",
+                "OK");
+
+        }
+
+
+       
+        [RelayCommand]
         private async Task Volver()
         {
-            if (Application.Current?.MainPage is NavigationPage navPage)
-            {
-                await navPage.PopAsync();
-            }
+            // Usa Shell.Current.GoToAsync("..") para subir un nivel de navegación
+            await Shell.Current.GoToAsync("..");
         }
     }
 }

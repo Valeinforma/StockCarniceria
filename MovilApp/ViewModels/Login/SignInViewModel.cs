@@ -47,7 +47,7 @@ namespace MovilApp.ViewModels.Login
         [NotifyCanExecuteChangedFor(nameof(RegistrarseCommand))]
         private string verifyPassword;
 
-        // 4. CONSTRUCTOR 🏗️
+        // 4. CONSTRUCTOR 
         public SignInViewModel()
         {
             FirebaseApiKey = Service.Properties.Resources.ApiKeyFirebase;

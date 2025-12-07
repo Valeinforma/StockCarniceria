@@ -123,8 +123,13 @@ namespace Backend.Controllers
         {
             if (_context.Proveedores == null)
             {
+                // Verifica si la base de datos está disponible para esta entidad
                 return Problem("El conjunto de entidades 'Proveedores' es nulo.");
             }
+
+            // Lógica corregida: 
+            // 1. Se eliminó el bucle y la llamada Attach incorrecta.
+            // 2. Se asegura que la entidad a insertar no esté marcada como eliminada.
 
             try
             {
