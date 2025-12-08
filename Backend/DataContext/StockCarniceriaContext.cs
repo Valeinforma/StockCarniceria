@@ -23,6 +23,29 @@ public class StockCarniceriaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Query Filters para eliminar lógicamente (PRIMERO)
+        modelBuilder.Entity<Producto>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Categoria>().HasQueryFilter(c => !c.IsDeleted);
+        modelBuilder.Entity<Proveedor>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Venta>().HasQueryFilter(v => !v.IsDeleted);
+        modelBuilder.Entity<DetalleVenta>().HasQueryFilter(dv => !dv.IsDeleted);
+        modelBuilder.Entity<Usuario>().HasQueryFilter(u => !u.IsDeleted);
+
+        // Configurar solo las relaciones críticas
+        // Relación: Categoria -> Productos (1:N)
+        modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Categoria)
+            .WithMany(c => c.Productos)
+            .HasForeignKey(p => p.CategoriaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Relación: Proveedor -> Productos (1:N)
+        modelBuilder.Entity<Producto>()
+            .HasOne(p => p.Proveedor)
+            .WithMany(pr => pr.Productos)
+            .HasForeignKey(p => p.ProveedorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Datos Semilla para Usuarios
         modelBuilder.Entity<Usuario>().HasData(
             new Usuario { Id = 1, Nombre = "Carlos Mendez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false },
@@ -32,6 +55,7 @@ public class StockCarniceriaContext : DbContext
             new Usuario { Id = 5, Nombre = "Roberto López", tipoUsuarioEnum = TipoUsuarioEnum.Cliente, IsDeleted = false },
             new Usuario { Id = 6, Nombre = "Sofía Martínez", tipoUsuarioEnum = TipoUsuarioEnum.Vendedor, IsDeleted = false }
         );
+
         // Datos Semilla para Categorias
         modelBuilder.Entity<Categoria>().HasData(
             new Categoria { Id = 1, Nombre = "Carnes Rojas", IsDeleted = false },
@@ -83,15 +107,5 @@ public class StockCarniceriaContext : DbContext
             new DetalleVenta { Id = 7, VentaId = 4, ProductoId = 8, CantidadProductoVendido = 1, PrecioTotalProductoVendido = 14.50M, IsDeleted = false },
             new DetalleVenta { Id = 8, VentaId = 4, ProductoId = 12, CantidadProductoVendido = 2, PrecioTotalProductoVendido = 23.98M, IsDeleted = false }
         );
-
-        // Configuramos las querys para que no devuelvan los elementos eliminados
-        modelBuilder.Entity<Producto>().HasQueryFilter(p => !p.IsDeleted);
-        modelBuilder.Entity<Categoria>().HasQueryFilter(c => !c.IsDeleted);
-        modelBuilder.Entity<Proveedor>().HasQueryFilter(p => !p.IsDeleted);
-        modelBuilder.Entity<Venta>().HasQueryFilter(v => !v.IsDeleted);
-        modelBuilder.Entity<DetalleVenta>().HasQueryFilter(dv => !dv.IsDeleted);
-        modelBuilder.Entity<Usuario>().HasQueryFilter(u => !u.IsDeleted);
-
-
     }
 }

@@ -97,9 +97,8 @@ namespace Desktop.Views
         {
             GridData.DataSource = _productos;
 
-            // Ocultar propiedades internas y las propiedades de navegación innecesarias para la edición
-            // NOTA: Se deja 'Categoria' visible para mostrar el nombre.
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "DetallesVenta", "ProveedorId", "Proveedor");
+            // Ocultar propiedades internas
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "DetallesVenta", "ProveedorId", "Proveedor", "Categoria");
 
             // Aplicar formato de moneda
             if (GridData.Columns.Contains("PrecioUnitario"))
@@ -109,10 +108,24 @@ namespace Desktop.Views
                 GridData.Columns["PrecioUnitario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
 
-            // Si el grid contiene la columna Categoria (como objeto de navegación)
-            if (GridData.Columns.Contains("Categoria"))
+            // NUEVA COLUMNA: Mostrar el nombre de la categoría
+            if (!GridData.Columns.Contains("NombreCategoria"))
             {
-                GridData.Columns["Categoria"].HeaderText = "Categoría";
+                DataGridViewTextBoxColumn colCategoria = new DataGridViewTextBoxColumn();
+                colCategoria.Name = "NombreCategoria";
+                colCategoria.HeaderText = "Categoría";
+                GridData.Columns.Add(colCategoria);
+            }
+
+            // Llenar la columna manualmente con nombres de categorías
+            if (_categorias != null && _productos != null)
+            {
+                for (int i = 0; i < GridData.Rows.Count; i++)
+                {
+                    var producto = _productos[i];
+                    var categoria = _categorias.FirstOrDefault(c => c.Id == producto.CategoriaId);
+                    GridData.Rows[i].Cells["NombreCategoria"].Value = categoria?.Nombre ?? "Sin categoría";
+                }
             }
         }
 
@@ -169,26 +182,20 @@ namespace Desktop.Views
         private void BtnAgregar_Click(object sender, EventArgs e)
         {
             LimpiarControlAgregar();
-            _currentProducto = new Producto();
+            _currentProducto = null;  // ← Inicializar como null para indicar que es NUEVO
             TabControl.SelectedTab = tabPageAgregar_Editar;
         }
 
         private void BtnCancelar_Click(object sender, EventArgs e)
         {
+            _currentProducto = null;  // ← Limpiar estado
+            LimpiarControlAgregar();  // ← Agregar esta línea
             TabControl.SelectedTab = tabPageLista;
-            LimpiarControlAgregar();
-            _currentProducto = null;
         }
 
         private async void BtnGuardar_Click(object sender, EventArgs e)
         {
             // --- Validaciones ---
-            if (_currentProducto == null)
-            {
-                MessageBox.Show("No se pudo inicializar el objeto Producto para guardar.", "Error interno", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(TxtNombre.Text))
             {
                 MessageBox.Show("El nombre del producto es requerido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -201,61 +208,57 @@ namespace Desktop.Views
                 return;
             }
 
-            // 1. Mapeo de datos (Transferir valores de los controles al objeto _currentProducto)
-            _currentProducto.Nombre = TxtNombre.Text.Trim();
-            _currentProducto.PrecioUnitario = NumericPrecio.Value;
-            _currentProducto.Stock = (int)NumericStock.Value;
-            _currentProducto.Unidad = "kg";
-
-            // 2. Asignar la clave foránea (Foreign Key)
-            _currentProducto.CategoriaId = ((Categoria)ComboCategorias.SelectedItem).Id;
-
-            // ** CORRECCIÓN: ANULAR TODAS las propiedades de navegación antes de enviar **
-            // Esto es crucial porque el objeto podría contener datos de Proveedor y Categoria 
-            // cargados durante la operación de Modificar (por el GridData), y el servidor
-            // rechaza esos objetos anidados en el POST/PUT.
-            _currentProducto.Categoria = null;
-            _currentProducto.Proveedor = null;
-            _currentProducto.DetallesVenta = null;
-
-            // 3. Lógica de Guardado (Add o Update)
-            bool success = false;
-            string action = _currentProducto.Id == 0 ? "agregado" : "modificado";
-
             try
             {
-                if (_currentProducto.Id == 0) // Producto nuevo (ADD)
+                // 1. Crear objeto a guardar
+                Producto productoAGuardar = new Producto
                 {
-                    var newProduct = await _productoService.AddAsync(_currentProducto);
+                    Id = _currentProducto?.Id ?? 0,
+                    Nombre = TxtNombre.Text.Trim(),
+                    PrecioUnitario = NumericPrecio.Value,
+                    Stock = (int)NumericStock.Value,
+                    Unidad = "kg",
+                    Categoria = (Categoria)ComboCategorias.SelectedItem,
+                    CategoriaId = ((Categoria)ComboCategorias.SelectedItem).Id,
+                    ProveedorId = 1,
+                    Proveedor = new Proveedor { Id = 1 },
+                    DetallesVenta = null
+                };
+
+                bool success = false;
+                string action = _currentProducto?.Id > 0 ? "modificado" : "agregado";
+
+                // 2. Guardar según sea crear o actualizar
+                if (_currentProducto?.Id > 0)
+                {
+                    // ✅ ACTUALIZAR producto existente
+                    success = await _productoService.UpdateAsync(productoAGuardar);
+                }
+                else
+                {
+                    // ✅ CREAR nuevo producto
+                    var newProduct = await _productoService.AddAsync(productoAGuardar);
                     success = newProduct != null;
                 }
-                else // Producto existente (UPDATE)
+
+                // 3. Resultado
+                if (success)
                 {
-                    success = await _productoService.UpdateAsync(_currentProducto);
+                    _currentProducto = null;
+                    LabelStatusMessage.Text = $"Producto '{productoAGuardar.Nombre}' {action} correctamente";
+                    TimerStatusBar.Start();
+                    await GetAllData();
+                    LimpiarControlAgregar();
+                    TabControl.SelectedTab = tabPageLista;
+                }
+                else
+                {
+                    MessageBox.Show("Error al guardar el producto. El servicio de datos no indicó éxito.", "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                // El error de BadRequest se captura aquí
                 MessageBox.Show($"Error al guardar el producto: {ex.Message}\n\nDetalles internos: {ex.InnerException?.Message}", "Error de Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // 4. Post-Proceso 
-            if (success)
-            {
-                LabelStatusMessage.Text = $"Producto {_currentProducto.Nombre} {action} correctamente";
-                TimerStatusBar.Start();
-
-                await GetAllData(); // Recargar la lista de productos
-
-                LimpiarControlAgregar();
-                TabControl.SelectedTab = tabPageLista;
-                _currentProducto = null;
-            }
-            else
-            {
-                MessageBox.Show($"Error al guardar el producto. El servicio de datos no indicó éxito.", "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

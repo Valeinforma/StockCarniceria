@@ -99,42 +99,49 @@ namespace Backend.Controllers
                 return BadRequest("El ID de la ruta no coincide con el ID del producto.");
             }
 
-            // *** CORRECCIÓN DE VALIDACIÓN 1/2: Ignorar propiedades de navegación en la validación del ModelState ***
-            // Esto previene el error HTTP 400 si las propiedades de navegación vienen nulas
-            // pero el validador intenta validarlas.
-            ModelState.Remove(nameof(Producto.Categoria));
-            ModelState.Remove(nameof(Producto.Proveedor));
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            // *****************************************************************************************************
-
-            // *** LÓGICA DE ATTACH PARA UPDATE (Similar al POST para seguridad) ***
-            // Esto es crucial para el PUT, ya que las entidades relacionadas deben ser rastreadas
-            // como existentes antes de modificar el producto.
-
-            // 1. Adjuntar Proveedor (si el objeto no es null)
-            if (producto.Proveedor != null)
-            {
-                // Adjuntamos la entidad existente y la marcamos como no modificada
-                _context.Entry(producto.Proveedor).State = EntityState.Unchanged;
-            }
-
-            // 2. Adjuntar Categoría (si el objeto no es null)
-            if (producto.Categoria != null)
-            {
-                // Adjuntamos la entidad existente y la marcamos como no modificada
-                _context.Entry(producto.Categoria).State = EntityState.Unchanged;
-            }
-
-            // *******************************************************************
-
-            _context.Entry(producto).State = EntityState.Modified;
-
             try
             {
+                // Validar que las claves foráneas sean válidas
+                if (producto.CategoriaId <= 0)
+                {
+                    return BadRequest("CategoriaId debe ser mayor a 0");
+                }
+
+                if (producto.ProveedorId <= 0)
+                {
+                    return BadRequest("ProveedorId debe ser mayor a 0");
+                }
+
+                // Verificar que la categoría exista
+                var categoriaExiste = await _context.Categorias.AnyAsync(c => c.Id == producto.CategoriaId && !c.IsDeleted);
+                if (!categoriaExiste)
+                {
+                    return BadRequest($"La categoría con ID {producto.CategoriaId} no existe.");
+                }
+
+                // Verificar que el proveedor exista
+                var proveedorExiste = await _context.Proveedores.AnyAsync(p => p.Id == producto.ProveedorId && !p.IsDeleted);
+                if (!proveedorExiste)
+                {
+                    return BadRequest($"El proveedor con ID {producto.ProveedorId} no existe.");
+                }
+
+                // Obtener el producto existente de la BD
+                var productoExistente = await _context.Productos.FindAsync(id);
+                if (productoExistente == null)
+                {
+                    return NotFound($"Producto con ID {id} no encontrado.");
+                }
+
+                // Actualizar solo los campos necesarios
+                productoExistente.Nombre = producto.Nombre;
+                productoExistente.PrecioUnitario = producto.PrecioUnitario;
+                productoExistente.Stock = producto.Stock;
+                productoExistente.Unidad = producto.Unidad;
+                productoExistente.CategoriaId = producto.CategoriaId;
+                productoExistente.ProveedorId = producto.ProveedorId;
+
+                _context.Entry(productoExistente).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -158,8 +165,6 @@ namespace Backend.Controllers
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
             // *** CORRECCIÓN DE VALIDACIÓN 2/2: Ignorar propiedades de navegación en la validación del ModelState ***
-            // Esto es necesario porque el validador de ASP.NET Core intenta validar las propiedades anidadas 
-            // (e.g., Categoria.Nombre), lo que causa un error 400 si el objeto Categoria/proveedor es nulo.
             ModelState.Remove(nameof(Producto.Categoria));
             ModelState.Remove(nameof(Producto.Proveedor));
 
@@ -168,7 +173,6 @@ namespace Backend.Controllers
                 return Problem("El conjunto de entidades 'Productos' es nulo.");
             }
 
-            // La validación ahora debe ocurrir después de quitar las claves no deseadas.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -176,40 +180,54 @@ namespace Backend.Controllers
 
             try
             {
-                // *** LÓGICA DE ATTACH PARA CREACIÓN ***
-                // Si el cliente envía los objetos de navegación completos, esta lógica
-                // asegura que EF Core solo use el ID para la clave foránea, sin intentar
-                // crear un Proveedor o Categoría duplicado.
-
-                // 1. Adjuntar Proveedor
-                if (producto.Proveedor != null)
+                // Validar que la categoría exista
+                if (producto.CategoriaId <= 0)
                 {
-                    _context.Entry(producto.Proveedor).State = EntityState.Unchanged;
+                    return BadRequest("CategoriaId debe ser mayor a 0");
                 }
 
-                // 2. Adjuntar Categoría
-                if (producto.Categoria != null)
+                var categoriaExiste = await _context.Categorias.AnyAsync(c => c.Id == producto.CategoriaId && !c.IsDeleted);
+                if (!categoriaExiste)
                 {
-                    _context.Entry(producto.Categoria).State = EntityState.Unchanged;
+                    return BadRequest($"La categoría con ID {producto.CategoriaId} no existe.");
                 }
-                // *** FIN DE LA LÓGICA DE ATTACH PARA CREACIÓN ***
 
-                producto.IsDeleted = false;
+                // Validar que el proveedor exista
+                if (producto.ProveedorId <= 0)
+                {
+                    return BadRequest("ProveedorId debe ser mayor a 0");
+                }
+
+                var proveedorExiste = await _context.Proveedores.AnyAsync(p => p.Id == producto.ProveedorId && !p.IsDeleted);
+                if (!proveedorExiste)
+                {
+                    return BadRequest($"El proveedor con ID {producto.ProveedorId} no existe.");
+                }
+
+                // Limpiar referencias de navegación antes de agregar
+                producto.Categoria = null;
+                producto.Proveedor = null;
+                producto.DetallesVenta = null;
+                producto.IsDeleted = false;
 
                 _context.Productos.Add(producto);
                 await _context.SaveChangesAsync();
 
-                // Es importante recargar las entidades de navegación para que la respuesta 
-                // contenga el nombre completo del Proveedor y Categoría (opcional, pero buena práctica)
-                await _context.Entry(producto).Reference(p => p.Proveedor).LoadAsync();
-                await _context.Entry(producto).Reference(p => p.Categoria).LoadAsync();
+                // Obtener el ID del producto recién creado
+                int productoId = producto.Id;
 
-                return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, producto);
+                // Recargar el producto con sus relaciones en una nueva consulta
+                var productoCreado = await _context.Productos
+                    .AsNoTracking()
+                    .Include(p => p.Categoria)
+                    .Include(p => p.Proveedor)
+                    .FirstOrDefaultAsync(p => p.Id == productoId);
+
+                return CreatedAtAction(nameof(GetProducto), new { id = productoId }, productoCreado);
             }
             catch (Exception ex)
             {
-                // Devuelve el mensaje de la excepción para ayudar a la depuración
-                return StatusCode(500, $"Error interno del servidor al crear: {ex.Message}");
+                return StatusCode(500, $"Error interno del servidor al crear: {ex.Message} - {ex.InnerException?.Message}");
             }
         }
 

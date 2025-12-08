@@ -13,17 +13,17 @@ namespace Service.Models
 
         public int Stock { get; set; } = 0;
         public int ProveedorId { get; set; }
-
-        [JsonIgnore] // <<-- ¡Agregar este atributo!
-        public Proveedor? Proveedor { get; set; } = null; // Quitar '= null' es opcional aquí.
+            
+        // ✅ SIN [JsonIgnore] - Permitir serialización
+        public Proveedor? Proveedor { get; set; }
 
         public string Unidad { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
 
-        [JsonIgnore]
-        public Categoria? Categoria { get; set; } // ¡Tu corrección está perfecta!
+        // ✅ SIN [JsonIgnore] - Permitir serialización
+        public Categoria? Categoria { get; set; }
 
-        public int CategoriaId { get; set; }
+        public int CategoriaId { get; set; }
 
         public override string ToString()
         {

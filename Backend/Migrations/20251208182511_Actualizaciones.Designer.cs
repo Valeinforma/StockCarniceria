@@ -4,6 +4,7 @@ using Backend.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(StockCarniceriaContext))]
-    partial class StockCarniceriaContextModelSnapshot : ModelSnapshot
+    [Migration("20251208182511_Actualizaciones")]
+    partial class Actualizaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -503,7 +506,7 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             ClienteId = 3,
-                            Fecha = new DateTime(2025, 12, 1, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5497),
+                            Fecha = new DateTime(2025, 12, 1, 15, 25, 8, 243, DateTimeKind.Local).AddTicks(3909),
                             IsDeleted = false,
                             PrecioTotal = 76.50m,
                             TipoPagoEnum = 1,
@@ -513,7 +516,7 @@ namespace Backend.Migrations
                         {
                             Id = 2,
                             ClienteId = 4,
-                            Fecha = new DateTime(2025, 12, 3, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5526),
+                            Fecha = new DateTime(2025, 12, 3, 15, 25, 8, 243, DateTimeKind.Local).AddTicks(3940),
                             IsDeleted = false,
                             PrecioTotal = 57.49m,
                             TipoPagoEnum = 2,
@@ -523,7 +526,7 @@ namespace Backend.Migrations
                         {
                             Id = 3,
                             ClienteId = 5,
-                            Fecha = new DateTime(2025, 12, 6, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5531),
+                            Fecha = new DateTime(2025, 12, 6, 15, 25, 8, 243, DateTimeKind.Local).AddTicks(3944),
                             IsDeleted = false,
                             PrecioTotal = 94.99m,
                             TipoPagoEnum = 3,
@@ -532,7 +535,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 4,
-                            Fecha = new DateTime(2025, 12, 7, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5535),
+                            Fecha = new DateTime(2025, 12, 7, 15, 25, 8, 243, DateTimeKind.Local).AddTicks(3950),
                             IsDeleted = false,
                             NombreClienteSinUsuario = "Cliente Anónimo",
                             PrecioTotal = 45.75m,
@@ -565,13 +568,13 @@ namespace Backend.Migrations
                     b.HasOne("Service.Models.Categoria", "Categoria")
                         .WithMany("Productos")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Service.Models.Proveedor", "Proveedor")
-                        .WithMany("Productos")
+                        .WithMany()
                         .HasForeignKey("ProveedorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Categoria");
@@ -602,11 +605,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Service.Models.Producto", b =>
                 {
                     b.Navigation("DetallesVenta");
-                });
-
-            modelBuilder.Entity("Service.Models.Proveedor", b =>
-                {
-                    b.Navigation("Productos");
                 });
 
             modelBuilder.Entity("Service.Models.Venta", b =>

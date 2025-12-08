@@ -4,6 +4,7 @@ using Backend.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(StockCarniceriaContext))]
-    partial class StockCarniceriaContextModelSnapshot : ModelSnapshot
+    [Migration("20251208200506_ControladoresyContext")]
+    partial class ControladoresyContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -503,7 +506,7 @@ namespace Backend.Migrations
                         {
                             Id = 1,
                             ClienteId = 3,
-                            Fecha = new DateTime(2025, 12, 1, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5497),
+                            Fecha = new DateTime(2025, 12, 1, 17, 5, 3, 640, DateTimeKind.Local).AddTicks(4539),
                             IsDeleted = false,
                             PrecioTotal = 76.50m,
                             TipoPagoEnum = 1,
@@ -513,7 +516,7 @@ namespace Backend.Migrations
                         {
                             Id = 2,
                             ClienteId = 4,
-                            Fecha = new DateTime(2025, 12, 3, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5526),
+                            Fecha = new DateTime(2025, 12, 3, 17, 5, 3, 640, DateTimeKind.Local).AddTicks(4569),
                             IsDeleted = false,
                             PrecioTotal = 57.49m,
                             TipoPagoEnum = 2,
@@ -523,7 +526,7 @@ namespace Backend.Migrations
                         {
                             Id = 3,
                             ClienteId = 5,
-                            Fecha = new DateTime(2025, 12, 6, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5531),
+                            Fecha = new DateTime(2025, 12, 6, 17, 5, 3, 640, DateTimeKind.Local).AddTicks(4573),
                             IsDeleted = false,
                             PrecioTotal = 94.99m,
                             TipoPagoEnum = 3,
@@ -532,7 +535,7 @@ namespace Backend.Migrations
                         new
                         {
                             Id = 4,
-                            Fecha = new DateTime(2025, 12, 7, 17, 26, 45, 170, DateTimeKind.Local).AddTicks(5535),
+                            Fecha = new DateTime(2025, 12, 7, 17, 5, 3, 640, DateTimeKind.Local).AddTicks(4577),
                             IsDeleted = false,
                             NombreClienteSinUsuario = "Cliente Anónimo",
                             PrecioTotal = 45.75m,
@@ -546,7 +549,7 @@ namespace Backend.Migrations
                     b.HasOne("Service.Models.Producto", "producto")
                         .WithMany("DetallesVenta")
                         .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Service.Models.Venta", "venta")
@@ -583,11 +586,13 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Service.Models.Usuario", "Cliente")
                         .WithMany()
-                        .HasForeignKey("ClienteId");
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Service.Models.Usuario", "Vendedor")
                         .WithMany()
-                        .HasForeignKey("VendedorId");
+                        .HasForeignKey("VendedorId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cliente");
 
