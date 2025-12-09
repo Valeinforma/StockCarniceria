@@ -98,7 +98,7 @@ namespace Desktop.Views
             GridData.DataSource = _productos;
 
             // Ocultar propiedades internas
-            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "DetallesVenta", "ProveedorId", "Proveedor", "Categoria");
+            GridData.HideColumns("Id", "DeleteDate", "IsDeleted", "CategoriaId", "Unidad", "DetallesVenta", "ProveedorId", "Proveedor", "Categoria","VentaId","Venta");
 
             // Aplicar formato de moneda
             if (GridData.Columns.Contains("PrecioUnitario"))
