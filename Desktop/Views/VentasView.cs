@@ -20,7 +20,12 @@ namespace Desktop.Views
         public VentasView()
         {
             InitializeComponent();
-            _ = CargarProductos();
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+            await CargarProductos();
         }
 
         private async Task CargarProductos()
@@ -38,7 +43,6 @@ namespace Desktop.Views
                         EnStock = p.Stock > 0 ? "Sí" : "No",
                         p.Stock,
                         p.Id,
-
                     })
                     .ToList();
 
@@ -74,60 +78,38 @@ namespace Desktop.Views
             }
         }
 
-        private void ComboProductos_SelectedIndexChanged(object sender, EventArgs e)
+        
+
+        private void BtnImprimirVenta_Click(object sender, EventArgs e)
         {
-            var categoriaSeleccionada = TxtBuscarProducto.SelectedText as string;
-            if (categoriaSeleccionada != null)
+            if (_productos == null || !_productos.Any())
             {
-                GridInscripciones.DataSource = _productos?
-                    .Where(p => p.Categoria.Nombre.Equals(categoriaSeleccionada, StringComparison.OrdinalIgnoreCase))
-                    .Select(p => new
-                    {
-                        p.Nombre,
-                        CategoriaNombre = p.Categoria.Nombre,
-                        EnStock = p.Stock > 0 ? "Sí" : "No",
-                        p.Stock,
-                        p.PrecioUnitario,
-                        p.Id
-                    })
-                    .ToList();
-            }
-        }
-
-
-        private async void  BtnImprimirVenta_Click(object sender, EventArgs e)
-        {
-
-            if (GridInscripciones.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Selecciona un producto", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "Por favor, espera a que los productos se carguen.",
+                    "Información",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
                 return;
             }
 
-            // Obtener el Id del objeto anónimo
-            var selectedRow = GridInscripciones.SelectedRows[0];
-            var selectedId = (int)selectedRow.Cells["Id"].Value;
+            var productosConStock = _productos
+                .Where(p => p.Stock > 0)
+                .OrderByDescending(p => p.Stock)
+                .ToList();
 
-            try
+            if (!productosConStock.Any())
             {
-                // Cargar el producto con sus relaciones (DetallesVenta)
-                var selectedProducto = await _productoService.GetByIdAsync(selectedId);
-
-                if (selectedProducto == null)
-                {
-                    MessageBox.Show("No se pudo encontrar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var ventasViewReport = new VentasViewReport(selectedProducto);
-                ventasViewReport.MdiParent = this.MdiParent;
-                ventasViewReport.Show();
+                MessageBox.Show(
+                    "No hay productos con stock para generar el reporte.",
+                    "Información",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            var productoVentaReporte = new ProductoVentaReport(productosConStock);
+            productoVentaReporte.MdiParent = this.MdiParent;
+            productoVentaReporte.Show();
         }
-
     }
 }

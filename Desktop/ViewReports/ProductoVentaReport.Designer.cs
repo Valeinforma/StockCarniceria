@@ -1,6 +1,6 @@
 ﻿namespace Desktop.ViewReports
 {
-    partial class VentasViewReport
+    partial class ProductoVentaReport
     {
         /// <summary>
         /// Required designer variable.
@@ -30,16 +30,14 @@
         {
             SuspendLayout();
             // 
-            // VentasViewReport
+            // ProductoVentaReport
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(560, 270);
-            Margin = new Padding(2, 2, 2, 2);
-            Name = "VentasViewReport";
-            Text = "VentasViewReport";
-            WindowState = FormWindowState.Maximized;
-            Load += VentasViewReport_Load;
+            ClientSize = new Size(800, 450);
+            Name = "ProductoVentaReport";
+            Text = "ProductoVenta";
+            Load += this.ProductoVentaReport_Load;
             ResumeLayout(false);
         }
 

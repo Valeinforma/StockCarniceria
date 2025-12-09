@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Reports\ProductosVenta.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\ProductosVenta.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
     <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="ReportViewerCore.WinForms" Version="15.1.27" />
@@ -19,6 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Dataset\StockCarniceriaDataset.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StockCarniceriaDataset.xsd</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -34,8 +47,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dataset\" />
-    <Folder Include="Reports\" />
+    <None Update="Dataset\StockCarniceriaDataset.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StockCarniceriaDataset.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>
