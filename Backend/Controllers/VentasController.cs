@@ -42,7 +42,7 @@ namespace Backend.Controllers
                 if (!string.IsNullOrWhiteSpace(filter))
                 {
                     var lowerFilter = filter.Trim().ToLower();
-                    query = query.Where(v => v.NombreClienteSinUsuario.ToLower().Contains(lowerFilter) ||
+                    query = query.Where(v => 
                                              v.Cliente.Nombre.ToLower().Contains(lowerFilter));
                 }
 

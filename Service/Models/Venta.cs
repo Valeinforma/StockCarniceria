@@ -6,7 +6,6 @@ namespace Service.Models
     public class Venta
     {
         public int Id { get; set; }
-
         public DateTime Fecha { get; set; }
 
         public int? VendedorId { get; set; }
@@ -14,8 +13,6 @@ namespace Service.Models
 
         public int? ClienteId { get; set; }
         public Usuario? Cliente { get; set; }
-
-        public string? NombreClienteSinUsuario { get; set; }
 
         [JsonIgnore]
         public ICollection<DetalleVenta>? Items { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Desktop.ExtensionMethod;
+using Desktop.ViewReports;
 using Service.Models;
 using Service.Services;
 using System;
@@ -33,18 +34,17 @@ namespace Desktop.Views
                     .Select(p => new
                     {
                         p.Nombre,
-                        CategoriaNombre = p.Categoria.Nombre, // Renombrar la propiedad para evitar duplicados
+                        Categoria = p.Categoria.Nombre,
                         EnStock = p.Stock > 0 ? "Sí" : "No",
-                        p.Stock
+                        p.Stock,
+                        p.Id,
+
                     })
                     .ToList();
 
-                // Ocultar columnas innecesarias
                 GridInscripciones.HideColumns("Id", "DeleteDate", "IsDeleted");
             }
         }
-
-
 
         private async void TxtBuscarProducto_TextChanged_1(object sender, EventArgs e)
         {
@@ -65,9 +65,10 @@ namespace Desktop.Views
                     .Select(p => new
                     {
                         p.Nombre,
-                        CategoriaNombre = p.Categoria.Nombre, // Renombrar la propiedad para evitar duplicados
+                        CategoriaNombre = p.Categoria.Nombre,
                         EnStock = p.Stock > 0 ? "Sí" : "No",
-                        p.Stock
+                        p.Stock,
+                        p.Id
                     })
                     .ToList();
             }
@@ -75,8 +76,7 @@ namespace Desktop.Views
 
         private void ComboProductos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //que aparezcan los productos de la categoria seleccionada
-            var categoriaSeleccionada = ComboProductos.SelectedText as string;
+            var categoriaSeleccionada = TxtBuscarProducto.SelectedText as string;
             if (categoriaSeleccionada != null)
             {
                 GridInscripciones.DataSource = _productos?
@@ -84,41 +84,50 @@ namespace Desktop.Views
                     .Select(p => new
                     {
                         p.Nombre,
-                        CategoriaNombre = p.Categoria.Nombre, // Renombrar la propiedad para evitar duplicados
+                        CategoriaNombre = p.Categoria.Nombre,
                         EnStock = p.Stock > 0 ? "Sí" : "No",
-                        p.Stock
+                        p.Stock,
+                        p.PrecioUnitario,
+                        p.Id
                     })
                     .ToList();
-
             }
         }
 
-        private void ComboTipoPago_SelectedIndexChanged(object sender, EventArgs e)
+
+        private async void  BtnImprimirVenta_Click(object sender, EventArgs e)
         {
-            //que apaparezca la forma de pago seleccionada
-            var tipoPagoSeleccionado = ComboTipoPago.SelectedItem as string;
-            if (tipoPagoSeleccionado != null)
-            {
-                // Lógica para manejar el cambio en la selección del tipo de pago
-                // Por ejemplo, podrías mostrar un mensaje o actualizar otra parte de la interfaz
-                MessageBox.Show($"Tipo de pago seleccionado: {tipoPagoSeleccionado}", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+            if (GridInscripciones.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Selecciona un producto", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Obtener el Id del objeto anónimo
+            var selectedRow = GridInscripciones.SelectedRows[0];
+            var selectedId = (int)selectedRow.Cells["Id"].Value;
+
+            try
+            {
+                // Cargar el producto con sus relaciones (DetallesVenta)
+                var selectedProducto = await _productoService.GetByIdAsync(selectedId);
+
+                if (selectedProducto == null)
+                {
+                    MessageBox.Show("No se pudo encontrar el producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var ventasViewReport = new VentasViewReport(selectedProducto);
+                ventasViewReport.MdiParent = this.MdiParent;
+                ventasViewReport.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar el producto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void BtnTipoPago_Click(object sender, EventArgs e)
-        {
-            //que guarde el metodo de pago seleccionado y el producto seleccionado
-            var productoSeleccionado = GridInscripciones.CurrentRow?.Cells["Nombre"].Value.ToString();
-            var tipoPagoSeleccionado = ComboTipoPago.SelectedItem as string;
-            if (productoSeleccionado != null && tipoPagoSeleccionado != null)
-            {
-                MessageBox.Show($"Producto: {productoSeleccionado}\nTipo de pago: {tipoPagoSeleccionado}", "Venta Registrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("Por favor, seleccione un producto y un tipo de pago.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
     }
 }

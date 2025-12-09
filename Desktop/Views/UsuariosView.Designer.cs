@@ -57,6 +57,8 @@
             statusStrip1 = new StatusStrip();
             LabelStatusMessage = new ToolStripStatusLabel();
             TimerStatusBar = new System.Windows.Forms.Timer(components);
+            ComboTiposDeUsuarios = new ComboBox();
+            label8 = new Label();
             TabControl.SuspendLayout();
             TabPageLista.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DataGrid).BeginInit();
@@ -252,6 +254,8 @@
             // 
             // TabPageAgregarEditar
             // 
+            TabPageAgregarEditar.Controls.Add(ComboTiposDeUsuarios);
+            TabPageAgregarEditar.Controls.Add(label8);
             TabPageAgregarEditar.Controls.Add(TxtPassword2);
             TabPageAgregarEditar.Controls.Add(LabelPassword2);
             TabPageAgregarEditar.Controls.Add(TextPassword);
@@ -273,7 +277,7 @@
             // 
             // TxtPassword2
             // 
-            TxtPassword2.Location = new Point(241, 123);
+            TxtPassword2.Location = new Point(241, 124);
             TxtPassword2.Margin = new Padding(2);
             TxtPassword2.Name = "TxtPassword2";
             TxtPassword2.PasswordChar = '*';
@@ -283,7 +287,7 @@
             // 
             // LabelPassword2
             // 
-            LabelPassword2.Location = new Point(52, 123);
+            LabelPassword2.Location = new Point(52, 124);
             LabelPassword2.Margin = new Padding(2, 0, 2, 0);
             LabelPassword2.Name = "LabelPassword2";
             LabelPassword2.Size = new Size(190, 23);
@@ -293,7 +297,7 @@
             // 
             // TextPassword
             // 
-            TextPassword.Location = new Point(241, 86);
+            TextPassword.Location = new Point(241, 87);
             TextPassword.Margin = new Padding(2);
             TextPassword.Name = "TextPassword";
             TextPassword.PasswordChar = '*';
@@ -303,7 +307,7 @@
             // 
             // LabelPassword
             // 
-            LabelPassword.Location = new Point(74, 89);
+            LabelPassword.Location = new Point(74, 90);
             LabelPassword.Margin = new Padding(2, 0, 2, 0);
             LabelPassword.Name = "LabelPassword";
             LabelPassword.Size = new Size(163, 23);
@@ -354,7 +358,7 @@
             BtnCancelar.IconColor = Color.Black;
             BtnCancelar.IconFont = FontAwesome.Sharp.IconFont.Auto;
             BtnCancelar.ImageAlign = ContentAlignment.MiddleLeft;
-            BtnCancelar.Location = new Point(602, 184);
+            BtnCancelar.Location = new Point(562, 237);
             BtnCancelar.Margin = new Padding(2);
             BtnCancelar.Name = "BtnCancelar";
             BtnCancelar.Size = new Size(95, 32);
@@ -371,7 +375,7 @@
             BtnGuardar.IconColor = Color.Black;
             BtnGuardar.IconFont = FontAwesome.Sharp.IconFont.Auto;
             BtnGuardar.ImageAlign = ContentAlignment.MiddleLeft;
-            BtnGuardar.Location = new Point(462, 184);
+            BtnGuardar.Location = new Point(422, 237);
             BtnGuardar.Margin = new Padding(2);
             BtnGuardar.Name = "BtnGuardar";
             BtnGuardar.Size = new Size(95, 32);
@@ -422,6 +426,25 @@
             // 
             TimerStatusBar.Interval = 5000;
             TimerStatusBar.Tick += TimerStatusBar_Tick;
+            // 
+            // ComboTiposDeUsuarios
+            // 
+            ComboTiposDeUsuarios.FormattingEnabled = true;
+            ComboTiposDeUsuarios.Location = new Point(241, 168);
+            ComboTiposDeUsuarios.Margin = new Padding(2);
+            ComboTiposDeUsuarios.Name = "ComboTiposDeUsuarios";
+            ComboTiposDeUsuarios.Size = new Size(215, 23);
+            ComboTiposDeUsuarios.TabIndex = 38;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(127, 168);
+            label8.Margin = new Padding(2, 0, 2, 0);
+            label8.Name = "label8";
+            label8.Size = new Size(91, 15);
+            label8.TabIndex = 37;
+            label8.Text = "Tipo de usuario:";
             // 
             // UsuariosView
             // 
@@ -478,5 +501,7 @@
         private Label LabelPassword;
         private TextBox TxtPassword2;
         private Label LabelPassword2;
+        private ComboBox ComboTiposDeUsuarios;
+        private Label label8;
     }
 }

@@ -92,8 +92,7 @@ public class StockCarniceriaContext : DbContext
         modelBuilder.Entity<Venta>().HasData(
             new Venta { Id = 1, Fecha = DateTime.Now.AddDays(-7), VendedorId = 1, ClienteId = 3, PrecioTotal = 76.50M, TipoPagoEnum = TipoPagoEnum.Efectivo, IsDeleted = false },
             new Venta { Id = 2, Fecha = DateTime.Now.AddDays(-5), VendedorId = 2, ClienteId = 4, PrecioTotal = 57.49M, TipoPagoEnum = TipoPagoEnum.TarjetaCredito, IsDeleted = false },
-            new Venta { Id = 3, Fecha = DateTime.Now.AddDays(-2), VendedorId = 1, ClienteId = 5, PrecioTotal = 94.99M, TipoPagoEnum = TipoPagoEnum.TarjetaDebito, IsDeleted = false },
-            new Venta { Id = 4, Fecha = DateTime.Now.AddDays(-1), VendedorId = 2, NombreClienteSinUsuario = "Cliente Anónimo", PrecioTotal = 45.75M, TipoPagoEnum = TipoPagoEnum.Transferencia, IsDeleted = false }
+            new Venta { Id = 3, Fecha = DateTime.Now.AddDays(-2), VendedorId = 1, ClienteId = 5, PrecioTotal = 94.99M, TipoPagoEnum = TipoPagoEnum.TarjetaDebito, IsDeleted = false }
         );
 
         // Datos Semilla para DetalleVenta

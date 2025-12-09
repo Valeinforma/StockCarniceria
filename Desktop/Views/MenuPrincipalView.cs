@@ -25,7 +25,7 @@ namespace Desktop.Views
 
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           var UsuariosView = new UsuariosView();
+            var UsuariosView = new UsuariosView();
             UsuariosView.MdiParent = this;
             UsuariosView.Show();
         }
@@ -35,6 +35,14 @@ namespace Desktop.Views
             var ProductosView = new ProductosView();
             ProductosView.MdiParent = this;
             ProductosView.Show();
+        }
+
+        private void ventasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            var VentasView = new VentasView();
+            VentasView.MdiParent = this;
+            VentasView.Show();
         }
     }
 }
