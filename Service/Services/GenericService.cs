@@ -21,11 +21,11 @@ namespace Service.Services
 
             _options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
-          // _endpoint = Properties.Resources.UrlApiLocal + ApiEndPoins.GetEndpoint(typeof(T).Name);
+           // _endpoint = Properties.Resources.UrlApiLocal + ApiEndPoins.GetEndpoint(typeof(T).Name);
 
-           _endpoint = Properties.Resources.UrlApi + ApiEndPoins.GetEndpoint(typeof(T).Name);
+             _endpoint = Properties.Resources.UrlApi + ApiEndPoins.GetEndpoint(typeof(T).Name);
 
-  
+
 
 
         }
@@ -103,26 +103,23 @@ namespace Service.Services
 
         public async Task<bool> UpdateAsync(T? entity)
         {
-
-            var idValue = entity.GetType().GetProperty("Id").GetValue(entity);
-            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{idValue}", entity);
-            var content = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new Exception($"Hubon un problema al actualizar:{response.StatusCode} - {content}");
-            }
-            else
-            {
-                return response.IsSuccessStatusCode;
-            }
+                var idValue = entity?.GetType().GetProperty("Id")?.GetValue(entity);
+                var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{idValue}", entity);
+                var content = await response.Content.ReadAsStringAsync();
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Hubo un problema al actualizar: {response.StatusCode} - {content}");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en UpdateAsync: {ex.Message}", ex);
+            }
         }
-
-
-
-
-
-
     }
-
 }

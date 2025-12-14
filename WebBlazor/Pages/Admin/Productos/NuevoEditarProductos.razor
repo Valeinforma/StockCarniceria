@@ -2,11 +2,13 @@
 
 @using Service.Models
 @using Service.Services
+@using CurrieTechnologies.Razor.SweetAlert2
 
 @inject NavigationManager NavigationManager
 @inject IGenericService<Producto> _productoService
 @inject IGenericService<Categoria> CategoriaService
 @inject IGenericService<Proveedor> ProveedorService
+@inject SweetAlertService sweetAlert
 
 @if (producto is null || ListaCategorias is null || ListaProveedores is null)
 {
@@ -85,10 +87,10 @@ else
                         <ValidationSummary class="alert alert-warning mt-3" />
 
                         <div class="mt-4">
-                            <button class="btn btn-primary me-2" type="submit">
+                            <button class="btn btn-primary me-2" type="submit" disabled="@isSaving">
                                 <i class="oi oi-check"></i> @guardarButtonText
                             </button>
-                            <button class="btn btn-danger" type="button" @onclick="Cancelar">
+                            <button class="btn btn-danger" type="button" @onclick="Cancelar" disabled="@isSaving">
                                 <i class="oi oi-x"></i> Cancelar
                             </button>
                         </div>
@@ -107,6 +109,7 @@ else
     private Producto? producto;
     private List<Categoria>? ListaCategorias;
     private List<Proveedor>? ListaProveedores;
+    private bool isSaving = false;
 
     private bool isEditing => idProducto.HasValue && idProducto.Value > 0;
     private string guardarButtonText => isEditing ? "Actualizar" : "Agregar";
@@ -114,71 +117,60 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Cargar listas de categorías y proveedores
-        ListaCategorias = (await CategoriaService.GetAllAsync())?.ToList();
-        ListaProveedores = (await ProveedorService.GetAllAsync())?.ToList();
-
-        if (isEditing)
+        try
         {
-            producto = await _productoService.GetByIdAsync((int)idProducto!);
+            // Cargar listas de categorías y proveedores
+            ListaCategorias = (await CategoriaService.GetAllAsync())?.ToList();
+            ListaProveedores = (await ProveedorService.GetAllAsync())?.ToList();
 
-            if (producto != null)
+            if (isEditing)
             {
-                // Sincronizar IDs si las relaciones existen
-                if (producto.Categoria != null)
+                producto = await _productoService.GetByIdAsync((int)idProducto!);
+
+                if (producto != null)
                 {
-                    producto.CategoriaId = producto.Categoria.Id;
-                }
-                if (producto.Proveedor != null)
-                {
-                    producto.ProveedorId = producto.Proveedor.Id;
+                    // Sincronizar IDs si las relaciones existen
+                    if (producto.Categoria != null)
+                    {
+                        producto.CategoriaId = producto.Categoria.Id;
+                    }
+                    if (producto.Proveedor != null)
+                    {
+                        producto.ProveedorId = producto.Proveedor.Id;
+                    }
                 }
             }
-        }
-        else
-        {
-            // Inicializar nuevo producto con relaciones vacías
-            producto = new Producto
+            else
             {
-                Categoria = new Categoria(),
-                Proveedor = new Proveedor()
-            };
+                // Inicializar nuevo producto con relaciones vacías
+                producto = new Producto
+                {
+                    Categoria = null,
+                    Proveedor = null,
+                    CategoriaId = 0,
+                    ProveedorId = 0
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            await sweetAlert.FireAsync("Error", $"No se pudo cargar el producto: {ex.Message}", SweetAlertIcon.Error);
         }
     }
 
     private void OnCategoryChange(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value?.ToString(), out int selectedId) && selectedId != 0 && ListaCategorias != null)
+        if (int.TryParse(e.Value?.ToString(), out int selectedId))
         {
-            var selectedCategory = ListaCategorias.FirstOrDefault(c => c.Id == selectedId);
-            if (selectedCategory != null && producto != null)
-            {
-                producto.Categoria = selectedCategory;
-                producto.CategoriaId = selectedId;
-            }
-        }
-        else if (producto != null)
-        {
-            producto.Categoria = new Categoria();
-            producto.CategoriaId = 0;
+            producto!.CategoriaId = selectedId;
         }
     }
 
     private void OnSupplierChange(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value?.ToString(), out int selectedId) && selectedId != 0 && ListaProveedores != null)
+        if (int.TryParse(e.Value?.ToString(), out int selectedId))
         {
-            var selectedSupplier = ListaProveedores.FirstOrDefault(p => p.Id == selectedId);
-            if (selectedSupplier != null && producto != null)
-            {
-                producto.Proveedor = selectedSupplier;
-                producto.ProveedorId = selectedId;
-            }
-        }
-        else if (producto != null)
-        {
-            producto.Proveedor = new Proveedor();
-            producto.ProveedorId = 0;
+            producto!.ProveedorId = selectedId;
         }
     }
 
@@ -186,55 +178,57 @@ else
     {
         try
         {
+            isSaving = true;
+
             // Validar que producto no sea null
             if (producto == null)
             {
-                Console.WriteLine("Error: El producto no puede ser nulo.");
+                await sweetAlert.FireAsync("Error", "El producto no puede ser nulo.", SweetAlertIcon.Error);
                 return;
-            }
-
-            // Sincronizar IDs con los objetos de navegación
-            if (producto.Categoria != null && producto.Categoria.Id > 0)
-            {
-                producto.CategoriaId = producto.Categoria.Id;
-            }
-            if (producto.Proveedor != null && producto.Proveedor.Id > 0)
-            {
-                producto.ProveedorId = producto.Proveedor.Id;
             }
 
             // Validar que se hayan seleccionado categoría y proveedor
             if (producto.CategoriaId == 0 || producto.ProveedorId == 0)
             {
-                Console.WriteLine("Por favor, selecciona una Categoría y un Proveedor válidos.");
+                await sweetAlert.FireAsync("Validación", "Por favor, selecciona una Categoría y un Proveedor válidos.", SweetAlertIcon.Warning);
+                isSaving = false;
                 return;
             }
 
-            // Desvincular objetos de navegación para enviar solo IDs a la API
-            var tempCategoria = producto.Categoria;
-            var tempProveedor = producto.Proveedor;
-
-            producto.Categoria = null;
-            producto.Proveedor = null;
+            // Crear una copia para enviar sin objetos de navegación
+            var productoParaGuardar = new Producto
+            {
+                Id = producto.Id,
+                Nombre = producto.Nombre,
+                PrecioUnitario = producto.PrecioUnitario,
+                Stock = producto.Stock,
+                Unidad = producto.Unidad,
+                CategoriaId = producto.CategoriaId,
+                ProveedorId = producto.ProveedorId,
+                Categoria = null,
+                Proveedor = null
+            };
 
             if (isEditing)
             {
-                await _productoService.UpdateAsync(producto);
+                await _productoService.UpdateAsync(productoParaGuardar);
+                await sweetAlert.FireAsync("Éxito", $"El producto '{productoParaGuardar.Nombre}' ha sido actualizado correctamente.", SweetAlertIcon.Success);
             }
             else
             {
-                await _productoService.AddAsync(producto);
+                await _productoService.AddAsync(productoParaGuardar);
+                await sweetAlert.FireAsync("Éxito", $"El producto '{productoParaGuardar.Nombre}' ha sido creado correctamente.", SweetAlertIcon.Success);
             }
-
-            // Opcional: restaurar objetos si el componente se mantiene en memoria
-            producto.Categoria = tempCategoria;
-            producto.Proveedor = tempProveedor;
 
             NavigationManager.NavigateTo("productos");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al guardar: {ex.Message}");
+            await sweetAlert.FireAsync("Error al guardar", ex.Message, SweetAlertIcon.Error);
+        }
+        finally
+        {
+            isSaving = false;
         }
     }
 

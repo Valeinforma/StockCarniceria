@@ -1,7 +1,4 @@
-﻿@implements IAsyncDisposable
-@inject IJSRuntime JS
-
-<Router AppAssembly="@typeof(App).Assembly">
+﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -13,41 +10,3 @@
         </LayoutView>
     </NotFound>
 </Router>
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Esperar a que el DOM esté completamente listo
-            await Task.Delay(300);
-
-            // Intentar ocultar la pantalla de carga personalizada
-            try
-            {
-                // Verificar que la función JS existe
-                if (!string.IsNullOrEmpty(JS?.ToString()))
-                {
-                    await JS.InvokeVoidAsync("hideCustomLoadingScreen");
-                }
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignorar si JS está desconectado (no es crítico)
-                Console.WriteLine("JS disconnected, pantalla de carga no fue ocultada");
-            }
-            catch (Exception ex)
-            {
-                // Log de cualquier otro error (no es crítico para la app)
-                Console.WriteLine($"Nota: {ex.Message}");
-            }
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        // Limpieza si es necesaria
-    }
-}

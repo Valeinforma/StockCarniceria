@@ -20,8 +20,8 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // GET: api/Productos
-        [HttpGet]
+        // GET: api/Productos
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductos([FromQuery] string? filter = null)
         {
             if (_context.Productos == null)
@@ -60,8 +60,8 @@ namespace Backend.Controllers
             }
         }
 
-        // GET: api/Productos/5
-        [HttpGet("{id}")]
+        // GET: api/Productos/5
+        [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
             if (_context.Productos == null)
@@ -90,8 +90,8 @@ namespace Backend.Controllers
             }
         }
 
-        // PUT: api/Productos/5
-        [HttpPut("{id}")]
+        // PUT: api/Productos/5
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
             if (id != producto.Id)
@@ -143,6 +143,15 @@ namespace Backend.Controllers
 
                 _context.Entry(productoExistente).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+
+                // Recargar el producto actualizado con sus relaciones para devolverlo
+                var productoActualizado = await _context.Productos
+                    .AsNoTracking()
+                    .Include(p => p.Categoria)
+                    .Include(p => p.Proveedor)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                return Ok(productoActualizado);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -156,12 +165,10 @@ namespace Backend.Controllers
             {
                 return StatusCode(500, $"Error interno del servidor al actualizar: {ex.Message}");
             }
-
-            return NoContent();
         }
 
-        // POST: api/Productos
-        [HttpPost]
+        // POST: api/Productos
+        [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
             // *** CORRECCIÓN DE VALIDACIÓN 2/2: Ignorar propiedades de navegación en la validación del ModelState ***
@@ -231,8 +238,8 @@ namespace Backend.Controllers
             }
         }
 
-        // DELETE: api/Productos/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Productos/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {
             try
@@ -260,8 +267,8 @@ namespace Backend.Controllers
             }
         }
 
-        // PUT: api/Productos/restore/5
-        [HttpPut("restore/{id}")]
+        // PUT: api/Productos/restore/5
+        [HttpPut("restore/{id}")]
         public async Task<IActionResult> RestoreProducto(int id)
         {
             try
@@ -291,8 +298,8 @@ namespace Backend.Controllers
             }
         }
 
-        // GET: api/Productos/deleteds
-        [HttpGet("deleteds")]
+        // GET: api/Productos/deleteds
+        [HttpGet("deleteds")]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductosDeleteds()
         {
             var eliminados = await _context.Productos
