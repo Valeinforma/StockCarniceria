@@ -5,71 +5,132 @@
 @inject NavigationManager NavigationManager
 @inject FirebaseAuthService _authService
 @inject SweetAlertService sweetAlert
-<PageTitle>Inventario de Productos</PageTitle>
+<PageTitle>Inventario de Productos - StockCarnicería</PageTitle>
 
 <!-- Componente asumido para el título de la página -->
-<PageHeader Title="Inventario de Productos" Description="Administra, edita y elimina los productos de la carnicería." />
+<PageHeader Title="📊 Inventario de Productos" Description="Administra, edita y elimina los productos de la carnicería." />
 
-@if (productos == null)
-{
-	<p><em>Cargando la lista de productos...</em></p>
-}
-else if (!productos.Any())
-{
-	<p><em>No hay productos disponibles.</em></p>
-}
-else
-{
-	<NavLink class="btn btn-primary mb-3" href=@($"NuevoEditarProducto")>
-		<span class="bi bi-plus-circle"></span> Agregar producto
-	</NavLink>
-	
-	<table class="table table-hover table-striped">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Nombre</th>
-				<th>Categoría</th>
-				<th>Precio Unitario</th>
-				<th>Stock</th>
-				<th>Unidad</th>
-				<th colspan="2" class="text-center">Acciones</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var pro in productos)
-			{
-				<tr>
-					<td>@pro.Id</td>
-					<td>@pro.Nombre</td>
-					<td>@pro.Categoria?.Nombre</td>
-					<td>$@pro.PrecioUnitario.ToString("N2")</td>
-					<td>@pro.Stock</td>
-					<td>@pro.Unidad</td>
-				
-					<td class="text-center">
-						<NavLink class="btn btn-sm btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
-							<span class="bi bi-pencil"></span> Editar
-						</NavLink>
-					</td>
-					<td class="text-center">
-						<button class="btn btn-sm btn-danger" @onclick="() => DeleteProducto(pro)">
-							<span class="bi bi-trash"></span> Eliminar
-						</button>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="content-wrapper">
+	@if (productos == null)
+	{
+		<div class="loading-container">
+			<div class="loading-icon">🥩</div>
+			<div class="loading-text">Cargando inventario</div>
+			<div class="loading-bar-container">
+				<div class="loading-bar-fill"></div>
+			</div>
+			<div class="loading-dots">
+				<div class="loading-dot"></div>
+				<div class="loading-dot"></div>
+				<div class="loading-dot"></div>
+			</div>
+			<div class="loading-subtitle">Preparando los mejores productos...</div>
+		</div>
+	}
+	else if (!productos.Any())
+	{
+		<div class="alert alert-warning text-center fade-in-down" role="alert" style="margin-top: 40px;">
+			<span style="font-size: 3rem; display: block; margin-bottom: 15px;">📭</span>
+			<h5 style="color: var(--butcher-dark-red); margin-bottom: 10px; font-weight: bold;">No hay productos disponibles</h5>
+			<p style="margin-bottom: 15px; font-size: 1.05rem;">El inventario está vacío. ¡Comienza a agregar productos!</p>
+			<a href="NuevoEditarProducto" class="btn btn-primary">
+				<span class="emoji-icon">➕</span> Agregar primer producto
+			</a>
+		</div>
+	}
+	else
+	{
+		<div class="mb-4">
+			<NavLink class="btn btn-primary" href=@($"NuevoEditarProducto")>
+				<span class="emoji-icon">➕</span> Agregar producto
+			</NavLink>
+		</div>
+
+		<div class="table-responsive shadow-sm rounded-3" style="background: white;">
+			<table class="table table-hover table-striped mb-0">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Producto</th>
+						<th>Categoría</th>
+						<th>Precio</th>
+						<th>Stock</th>
+						<th>Unidad</th>
+						<th colspan="2" class="text-center">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var pro in productos)
+					{
+						<tr>
+							<td><strong>#@pro.Id</strong></td>
+							<td>
+								<span class="product-emoji">@GetProductoEmoji(pro.Categoria?.Nombre)</span>
+								<strong>@pro.Nombre</strong>
+							</td>
+							<td>
+								<span class="badge" style="background-color: #8b0000; font-size: 0.9rem;">
+									@pro.Categoria?.Nombre
+								</span>
+							</td>
+							<td style="font-weight: bold; color: #8b0000;">
+								$@pro.PrecioUnitario.ToString("N2")
+							</td>
+							<td>
+								@if (pro.Stock > 10)
+								{
+									<span class="badge bg-success">@pro.Stock</span>
+								}
+								else if (pro.Stock > 0)
+								{
+									<span class="badge bg-warning">@pro.Stock</span>
+								}
+								else
+								{
+									<span class="badge bg-danger">@pro.Stock</span>
+								}
+							</td>
+							<td>@pro.Unidad</td>
+
+							<td class="text-center">
+								<NavLink class="btn btn-sm btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
+									<span class="emoji-icon">✏️</span> Editar
+								</NavLink>
+							</td>
+							<td class="text-center">
+								<button class="btn btn-sm btn-danger" @onclick="() => DeleteProducto(pro)">
+									<span class="emoji-icon">🗑️</span> Eliminar
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+</div>
 
 @code {
 	private List<Producto>? productos;
 
-	
+	// Método para asignar emojis según la categoría
+	private string GetProductoEmoji(string? categoria)
+	{
+		return categoria?.ToLower() switch
+		{
+			"carne roja" or "vacuna" or "res" => "🥩",
+			"carne de cerdo" or "cerdo" or "porcino" => "🐷",
+			"pollo" or "ave" or "aves" => "🍗",
+			"pescado" or "mariscos" or "camarón" => "🐟",
+			"chorizos" or "embutidos" or "salchicha" => "🌭",
+			"costillas" or "asado" => "🔥",
+			_ => "🥓"
+		};
+	}
+
 	protected override async Task OnInitializedAsync()
 	{
-		// 1. Verificación de Autenticación (como en el ejemplo funcional)
+		// 1. Verificación de Autenticación
 		if (!await _authService.IsUserAuthenticated())
 		{
 			NavigationManager.NavigateTo("/login");
@@ -79,37 +140,36 @@ else
 		// 2. Carga de Productos
 		try
 		{
-			// ⚠️ NOTA: Si GetByIdAsync falla por falta de Categoria, deberás modificar el servicio
-			// para que use .Include(p => p.Categoria) si usas Entity Framework Core.
 			productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
 		}
 		catch (Exception ex)
 		{
 			// Manejo de errores de carga
 			await sweetAlert.FireAsync("Error de Carga", $"No se pudieron cargar los productos: {ex.Message}", SweetAlertIcon.Error);
-			productos = new List<Producto>(); // Inicializa a lista vacía para evitar el estado de 'null'
+			productos = new List<Producto>();
 		}
 	}
 
 	private async Task DeleteProducto(Producto producto)
 	{
 		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions
-			{
-				Title = "¿Estás seguro?",
-				Text = $"¿Deseas eliminar el producto '{producto.Nombre}'?",
-				Icon = SweetAlertIcon.Warning,
-				ShowCancelButton = true,
-				ConfirmButtonText = "Sí, eliminar",
-				CancelButtonText = "Cancelar"
-			});
+		{
+			Title = "¿Estás seguro?",
+			Text = $"¿Deseas eliminar el producto '{producto.Nombre}'?",
+			Icon = SweetAlertIcon.Warning,
+			ShowCancelButton = true,
+			ConfirmButtonText = "Sí, eliminar",
+			CancelButtonText = "Cancelar"
+		});
 		if (respuesta.IsConfirmed)
 		{
 			if (await _serviceProducto.DeleteAsync(producto.Id))
 			{
 				productos?.Remove(producto);
 				StateHasChanged();
-				await sweetAlert.FireAsync("Eliminado", $"El producto '{producto.Nombre}' ha sido eliminado.", SweetAlertIcon.Success);
-			}else
+				await sweetAlert.FireAsync("Eliminado", $"El producto '{producto.Nombre}' ha sido eliminado. 🥩", SweetAlertIcon.Success);
+			}
+			else
 			{
 				await sweetAlert.FireAsync("Error", "No se pudo eliminar el producto. Revise las dependencias.", SweetAlertIcon.Error);
 			}

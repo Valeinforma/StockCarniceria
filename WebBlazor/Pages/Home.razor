@@ -1,27 +1,100 @@
 ﻿@page "/"
 
-<PageTitle>Inicio - StockCarniceria</PageTitle>
+<PageTitle>Inicio - StockCarnicería</PageTitle>
 
-<!-- Contenedor principal centrado y con margen superior -->
-<div class="container mt-5">
-
-    <!-- Encabezado de la Plataforma -->
-    <div class="mb-5 p-4 bg-light rounded-3 shadow-sm text-center">
-        <h1 class="display-5 fw-bold text-success">StockCarniceria</h1>
-        <p class="fs-4 text-muted">Plataforma de Gestión de Inventario y Ventas</p>
+<div class="container-fluid mt-0 p-0" style="background: linear-gradient(135deg, #8b0000 0%, #d4a574 100%); min-height: 100vh; display: flex; flex-direction: column;">
+    <!-- Encabezado animado -->
+    <div class="text-center pt-5 pb-4 fade-in-down">
+        <div style="font-size: 4rem; margin-bottom: 20px;">
+            🥩 🍖 🥓
+        </div>
+        <h1 class="display-4 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            StockCarnicería
+        </h1>
+        <p class="fs-3 text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+            Sistema de Control de Inventario
+        </p>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <h4 class="text-primary mb-4 border-bottom pb-2">Bienvenido al Panel de Control</h4>
-            <p class="lead">StockCarniceria es una plataforma diseñada para gestionar de manera eficiente el inventario, control de stock, y optimización de ventas de productos cárnicos. Su objetivo principal es brindar acceso rápido a las funciones de gestión de productos, categorías y pedidos.</p>
-            <hr />
+    <!-- Animación de emojis relacionados con carnicería -->
+    <div class="row justify-content-center mb-5 text-center">
+        <div class="col-12">
+            <div class="bounce" style="display: inline-block; margin: 0 15px; font-size: 3rem;">🥩</div>
+            <div class="bounce" style="display: inline-block; margin: 0 15px; font-size: 3rem; animation-delay: 0.2s;">🍖</div>
+            <div class="bounce" style="display: inline-block; margin: 0 15px; font-size: 3rem; animation-delay: 0.4s;">🥓</div>
+            <div class="bounce" style="display: inline-block; margin: 0 15px; font-size: 3rem; animation-delay: 0.6s;">🍗</div>
+            <div class="bounce" style="display: inline-block; margin: 0 15px; font-size: 3rem; animation-delay: 0.8s;">🔪</div>
+        </div>
+    </div>
 
+    <!-- Contenedor principal de contenido -->
+    <div class="container flex-grow-1 d-flex align-items-center">
+        <div class="row justify-content-center w-100">
+            <div class="col-lg-8">
+                <!-- Card principal -->
+                <div class="card shadow-lg border-0" style="background-color: rgba(255,255,255,0.95); border-radius: 15px; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #8b0000 0%, #a60000 100%); border: none; padding: 30px;">
+                        <h4 class="m-0 text-white slide-in-left">
+                            <span style="font-size: 2rem;">👨‍🍳</span> Bienvenido a StockCarnicería
+                        </h4>
+                    </div>
 
-            <div class="mt-5 pt-3 text-center border-top">
-                <p class="text-muted small">Plataforma educativa: Desarrollo 2do año - TSDS - 2025</p>
+                    <div class="card-body p-5">
+                        <p class="lead text-dark mb-4">
+                            Sistema especializado para la gestión de inventario y control de stock de productos cárnicos.
+                            Administra de manera eficiente tus productos, categorías, precios y disponibilidad.
+                        </p>
+
+                        <!-- Características principales -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3" style="background-color: rgba(139, 0, 0, 0.05); border-radius: 10px;">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">📊</div>
+                                    <h5 class="text-dark">Control Total</h5>
+                                    <p class="small text-muted">Gestión completa de inventario</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3" style="background-color: rgba(139, 0, 0, 0.05); border-radius: 10px;">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">💾</div>
+                                    <h5 class="text-dark">Datos Seguros</h5>
+                                    <p class="small text-muted">Información protegida y sincronizada</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3" style="background-color: rgba(139, 0, 0, 0.05); border-radius: 10px;">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
+                                    <h5 class="text-dark">Rápido y Fácil</h5>
+                                    <p class="small text-muted">Interfaz intuitiva y eficiente</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3" style="background-color: rgba(139, 0, 0, 0.05); border-radius: 10px;">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">🔐</div>
+                                    <h5 class="text-dark">Autenticación</h5>
+                                    <p class="small text-muted">Acceso controlado y seguro</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: #ddd;">
+
+                        <p class="text-muted small text-center">
+                            Accede al panel de administración con tus credenciales para comenzar
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-5 pt-4 text-center border-top border-light border-opacity-25">
+        <p class="text-white small mb-0">Plataforma educativa: Desarrollo 2do año - TSDS - 2025</p>
+        <p class="text-white-50 small">🥩 StockCarnicería - Control total de tu inventario 🥩</p>
     </div>
 </div>
 

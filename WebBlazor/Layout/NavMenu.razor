@@ -1,7 +1,10 @@
 ﻿@inject FirebaseAuthService _firebaseAuthService
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">StockCarniceria</a>
+        <a class="navbar-brand" href="">
+            <span style="font-size: 1.5rem; margin-right: 10px;">🥩</span>
+            StockCarnicería
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -12,21 +15,22 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> inicio
+                <span class="emoji-icon">🏠</span> Inicio
             </NavLink>
         </div>
-        
+
         @if (isAuthenticated)
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="productos"> <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Stock
+                <NavLink class="nav-link" href="productos">
+                    <span class="emoji-icon">📊</span> Inventario
                 </NavLink>
             </div>
         }
-        
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="login">
-                <span class="bi bi-login" aria-hidden="true"></span>@textBtnLogin
+                <span class="emoji-icon">🔐</span> @textBtnLogin
             </NavLink>
         </div>
     </nav>
@@ -43,28 +47,21 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    
-    // 1. Inicializa y se suscribe al evento de cambio de login
+
     protected override async Task OnInitializedAsync()
     {
         isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
         _firebaseAuthService.OnChangeLogin += LoginHasChanged;
     }
-    
-    // 2. Método de limpieza: Se llama cuando el componente es destruido
+
     public void Dispose()
     {
-        // CRÍTICO: Desuscribirse para prevenir memory leaks
-        _firebaseAuthService.OnChangeLogin -= LoginHasChanged; 
+        _firebaseAuthService.OnChangeLogin -= LoginHasChanged;
     }
-    
-    // 3. El delegado que se dispara cuando cambia el estado de login
+
     private async void LoginHasChanged()
     {
-        // Volvemos a verificar el estado de autenticación
         isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
-        
-        // CRÍTICO: Forzar a Blazor a refrescar la UI
-        await InvokeAsync(StateHasChanged); 
+        await InvokeAsync(StateHasChanged);
     }
 }
