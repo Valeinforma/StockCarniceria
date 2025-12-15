@@ -12,7 +12,7 @@
 
 @if (productos == null)
 {
-	<p><em>Cargando la lista de productos...</em></p>
+	<p class="loading-message"><em>Cargando la lista de productos...</em></p>
 }
 else if (!productos.Any())
 {
@@ -24,13 +24,13 @@ else
 		<span class="bi bi-plus-circle"></span> Agregar producto
 	</NavLink>
 
-	<table class="table table-hover table-striped">
+	<table class="table table-hover table-striped products-table">
 		<thead>
 			<tr>
 				<th>ID</th>
 				<th>Nombre</th>
 				<th>Categoría</th>
-				<th>Precio Unitario</th>
+				<th>Precio</th>
 				<th>Stock</th>
 				<th>Unidad</th>
 				<th colspan="2" class="text-center">Acciones</th>
@@ -39,21 +39,33 @@ else
 		<tbody>
 			@foreach (var pro in productos)
 			{
-				<tr>
-					<td>@pro.Id</td>
-					<td>@pro.Nombre</td>
-					<td>@pro.Categoria?.Nombre</td>
-					<td>$@pro.PrecioUnitario.ToString("N2")</td>
-					<td>@pro.Stock</td>
-					<td>@pro.Unidad</td>
+				<tr class="product-row">
+					<td class="text-muted small">@pro.Id</td>
+					<td>
+						<span class="product-name">@pro.Nombre</span>
+					</td>
+					<td>
+						<span class="category-badge">@pro.Categoria?.Nombre</span>
+					</td>
+					<td>
+						<span class="price-highlight">$@pro.PrecioUnitario.ToString("N2")</span>
+					</td>
+					<td>
+						<span class="stock-badge @GetStockClass(pro.Stock)">
+							@pro.Stock
+						</span>
+					</td>
+					<td>
+						<span class="unit-badge">@pro.Unidad</span>
+					</td>
 
 					<td class="text-center">
-						<NavLink class="btn btn-sm btn-primary" href=@($"NuevoEditarProducto?idProducto={pro.Id}")>
+						<NavLink class="btn btn-sm btn-edit action-btn" href=@($"NuevoEditarProducto?idProducto={pro.Id}") title="Editar producto">
 							<span class="bi bi-pencil"></span> Editar
 						</NavLink>
 					</td>
 					<td class="text-center">
-						<button class="btn btn-sm btn-danger" @onclick="() => DeleteProducto(pro)">
+						<button class="btn btn-sm btn-delete action-btn" @onclick="() => DeleteProducto(pro)" title="Eliminar producto">
 							<span class="bi bi-trash"></span> Eliminar
 						</button>
 					</td>
@@ -66,10 +78,9 @@ else
 @code {
 	private List<Producto>? productos;
 
-
 	protected override async Task OnInitializedAsync()
 	{
-		// 1. Verificación de Autenticación (como en el ejemplo funcional)
+		// 1. Verificación de Autenticación
 		if (!await _authService.IsUserAuthenticated())
 		{
 			NavigationManager.NavigateTo("/login");
@@ -79,41 +90,62 @@ else
 		// 2. Carga de Productos
 		try
 		{
-			// ⚠️ NOTA: Si GetByIdAsync falla por falta de Categoria, deberás modificar el servicio
-			// para que use .Include(p => p.Categoria) si usas Entity Framework Core.
-			productos = (await _serviceProducto.GetAllAsync(null))?.ToList();
+			productos = await _serviceProducto.GetAllAsync();
 		}
 		catch (Exception ex)
 		{
-			// Manejo de errores de carga
-			await sweetAlert.FireAsync("Error de Carga", $"No se pudieron cargar los productos: {ex.Message}", SweetAlertIcon.Error);
-			productos = new List<Producto>(); // Inicializa a lista vacía para evitar el estado de 'null'
+			await sweetAlert.FireAsync(new SweetAlertOptions
+			{
+				Icon = SweetAlertIcon.Error,
+				Title = "Error",
+				Text = $"Error al cargar productos: {ex.Message}"
+			});
 		}
 	}
 
-	private async Task DeleteProducto(Producto producto)
+	private async Task DeleteProducto(Producto pro)
 	{
-		var respuesta = await sweetAlert.FireAsync(new SweetAlertOptions
+		var result = await sweetAlert.FireAsync(new SweetAlertOptions
 		{
-			Title = "¿Estás seguro?",
-			Text = $"¿Deseas eliminar el producto '{producto.Nombre}'?",
-			Icon = SweetAlertIcon.Warning,
-			ShowCancelButton = true,
-			ConfirmButtonText = "Sí, eliminar",
-			CancelButtonText = "Cancelar"
+			Icon = SweetAlertIcon.Question,
+			Title = "Confirmar eliminación",
+			Text = $"¿Deseas eliminar {pro.Nombre}?",
+			ShowCancelButton = true
 		});
-		if (respuesta.IsConfirmed)
+
+		if (result.IsConfirmed)
 		{
-			if (await _serviceProducto.DeleteAsync(producto.Id))
+			try
 			{
-				productos?.Remove(producto);
-				StateHasChanged();
-				await sweetAlert.FireAsync("Eliminado", $"El producto '{producto.Nombre}' ha sido eliminado.", SweetAlertIcon.Success);
+				await _serviceProducto.DeleteAsync(pro.Id);
+				productos?.Remove(pro);
+				await sweetAlert.FireAsync(new SweetAlertOptions
+				{
+					Icon = SweetAlertIcon.Success,
+					Title = "Éxito",
+					Text = "Producto eliminado correctamente"
+				});
 			}
-			else
+			catch (Exception ex)
 			{
-				await sweetAlert.FireAsync("Error", "No se pudo eliminar el producto. Revise las dependencias.", SweetAlertIcon.Error);
+				await sweetAlert.FireAsync(new SweetAlertOptions
+				{
+					Icon = SweetAlertIcon.Error,
+					Title = "Error",
+					Text = $"Error al eliminar: {ex.Message}"
+				});
 			}
 		}
+	}
+
+	// Clase CSS para el badge de stock
+	private string GetStockClass(int stock)
+	{
+		return stock switch
+		{
+			> 50 => "badge-success-custom",
+			> 20 => "badge-warning-custom",
+			_ => "badge-danger-custom"
+		};
 	}
 }

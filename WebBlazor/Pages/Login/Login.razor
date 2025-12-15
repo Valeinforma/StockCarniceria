@@ -5,62 +5,42 @@
 
 <PageTitle>Iniciar Sesión - StockCarniceria</PageTitle>
 
-<!-- El componente de autenticación de Blazor se inicializa en esta etapa. -->
-<!-- [Image of Blazor component lifecycle] -->
-
 @if (!isAuthenticated)
 {
     <!-- VISTA: INICIAR SESIÓN -->
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 70px); padding: 2rem 0;">
         <div class="card text-center shadow-lg" style="max-width: 450px; width: 100%;">
             <div class="card-header bg-primary text-white">
                 Iniciar sesión
             </div>
             <div class="card-body">
                 <h3 class="card-title mb-4">Bienvenido a StockCarniceria</h3>
-                <div class="container">
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-12 d-flex justify-content-center align-items-center">
-                            <label class="form-label me-2 fw-bold" style="min-width: 120px; text-align: left;">Correo electrónico:</label>
-                            <InputText class="form-control w-75" @bind-Value="email" placeholder="usuario@gmail.com" />
-                        </div>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-bold">Correo electrónico:</label>
+                    <InputText class="form-control" @bind-Value="email" placeholder="usuario@gmail.com" />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="form-label fw-bold">Contraseña:</label>
+                    <InputText class="form-control" @bind-Value="password" placeholder="Contraseña" type="password" />
+                </div>
+
+                <div class="form-group mb-4">
+                    <div class="form-check text-start">
+                        <InputCheckbox class="form-check-input" id="rememberCheck" @bind-Value="rememberPassword" />
+                        <label class="form-check-label" for="rememberCheck">Recordar contraseña</label>
                     </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-12 d-flex justify-content-center align-items-center">
-                            <label class="form-label me-2 fw-bold" style="min-width: 120px; text-align: left;">Contraseña:</label>
-                            <InputText class="form-control w-75" @bind-Value="password" placeholder="Contraseña" type="password" />
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-12 d-flex justify-content-center align-items-center">
-                            <label class="form-check-label me-2" style="min-width: 120px; text-align: left;">Recordar contraseña:</label>
-                            <!-- Ajustado para que el checkbox no ocupe todo el ancho -->
-                            <div class="w-75 text-start">
-                                <InputCheckbox class="form-check-input" @bind-Value="rememberPassword" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-4">
-                        <div class="col-12 mb-2">
-                            <button class="btn btn-success w-75" @onclick="Loguear">Acceder</button>
-                        </div>
-                        <div class="col-12 mb-2">
-                            <button class="btn btn-outline-secondary w-75" @onclick="RegisterMe">Registrarme</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-outline-danger w-75" @onclick="LoginWithGoogle">
-                                <span class="bi bi-google me-2"></span> Google
-                            </button>
-                        </div>
-                    </div>
-                    
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" @onclick="Loguear">Acceder</button>
+                    <button class="btn btn-outline-secondary" @onclick="RegisterMe">Registrarme</button>
+                    <button class="btn btn-outline-danger" @onclick="LoginWithGoogle">
+                        <span class="bi bi-google me-2"></span> Google
+                    </button>
                 </div>
             </div>
-            <div class="card-footer text-muted">
+            <div class="card-footer text-muted small">
                 Desarrollo 2do año - TSDS - 2025
             </div>
         </div>
@@ -69,17 +49,16 @@
 else
 {
     <!-- VISTA: CERRAR SESIÓN -->
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 70px);">
         <div class="card text-center shadow-lg" style="max-width: 450px; width: 100%;">
             <div class="card-header bg-danger text-white">
                 Sesión Activa
             </div>
             <div class="card-body">
                 <p class="card-text mb-4">Actualmente has iniciado sesión en StockCarniceria.</p>
-
                 <button class="btn btn-danger" @onclick="Desloguear">Cerrar sesión</button>
             </div>
-            <div class="card-footer text-muted">
+            <div class="card-footer text-muted small">
                 Desarrollo 2do año - TSDS - 2025
             </div>
         </div>
@@ -92,7 +71,6 @@ else
     string password = string.Empty;
     bool rememberPassword = false;
 
-    // Se ejecuta al inicio, antes de renderizar la vista.
     protected override async Task OnInitializedAsync()
     {
         isAuthenticated = await _firebaseAuthService.IsUserAuthenticated();
@@ -101,20 +79,30 @@ else
     private async Task Loguear()
     {
         var user = await _firebaseAuthService.SignInWithEmailPassword(email, password, rememberPassword);
-        if (user is not null) // Uso 'is not null' como buena práctica C#
+        if (user is not null)
         {
             if (user.EmailVerified == false)
             {
-                await _sweetAlert.FireAsync("Verificación de correo", "Por favor, verifica tu correo electrónico antes de iniciar sesión.", SweetAlertIcon.Warning);
+                await _sweetAlert.FireAsync(new SweetAlertOptions
+                {
+                    Icon = SweetAlertIcon.Warning,
+                    Title = "Verificación de correo",
+                    Text = "Por favor, verifica tu correo electrónico antes de iniciar sesión."
+                });
                 return;
             }
             isAuthenticated = true;
             StateHasChanged();
-            _navigationManager.NavigateTo("/"); // Redirigir a la página principal después de iniciar sesión
+            _navigationManager.NavigateTo("/");
         }
         else
         {
-            await _sweetAlert.FireAsync("Error de autenticación", "Correo o contraseña incorrectos.", SweetAlertIcon.Error);
+            await _sweetAlert.FireAsync(new SweetAlertOptions
+            {
+                Icon = SweetAlertIcon.Error,
+                Title = "Error de autenticación",
+                Text = "Correo o contraseña incorrectos."
+            });
         }
     }
 
@@ -131,7 +119,7 @@ else
     {
         _navigationManager.NavigateTo("/signin");
     }
-    
+
     private async Task LoginWithGoogle()
     {
         var user = await _firebaseAuthService.LoginWithGoogle();
@@ -139,11 +127,16 @@ else
         {
             isAuthenticated = true;
             StateHasChanged();
-            _navigationManager.NavigateTo("/"); // Redirigir a la página principal
+            _navigationManager.NavigateTo("/");
         }
         else
         {
-            await _sweetAlert.FireAsync("Error de autenticación", "No se pudo iniciar sesión con Google.", SweetAlertIcon.Error);
+            await _sweetAlert.FireAsync(new SweetAlertOptions
+            {
+                Icon = SweetAlertIcon.Error,
+                Title = "Error de autenticación",
+                Text = "No se pudo iniciar sesión con Google."
+            });
         }
     }
 }

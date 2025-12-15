@@ -1,29 +1,113 @@
 ﻿@page "/"
+@using Service.Models
+@inject IGenericService<Producto> _serviceProducto
 
 <PageTitle>Inicio - StockCarniceria</PageTitle>
 
-<!-- Contenedor principal centrado y con margen superior -->
-<div class="container mt-5">
-
-    <!-- Encabezado de la Plataforma -->
-    <div class="mb-5 p-4 bg-light rounded-3 shadow-sm text-center">
-        <h1 class="display-5 fw-bold text-success">StockCarniceria</h1>
-        <p class="fs-4 text-muted">Plataforma de Gestión de Inventario y Ventas</p>
+<div class="home-container">
+    <!-- Encabezado Principal -->
+    <div class="hero-banner">
+        <h1 class="hero-title">🥩 StockCarnicería</h1>
+        <p class="hero-subtitle">Plataforma de Gestión de Inventario y Ventas</p>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <h4 class="text-primary mb-4 border-bottom pb-2">Bienvenido al Panel de Control</h4>
-            <p class="lead">StockCarniceria es una plataforma diseñada para gestionar de manera eficiente el inventario, control de stock, y optimización de ventas de productos cárnicos. Su objetivo principal es brindar acceso rápido a las funciones de gestión de productos, categorías y pedidos.</p>
-            <hr />
+    <!-- Sección de Bienvenida -->
+    <div class="welcome-section">
+        <h2 class="section-title">🎯 Bienvenido al Panel de Control</h2>
+        <p class="section-description">
+            StockCarnicería es una plataforma diseñada para gestionar de manera eficiente el inventario, control de stock, 
+            y optimización de ventas de productos cárnicos. Su objetivo principal es brindar acceso rápido a las funciones 
+            de gestión de productos, categorías y pedidos.
+        </p>
+    </div>
 
-            <div class="mt-5 pt-3 text-center border-top">
-                <p class="text-muted small">Plataforma educativa: Desarrollo 2do año - TSDS - 2025</p>
+    <!-- Estadísticas rápidas -->
+    @if (totalProductos > 0)
+    {
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h3>Productos</h3>
+                    <p class="stat-number">@totalProductos</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <h3>Stock Bajo</h3>
+                    <p class="stat-number">@stockBajo</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3>Valor Inventario</h3>
+                    <p class="stat-number">$@valorTotal.ToString("N0")</p>
+                </div>
             </div>
         </div>
+    }
+
+    <!-- Características principales -->
+    <div class="features-section">
+        <h3 class="section-title">✨ Características Principales</h3>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h4>Gestión de Inventario</h4>
+                <p>Controla el stock de tus productos en tiempo real.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🛒</span>
+                <h4>Sistema de Ventas</h4>
+                <p>Registra y administra tus ventas de forma rápida.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📦</span>
+                <h4>Categorización</h4>
+                <p>Organiza tus productos por categorías personalizadas.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🤝</span>
+                <h4>Gestión de Proveedores</h4>
+                <p>Mantén control sobre tus proveedores y suministros.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="footer-section">
+        <p class="footer-text">Plataforma educativa: Desarrollo 2do año - TSDS - 2025</p>
     </div>
 </div>
 
 @code {
-    // Componente Blazor sin inyecciones ni lógica asíncrona en C#, es puramente estático.
+    private int totalProductos = 0;
+    private int stockBajo = 0;
+    private decimal valorTotal = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var productos = await _serviceProducto.GetAllAsync();
+            if (productos != null && productos.Any())
+            {
+                totalProductos = productos.Count;
+                stockBajo = productos.Count(p => p.Stock <= 20);
+                valorTotal = productos.Sum(p => p.Stock * p.PrecioUnitario);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejar error silenciosamente
+            Console.WriteLine($"Error al cargar estadísticas: {ex.Message}");
+        }
+    }
 }

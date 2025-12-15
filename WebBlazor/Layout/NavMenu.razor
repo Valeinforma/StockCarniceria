@@ -1,49 +1,59 @@
 ﻿@inject FirebaseAuthService _firebaseAuthService
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">StockCarniceria</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> inicio
-            </NavLink>
-        </div>
+<div class="sidebar">
+    <!-- Encabezado del Sidebar -->
+    <div class="sidebar-header">
+        <span class="meat-emoji">🥩</span>
+        <h2>StockCarnicería</h2>
+    </div>
+
+    <!-- Navegación principal -->
+    <nav class="sidebar-nav">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <span class="nav-icon">🏠</span>
+            <span>Inicio</span>
+        </NavLink>
 
         @if (isAuthenticated)
         {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="productos">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Stock
-                </NavLink>
-            </div>
-        }
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-login" aria-hidden="true"></span>@textBtnLogin
+            <NavLink class="nav-link" href="productos">
+                <span class="nav-icon">📦</span>
+                <span>Stock</span>
             </NavLink>
-        </div>
+
+            <NavLink class="nav-link" href="categorias">
+                <span class="nav-icon">🏷️</span>
+                <span>Categorías</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="ventas">
+                <span class="nav-icon">💰</span>
+                <span>Ventas</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="proveedores">
+                <span class="nav-icon">🚚</span>
+                <span>Proveedores</span>
+            </NavLink>
+        }
     </nav>
+
+    <!-- Autenticación -->
+    <div class="sidebar-bottom">
+        <NavLink class="nav-link" href="login">
+            <span class="nav-icon">@(isAuthenticated ? "🚪" : "🔑")</span>
+            <span>@textBtnLogin</span>
+        </NavLink>
+        <div class="sidebar-footer">
+            <p>ISP20</p>
+            <p>2025</p>
+        </div>
+    </div>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
     private bool isAuthenticated = false;
     private string textBtnLogin => isAuthenticated ? "Cerrar sesión" : "Iniciar sesión";
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
 
     protected override async Task OnInitializedAsync()
     {
